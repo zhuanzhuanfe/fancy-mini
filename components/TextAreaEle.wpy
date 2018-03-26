@@ -1,0 +1,190 @@
+<!--
+textarea普通元素化，功能同原生textarea，主要处理以下问题：
+1. 原生textarea为原生组件，层级最高，会遮盖模态对话框、地址选择框等浮层元素
+2. 原生textarea样式简陋，许多css样式设置了也不生效，如：font-family、line-height等
+
+原理：
+用户处于编辑状态时展现原生textarea，非编辑状态时隐藏原生textarea，改用<view>展现内容，
+这样，非编辑状态时文本区域能正常展示自定义样式，并且不会覆盖浮层元素。
+
+使用：
+  属性中划线形式转为大小写形式，如：placeholder-class => placeholderClass
+  样式不添加scoped
+
+  示例：
+  <template>
+    <TextAreaEle class="post-desc-text" placeholderClass="desc-placeholder" :placeholder="contentPlaceholder" :maxlength="contentMaxLen"
+                   :value.sync="contentValue" :bindblur="onContentBlur"></TextAreaEle>
+  </template>
+  <script>
+    export default class extends wepy.page {
+      data = {
+        contentValue: '',
+        contentPlaceholder: '在这里详细描述一下你的宝贝吧，如品牌、规格、成色、购买渠道、转手原因等',
+        contentMaxLen: 15000,
+      }
+      onContentBlur= (ev)=>{
+        let val = ev.detail.value;
+        this.contentValue = val.substring(0, Math.min(val.length, this.contentMaxLen));
+        if (val.length >= this.contentMaxLen){
+          this.$toast({
+            title: `宝贝描述最多${this.contentMaxLen}个字`,
+            type: 'fail',
+            duration: 1500
+          });
+        }
+      }
+    }
+  </script>
+  <style lang="less" rel="stylesheet/less">
+    .post-desc-text{
+      width: 100%;
+      margin-top: 15rpx;
+      font-size: 28rpx;
+      height: 290rpx;
+      color: #43474c;
+      text-align: left;
+    }
+    .desc-placeholder{
+      color: #AAAEB9;
+    }
+  </style>
+  <style lang="less" rel="stylesheet/less" scoped>
+    //....
+  </style>
+-->
+<template>
+  <block>
+    <!--编辑状态，使用原生textarea，以进行文本编辑&交互-->
+    <textarea wx:if="{{editing}}"
+
+              class="{{class}}" value="{{value}}" placeholder="{{placeholder}}"
+              placeholder-style="{{placeholderStyle}}" placeholder-class="{{placeholderClass}}"
+              disabled="{{disabled}}" maxlength="{{maxlength}}"
+              auto-focus="{{autoFocus || editing}}" auto-height="{{autoHeight}}" fixed="{{fixed}}"
+              cursor-spacing="{{cursorSpacing}}" cursor="{{cursor}}" show-confirm-bar="{{showConfirmBar}}"
+              bindlinechange="onLineChange" bindconfirm="onConfirm"
+
+              focus="{{editing}}"
+              bindfocus="onTextFocus" bindblur="onTextBlur" bindinput="onTextInput"
+    ></textarea>
+    <!--非编辑状态，改用view展现内容，以支持自定义样式&避免覆盖页面弹层-->
+    <view wx:if="{{!editing}}"
+          class="{{class}} {{value ? '' : placeholderClass||'textarea-placeholder'}} {{value ? '_textarea' : '_textarea-placeholder'}}" @tap.stop="onBeginEdit"
+    >{{value || placeholder}}</view>
+
+    <!--当用户点击编辑框之外的区域时，手动触发编辑框的blur事件-->
+    <view wx:if="{{editing}}" class="blurModal" @tap="onBlurModal"></view>
+  </block>
+</template>
+
+<script>
+  import wepy from 'wepy';
+
+  export default class extends wepy.component {
+    props = {
+      'class': {
+        type: String,
+      },
+      'value': {
+        type: String,
+        twoWay: true,
+      },
+      'placeholder': {
+        type: String,
+      },
+      'placeholderStyle': {
+        type: String,
+      },
+      'placeholderClass': {
+        type: String,
+      },
+      'disabled': {
+      },
+      'maxlength': {
+      },
+      'autoFocus': {
+      },
+      'autoHeight': {
+      },
+      'fixed': {
+      },
+      'cursorSpacing': {
+      },
+      'cursor': {
+      },
+      'showConfirmBar': {
+      },
+      'focus': {
+      },
+      'bindblur': {
+        type: Function
+      },
+      'bindinput': {
+        type: Function
+      },
+      'bindfocus': {
+        type: Function
+      },
+      'bindlinechange': {
+        type: Function
+      },
+      'bindconfirm': {
+        type: Function
+      },
+    }
+
+    data = {
+      editing: false, //是否处于编辑状态
+      focusing: false, //是否处于聚焦状态（语义与editing一致，为兼容安卓真机bug而引入）
+    }
+
+    computed = {}
+
+    methods = {
+      onTextInput(ev){
+        this.value = ev.detail.value;
+        return this.bindinput && this.bindinput(ev);
+      },
+      onTextFocus(ev){
+        this.focusing = true;
+        return this.bindfocus && this.bindfocus(ev);
+      },
+      onTextBlur(ev){
+        if (!this.focusing) //安卓真机上存在bug，第一次聚焦时不触发focus事件，反而触发blur事件，此时不做处理，保留focus态
+          return;
+        this.editing = false;
+        this.focusing = false;
+        return this.bindblur && this.bindblur(ev);
+      },
+      onBlurModal(){
+        this.editing = false;
+      },
+      onBeginEdit(){
+        this.editing = true;
+      },
+      onLineChange(ev){
+        return this.bindlinechange && this.bindlinechange(ev);
+      },
+      onConfirm(ev){
+        return this.bindconfirm && this.bindconfirm(ev);
+      },
+    }
+
+    components = {}
+  }
+</script>
+
+<style lang="less" rel="stylesheet/less">
+  ._textarea {
+    white-space: pre-wrap;
+    line-height: 1.2;
+  }
+  ._textarea-placeholder {
+    white-space: pre-wrap;
+    line-height: 1.4;
+  }
+</style>
+<style lang="less" rel="stylesheet/less" scoped>
+
+</style>

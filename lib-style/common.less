@@ -1,0 +1,44 @@
+@import "border";
+
+//绝对定位时占据父元素全部空间
+.takeFullSpace(){
+  top:0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+//单行文本，过长时省略号截断
+.ellipsisLine(){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+//清除元素默认样式（场景示例：目前页内转发只能使用button组件，但样式需自定义，故使用前需对button默认样式进行清理）
+.clear(){
+  position:static;
+  display:block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing:content-box;
+  font-size:18px;
+  text-align:center;
+  text-decoration:none;
+  line-height:1;
+  border-radius:0;
+  -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
+  color:#000000;
+  background-color:transparent;
+  &::before, &::after {
+    content: '';
+    margin: 0;
+    padding: 0;
+    border: 0;
+    width: 0;
+    height: 0;
+    display: none;
+  }
+}
