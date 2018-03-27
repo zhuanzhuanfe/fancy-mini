@@ -8,8 +8,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run compile"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhuanzhuanfe/fancy-mini.git"
+  },
   "author": "",
   "license": "MIT",
+  "homepage": "https://github.com/zhuanzhuanfe/fancy-mini",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",

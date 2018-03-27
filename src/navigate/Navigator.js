@@ -74,7 +74,7 @@ export default class Navigator {
    * 替换当前页面
    * @param {Object} route 页面配置，格式同wx.redirectTo
    */
-  //@makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  @makeMutex({namespace:globalStore, mutexId:'redirect'}) //避免跳转相关函数并发执行（考虑到有些页面对特定入参会立马中转至其它页面，redirectTo不与navigateTo互斥）
   static async redirectTo(route){
     console.log('[Navigator] redirectTo:', route);
     Navigator._history.replace({url: route.url});

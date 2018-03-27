@@ -1,5 +1,5 @@
 # fancy-mini
-小程序代码库，封装一些常用的js模块和界面组件。  
+小程序代码库，封装一些常用的功能模块和ui组件。  
 组件部分基于 [WePY](https://tencent.github.io/wepy/) 框架  
 js模块大部分不与框架耦合，包括原生小程序在内均可使用。
 
@@ -19,6 +19,12 @@ js模块大部分不与框架耦合，包括原生小程序在内均可使用。
 - 补全文档
 - demo演示
 - 模块进一步抽离：与wepy解耦、尽量减少资源依赖， 耦合逻辑改为可配形式
+    + decorator/withErrToast   与this.$toast解耦
+    + navigate/Navigator   
+        - 做成可配：最大层级数
+        - 做成可配：原路由对象(wx / wepy) —— 与wepy解耦
+        - 做成可配：是否开启多实例并存自动刷新策略 —— 与wepy解耦
+    
 - wpy-npm-workaround
     + 目前wepy在引用包含多个组件的npm包时，存在bug：  
 	    - wepy 1.7.0以上 && Mac环境，可以正常引用， 见issue：https://github.com/Tencent/wepy/issues/851

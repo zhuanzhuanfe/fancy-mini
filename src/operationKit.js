@@ -1,7 +1,5 @@
 /**
  * 封装常用的通用功能函数
- *    存在文件依赖的功能、业务强耦合功能，请勿放置于此，此类功能参考 funcKit 模块
- *    应保证此文件被任意模块引用时，都不会造成循环依赖 （e.g. A引用B，B又引用A）
  */
 
 /**
@@ -98,7 +96,7 @@ export function delay(ms) {
  * @param {string} v2 版本号2
  * @return {number} 比较结果： -1 小于 | 0 等于 | 1 大于
  */
-function compareVersion(v1, v2) {
+export function compareVersion(v1, v2) {
   var seq1 = v1.split(".").map(subVersion=>parseInt(subVersion));
   var seq2 = v2.split(".").map(subVersion=>parseInt(subVersion));
 

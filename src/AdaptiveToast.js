@@ -1,15 +1,28 @@
-import {delay} from './operationKit';
+import {delay, deepAssign} from './operationKit';
 
 class Toast {
-  _icons = {
-    success:  '/images/tipsucc.png',
-    fail:     '/images/tipfail.png'
+  _options = {
+    icons: {
+      success: '/images/tipsucc.png',
+      fail: '/images/tipfail.png'
+    },
+    defaultOpts: {
+      title: '',
+      type: 'fail',
+      duration: 2000,
+    },
+    installProps: {
+      '$toast': 'toast'
+    }
   };
-  _defaultOpts = {
-    title: '',
-    type: 'fail',
-    duration: 2000,
-  };
+
+  constructor(options){
+    deepAssign(this._options, options);
+  }
+
+  get installProps(){
+    return this._options.installProps;
+  }
 
   /**
    * toast
@@ -20,7 +33,7 @@ class Toast {
    * }
    */
   toast = async (options)=>{
-    options = Object.assign({}, this._defaultOpts, options);
+    options = Object.assign({}, this._options.defaultOpts, options);
 
     let len = options.title.length;
     if (len <= 7) //文案简洁，使用带图标的toast
@@ -38,7 +51,7 @@ class Toast {
   sysToastIcon = async (options)=>{
     wx.showToast({
       title: options.title,
-      image: this._icons[options.type],
+      image: this._options.icons[options.type] || options.type,
       duration: options.duration,
       success : options.success,
       fail:options.fail,
@@ -94,4 +107,4 @@ class Toast {
   }
 }
 
-export default new Toast().toast;
+export default Toast;
