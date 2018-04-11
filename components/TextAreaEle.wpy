@@ -58,19 +58,19 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
     <!--编辑状态，使用原生textarea，以进行文本编辑&交互-->
     <textarea wx:if="{{editing}}"
 
-              class="{{class}}" value="{{value}}" placeholder="{{placeholder}}"
+              class="{{class}} {{platform}}" value="{{value}}" placeholder="{{placeholder}}"
               placeholder-style="{{placeholderStyle}}" placeholder-class="{{placeholderClass}}"
               disabled="{{disabled}}" maxlength="{{maxlength}}"
-              auto-focus="{{autoFocus || editing}}" auto-height="{{autoHeight}}" fixed="{{fixed}}"
-              cursor-spacing="{{cursorSpacing}}" cursor="{{cursor}}" show-confirm-bar="{{showConfirmBar}}"
+              auto-focus="{{autoFocus}}" auto-height="{{autoHeight}}" fixed="{{fixed}}"
+              cursor-spacing="{{cursorSpacing}}" show-confirm-bar="{{showConfirmBar}}"
               bindlinechange="onLineChange" bindconfirm="onConfirm"
 
-              focus="{{editing}}"
+              focus="{{_focus}}" cursor="{{_cursor}}"
               bindfocus="onTextFocus" bindblur="onTextBlur" bindinput="onTextInput"
     ></textarea>
     <!--非编辑状态，改用view展现内容，以支持自定义样式&避免覆盖页面弹层-->
     <view wx:if="{{!editing}}"
-          class="{{class}} {{value ? '' : placeholderClass||'textarea-placeholder'}} {{value ? '_textarea' : '_textarea-placeholder'}}" @tap.stop="onBeginEdit"
+          class="{{class}} {{platform}} {{value ? '' : placeholderClass||'textarea-placeholder'}} {{value ? '_textarea' : '_textarea-placeholder'}}" @tap.stop="onBeginEdit"
     >{{value || placeholder}}</view>
 
     <!--当用户点击编辑框之外的区域时，手动触发编辑框的blur事件-->
@@ -80,6 +80,8 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
 
 <script>
   import wepy from 'wepy';
+  import {wxPromise} from 'fancy-mini/lib/wxPromise';
+  import {delay} from 'fancy-mini/lib/operationKit';
 
   export default class extends wepy.component {
     props = {
@@ -103,20 +105,20 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
       },
       'maxlength': {
       },
-      'autoFocus': {
-      },
+      /*'autoFocus': {
+       },*/
       'autoHeight': {
       },
       'fixed': {
       },
       'cursorSpacing': {
       },
-      'cursor': {
-      },
+      /*'cursor': {
+       },*/
       'showConfirmBar': {
       },
-      'focus': {
-      },
+      /* 'focus': {
+       },*/
       'bindblur': {
         type: Function
       },
@@ -135,15 +137,19 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
     }
 
     data = {
+      _focus: false,
+      _cursor: 0,
+
       editing: false, //是否处于编辑状态
       focusing: false, //是否处于聚焦状态（语义与editing一致，为兼容安卓真机bug而引入）
-    }
+      draftValue: this.value,
 
-    computed = {}
+      platform: '', //android | ios | devtools
+    }
 
     methods = {
       onTextInput(ev){
-        this.value = ev.detail.value;
+        this.draftValue= ev.detail.value;
         return this.bindinput && this.bindinput(ev);
       },
       onTextFocus(ev){
@@ -155,13 +161,24 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
           return;
         this.editing = false;
         this.focusing = false;
-        return this.bindblur && this.bindblur(ev);
+        this.value = ev.detail.value;
+        this._focus = false;
+        this.bindblur && this.bindblur(ev);
+        this.$apply();
       },
-      onBlurModal(){
+      onBlurModal(ev){
+        this.value = this.draftValue;
+        this._focus = false;
         this.editing = false;
+        this.$apply();
       },
-      onBeginEdit(){
+      async onBeginEdit(){
         this.editing = true;
+        this.$apply();
+        await delay(150);
+        this._focus = true;
+        this._cursor = this.value.length;
+        this.$apply();
       },
       onLineChange(ev){
         return this.bindlinechange && this.bindlinechange(ev);
@@ -171,20 +188,37 @@ textarea普通元素化，功能同原生textarea，主要处理以下问题：
       },
     }
 
+    async onLoad(){
+      let sysInfo = await wxPromise.getSystemInfo();
+      this.platform = sysInfo.platform;
+      this.$apply();
+    }
     components = {}
   }
 </script>
 
 <style lang="less" rel="stylesheet/less">
-  ._textarea {
-    white-space: pre-wrap;
-    line-height: 1.2;
+  textarea, ._textarea, ._textarea-placeholder {
+    line-height: 1.26;
+    box-sizing: border-box;
   }
-  ._textarea-placeholder {
+  ._textarea, ._textarea-placeholder {
     white-space: pre-wrap;
-    line-height: 1.4;
+    &.ios {
+      padding: 17rpx 11rpx;
+    }
   }
 </style>
 <style lang="less" rel="stylesheet/less" scoped>
-
+  @import "../lib-style/common";
+  .blurModal {
+    .clear();
+    position: fixed;
+    .takeFullSpace();
+    z-index: 100000;
+  }
+  textarea { //开发者工具上textarea不具备最高层级的特性，手动模拟；避免安卓下点击textarea原生组件，点击事件穿透到下层dom
+    position: relative;
+    z-index: 100001;
+  }
 </style>

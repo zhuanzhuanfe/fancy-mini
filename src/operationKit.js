@@ -108,3 +108,29 @@ export function compareVersion(v1, v2) {
 
   return len1==len2 ? 0 : (len1<len2 ? -1 : 1);
 }
+
+/**
+ * 拼接参数，注：当前只针对小程序标准url，暂未考虑含#号/多?号等特殊url情形
+ * @param {string} url 原url
+ * @param {Object} extraParams 新增参数
+ * @return {string} 新url
+ */
+export function appendUrlParam(url, extraParams) {
+  if (!extraParams)
+    return url;
+
+  let [path, queryStr=""] = url.split('?');
+  let params = {};
+  queryStr.split('&').forEach(paramStr=>{
+    let [name, value] = paramStr.split('=');
+    if (name && value!==undefined)
+      params[name] = value;
+  });
+
+  let newParams = Object.assign({}, params, extraParams);
+  let newQueries = [];
+  for (let name in newParams)
+    newQueries.push(name + '=' + newParams[name]);
+
+  return newQueries.length>0 ? path + '?' + newQueries.join('&') : url;
+}

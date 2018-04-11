@@ -28,7 +28,7 @@ export const wxResolve = promisify(wx, {dealFail: true});
  * @param {boolean} dealFail   true - 失败时也resolve，并标记res.succeeded=false； false - 失败时直接reject
  * @return {Object}  Promise化的wx
  */
-export function customPromisify({overrides={}, dealFail=false}={}) {
+export function customWxPromisify({overrides={}, dealFail=false}={}) {
   let wxRefine = Object.assign({}, wx, overrides);
   return promisify(wxRefine, {dealFail});
 }
