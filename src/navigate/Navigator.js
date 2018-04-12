@@ -1,7 +1,8 @@
-import wepy from 'wepy';
 import History from './History';
 import {makeMutex} from '../decorator/noConcurrent';
 import {ctxDependConsole as console} from '../debugKit';
+import {delay, appendUrlParam} from '../operationKit';
+import {wxPromise,wxResolve} from '../wxPromise';
 
 const MAX_LEVEL = 10; //小程序支持打开的页面层数
 const NAV_BUSY_REMAIN = 300;  //实践发现，navigateTo成功回调之后页面也并未完全完成跳转，故将跳转状态短暂延长，单位：ms
@@ -20,32 +21,25 @@ wx.getSystemInfo({
 
 /**
  * 导航器
- * 由于小程序只支持最多5级页面，但需求上希望维护更长的历史栈，故自行维护完整历史栈并改写默认导航操作
- * 使用：
- *     1. app.vue中调用Navigator.install()；所有页面实例若有onUnload函数，函数中需执行 super.onUnload && super.onUnload();
- *     2. 页面不直接调用原生navigateTo、redirectTo、navigateBack接口，改调此处对应函数或wxPromise对应接口
+ * 由于小程序只支持最多5级页面（后放宽至10级），但需求上希望维护更长的历史栈，故自行维护完整历史栈并改写默认导航操作
+ * 使用：详见 docs/无限层级路由方案.md
  */
 export default class Navigator {
   static _config = {
-    curtainPage: '/pages/curtain/curtain',  //中转页面，默认为空白页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
+    curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
+    enableCurtain: true, //是否开启空白中转策略
+    enableTaintedRefresh: true, //是否开启实例覆盖自动刷新策略
   };
   static _history = new History({routes: [{url:''}], correctLevel: MAX_LEVEL-2}); //完整历史栈
   static _activeUnload = false;   //是否为主动触发的页面卸载： true-代码主动调用导致； false-用户点击了物理返回键/左上角返回按钮导致
 
   /**
    * 安装
-   * @param {Object} config 自定义配置，可配置项参见 _config 相关字段及注释
+   * @param {Object} options 自定义配置，可配置项参见 _config 相关字段及注释
    */
-  static install(config={}){
+  static config(options={}){
     //自定义配置
-    Object.assign(Navigator._config, config);
-
-    //注册onUnload钩子函数
-    let oriOnUnload = wepy.page.prototype.onUnload;
-    wepy.page.prototype.onUnload = function () {
-      oriOnUnload && oriOnUnload.apply(this, arguments);
-      Navigator.onPageUnload();
-    };
+    Object.assign(Navigator._config, options);
   }
 
   /**
@@ -58,12 +52,12 @@ export default class Navigator {
     Navigator._history.open({url: route.url});
 
     let curPages = getCurrentPages();
-    if (curPages.length < MAX_LEVEL-1) { //小于倒数第二层时，直接打开
-      await Navigator._secretOpen(route);
-    } else if (curPages.length == MAX_LEVEL-1) { //倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
+    if (Navigator._config.enableCurtain && curPages.length == MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
       console.log('[Navigator] replace with curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
       await Navigator._secretReplace({url: Navigator._config.curtainPage});
       console.log('[Navigator] open from curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
+      await Navigator._secretOpen(route);
+    } else if (curPages.length < MAX_LEVEL) { //层级未满，直接打开
       await Navigator._secretOpen(route);
     } else {  //层数已占满时，替换最后一层
       await Navigator._secretReplace(route);
@@ -122,18 +116,26 @@ export default class Navigator {
    */
   static async _doBack(opts, {sysBack}){
     let targetRoute = Navigator._history.back(opts);
-    let curLength = getCurrentPages().length - (sysBack ? 1 : 0);
+    let curLength = getCurrentPages().length - (sysBack ? 1 : 0); //当前实际层级（系统返回无法取消，实际层级需要减1）
 
     console.log('[Navigator] doBack, hisLength:', Navigator._history.length, 'curLen:', curLength, 'targetRoute:', targetRoute);
     if (Navigator._history.length < curLength) {  //返回后逻辑层级<当前实际层级，则直接返回到目标层级
       await Navigator._secretBack({
         delta: curLength-Navigator._history.length
       });
-      if (targetRoute.tainted || Navigator._history.length==MAX_LEVEL-1)  //若目标页面实例已被覆盖（wepy单页面实例问题）或 当前页为中转空白页，则刷新
-        await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+
+      if ((Navigator._config.enableTaintedRefresh && targetRoute.tainted) || //若目标页面实例已被覆盖（wepy单页面实例问题）
+        (Navigator._config.enableCurtain && Navigator._history.length==MAX_LEVEL-1)) //或 当前页为中转空白页（空白中转策略）
+      {
+        await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}); //则刷新
+      }
     } else if (Navigator._history.length === curLength) { //返回后逻辑层级===当前实际层级
-      if (!sysBack || curLength==MAX_LEVEL-1 || targetRoute.tainted) //非系统返回 或 当前页为中转空白页 或 目标页面已被覆盖，需重定向至目标页面；否则，系统返回即符合预期，无需额外处理
+      if (!sysBack || //非系统返回
+        (Navigator._config.enableCurtain && curLength==MAX_LEVEL-1) || //或 当前页为中转空白页
+        (Navigator._config.enableTaintedRefresh && targetRoute.tainted)) //或 目标页面已被覆盖
+      { //则重定向至目标页面；否则，系统返回即符合预期，无需额外处理
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+      }
     } else { //返回后逻辑层级 > 当前实际层级，则在最后一层载入目标页面
       await (sysBack ? Navigator._secretOpen(targetRoute, {extraParams: {_forcedRefresh: true}}) : Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}));
     }
@@ -149,10 +151,10 @@ export default class Navigator {
    */
   static async _secretOpen(route, {retryAfter=NAV_BUSY_REMAIN, retryTimeout=2000, extraParams=null}={}){
     console.log('[Navigator] _secretOpen', route);
-    let openRes = await promiseNav('navigateTo', Object.assign({}, route, {success: null, fail: null, url: appendUrlParam(route.url, extraParams)}), {dealFail: true});
+    let openRes = await wxResolve.navigateTo(Object.assign({}, route, {success: null, fail: null, url: appendUrlParam(route.url, extraParams)}));
 
     //打开成功
-    if (openRes.errMsg.includes('ok')) {
+    if (openRes.succeeded) {
       typeof route.success === "function" && route.success(openRes);
       await delay(NAV_BUSY_REMAIN);
       return;
@@ -191,7 +193,7 @@ export default class Navigator {
   static async _secretReplace(route, {extraParams=null}={}){
     console.log('[Navigator] _secretReplace', route);
     Navigator._activeUnload = true;
-    await promiseNav('redirectTo', Object.assign({}, route, {url: appendUrlParam(route.url, extraParams)}));
+    await wxPromise.redirectTo(Object.assign({}, route, {url: appendUrlParam(route.url, extraParams)}));
     await delay(NAV_BUSY_REMAIN);
   }
 
@@ -203,66 +205,7 @@ export default class Navigator {
   static async _secretBack(opts={delta:1}){
     console.log('[Navigator] _secretBack', opts);
     Navigator._activeUnload = true;
-    await promiseNav('navigateBack', opts);
+    await wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
   }
-}
-
-/**
- * 调用小程序跳转API，结果以Promise形式返回
- * @param method  API名称，如：navigateTo、redirectTo、navigateBack
- * @param params  API参数
- * @param {boolean} dealFail  是否需进行错误处理： false-成功回调时resolve，失败回调时reject； true-成功失败均resolve
- * @return {Promise}
- */
-function promiseNav(method, params, {dealFail=false}={}) {
-  return new Promise((resolve, reject)=>{
-    wx[method](Object.assign({}, params, {
-      success: (res)=>{
-        typeof params.success === "function" && params.success(res);
-        resolve(res);
-      },
-      fail: (res)=>{
-        typeof params.fail === "function" && params.fail(res);
-        dealFail ? resolve(res) : reject(res);
-      }
-    }));
-  });
-}
-
-/**
- * 设置延时
- * @param {number} ms  延迟时长，单位：ms
- * @return {Promise}
- */
-function delay(ms) {
-  return new Promise((resolve, reject)=>{
-    setTimeout(resolve, ms);
-  });
-}
-
-/**
- * 拼接参数
- * @param {string} url 原url
- * @param {Object} extraParams 新增参数
- * @return {string} 新url
- */
-function appendUrlParam(url, extraParams) {
-  if (!extraParams)
-    return url;
-
-  let [path, queryStr=""] = url.split('?');
-  let params = {};
-  queryStr.split('&').forEach(paramStr=>{
-    let [name, value] = paramStr.split('=');
-    if (name && value!==undefined)
-      params[name] = value;
-  });
-
-  let newParams = Object.assign({}, params, extraParams);
-  let newQueries = [];
-  for (let name in newParams)
-    newQueries.push(name + '=' + newParams[name]);
-
-  return newQueries.length>0 ? path + '?' + newQueries.join('&') : url;
 }
