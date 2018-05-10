@@ -1,2 +1,2 @@
 export * from './decorator/noConcurrent';
-export * from './decorator/withErrToast';
+export * from './decorator/errSafe';

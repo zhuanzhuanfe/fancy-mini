@@ -25,3 +25,31 @@
     console.log('sysInfo:', sysInfoRes);
   }
 ```
+
+## 自定义二次封装示例
+```js
+  import {customWxPromisify} from 'fancy-mini/lib/wxPromise';
+  import Navigator from 'fancy-mini/lib/navigate/Navigator';	
+  
+  let overrides = { //覆盖部分API，引入自定义逻辑，以优化性能/实现特定需求
+    navigateTo: Navigator.navigateTo,
+    redirectTo: Navigator.redirectTo,
+    navigateBack: Navigator.navigateBack,
+  };
+  
+  let wxPromise = customWxPromisify({
+	overrides,
+	dealFail: false, //不处理失败情形，成功时resolve，失败时reject
+  });
+	
+  let wxResolve = customWxPromisify({
+	overrides,
+	dealFail: true, //处理失败情形，成功失败均resolve，并在返回结果中额外标记res.succeeded=true/false
+  });
+  
+  export{
+    wxPromise,
+    wxResolve
+  } 
+  
+```

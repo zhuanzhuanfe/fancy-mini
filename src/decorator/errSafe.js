@@ -30,3 +30,17 @@ export function withErrToast({defaultMsg, duration=2000}) {
     }
   }
 }
+
+/**
+ * 捕获函数异常，避免阻断主流程
+ */
+export function errSafe(target, funcName, descriptor) {
+  let oriFunc = descriptor.value;
+  descriptor.value = function () {
+    try {
+      return oriFunc.apply(this, arguments);
+    } catch (e) {
+      console.error('[errSafe decorator] caught err with func:',funcName, e);
+    }
+  }
+}
