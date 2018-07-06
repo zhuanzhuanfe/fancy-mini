@@ -4,10 +4,13 @@
  */
 export default class History {
   _routes = []; //历史栈
-  _correctLevel = -1; //自行维护的逻辑历史栈与系统实际历史栈的前若干项应当始终保持一致
+  _correctLevel = 1; //自行维护的逻辑历史栈与系统实际历史栈的前若干项应当始终保持一致
 
-  constructor({correctLevel=1, routes=[]}){
+  constructor({routes=[]}){
     this._routes = routes.slice(0);
+  }
+
+  config({correctLevel=1}={}){
     this._correctLevel = correctLevel;
   }
 

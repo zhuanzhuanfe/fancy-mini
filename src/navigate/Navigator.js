@@ -4,7 +4,6 @@ import {ctxDependConsole as console} from '../debugKit';
 import {delay, appendUrlParam} from '../operationKit';
 import {wxPromise,wxResolve} from '../wxPromise';
 
-const MAX_LEVEL = 10; //小程序支持打开的页面层数
 const NAV_BUSY_REMAIN = 300;  //实践发现，navigateTo成功回调之后页面也并未完全完成跳转，故将跳转状态短暂延长，单位：ms
 
 let globalStore = {
@@ -29,8 +28,9 @@ export default class Navigator {
     curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
     enableCurtain: true, //是否开启空白中转策略
     enableTaintedRefresh: true, //是否开启实例覆盖自动刷新策略
+    MAX_LEVEL: 10, //小程序支持打开的页面层数
   };
-  static _history = new History({routes: [{url:''}], correctLevel: MAX_LEVEL-2}); //完整历史栈
+  static _history = new History({routes: [{url:''}]}); //完整历史栈
   static _activeUnload = false;   //是否为主动触发的页面卸载： true-代码主动调用导致； false-用户点击了物理返回键/左上角返回按钮导致
 
   /**
@@ -40,6 +40,7 @@ export default class Navigator {
   static config(options={}){
     //自定义配置
     Object.assign(Navigator._config, options);
+    Navigator._history.config({correctLevel: Navigator._config.MAX_LEVEL-2});
   }
 
   /**
@@ -52,12 +53,12 @@ export default class Navigator {
     Navigator._history.open({url: route.url});
 
     let curPages = getCurrentPages();
-    if (Navigator._config.enableCurtain && curPages.length == MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
+    if (Navigator._config.enableCurtain && curPages.length == Navigator._config.MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
       console.log('[Navigator] replace with curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
       await Navigator._secretReplace({url: Navigator._config.curtainPage});
       console.log('[Navigator] open from curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
       await Navigator._secretOpen(route);
-    } else if (curPages.length < MAX_LEVEL) { //层级未满，直接打开
+    } else if (curPages.length < Navigator._config.MAX_LEVEL) { //层级未满，直接打开
       await Navigator._secretOpen(route);
     } else {  //层数已占满时，替换最后一层
       await Navigator._secretReplace(route);
@@ -125,13 +126,13 @@ export default class Navigator {
       });
 
       if ((Navigator._config.enableTaintedRefresh && targetRoute.tainted) || //若目标页面实例已被覆盖（wepy单页面实例问题）
-        (Navigator._config.enableCurtain && Navigator._history.length==MAX_LEVEL-1)) //或 当前页为中转空白页（空白中转策略）
+        (Navigator._config.enableCurtain && Navigator._history.length==Navigator._config.MAX_LEVEL-1)) //或 当前页为中转空白页（空白中转策略）
       {
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}); //则刷新
       }
     } else if (Navigator._history.length === curLength) { //返回后逻辑层级===当前实际层级
       if (!sysBack || //非系统返回
-        (Navigator._config.enableCurtain && curLength==MAX_LEVEL-1) || //或 当前页为中转空白页
+        (Navigator._config.enableCurtain && curLength==Navigator._config.MAX_LEVEL-1) || //或 当前页为中转空白页
         (Navigator._config.enableTaintedRefresh && targetRoute.tainted)) //或 目标页面已被覆盖
       { //则重定向至目标页面；否则，系统返回即符合预期，无需额外处理
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
@@ -163,7 +164,7 @@ export default class Navigator {
     //层级问题导致的打开失败
     if (openRes.errMsg.includes('limit exceed')) {
       //超出层级限制无法打开，改为替换当前页
-      if (getCurrentPages().length >= MAX_LEVEL) {
+      if (getCurrentPages().length >= Navigator._config.MAX_LEVEL) {
         return Navigator._secretReplace(route, {extraParams});
       }
 
