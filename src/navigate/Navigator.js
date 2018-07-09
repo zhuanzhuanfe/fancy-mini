@@ -28,6 +28,7 @@ export default class Navigator {
     curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
     enableCurtain: true, //是否开启空白中转策略
     enableTaintedRefresh: true, //是否开启实例覆盖自动刷新策略
+    taintedRefreshWhiteList: [], //实例覆盖自动刷新策略白名单，这些页面不会进行自动刷新，相关数据逻辑页面自行处理
     MAX_LEVEL: 10, //小程序支持打开的页面层数
   };
   static _history = new History({routes: [{url:''}]}); //完整历史栈
@@ -125,7 +126,7 @@ export default class Navigator {
         delta: curLength-Navigator._history.length
       });
 
-      if ((Navigator._config.enableTaintedRefresh && targetRoute.tainted) || //若目标页面实例已被覆盖（wepy单页面实例问题）
+      if (Navigator._needTaintedRefresh(targetRoute) || //若目标页面实例已被覆盖（wepy单页面实例问题）
         (Navigator._config.enableCurtain && Navigator._history.length==Navigator._config.MAX_LEVEL-1)) //或 当前页为中转空白页（空白中转策略）
       {
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}); //则刷新
@@ -133,7 +134,7 @@ export default class Navigator {
     } else if (Navigator._history.length === curLength) { //返回后逻辑层级===当前实际层级
       if (!sysBack || //非系统返回
         (Navigator._config.enableCurtain && curLength==Navigator._config.MAX_LEVEL-1) || //或 当前页为中转空白页
-        (Navigator._config.enableTaintedRefresh && targetRoute.tainted)) //或 目标页面已被覆盖
+        (Navigator._needTaintedRefresh(targetRoute))) //或 目标页面已被覆盖
       { //则重定向至目标页面；否则，系统返回即符合预期，无需额外处理
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
       }
@@ -208,5 +209,18 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
+  }
+
+  /**
+   * 实例覆盖自动刷新策略，判断是否需要刷新
+   * @param {object} targetRoute 目标路由
+   * @return {boolean}
+   */
+  static _needTaintedRefresh(targetRoute){
+    let targetPage = targetRoute.url.split('?')[0];
+
+    return Navigator._config.enableTaintedRefresh &&
+      targetRoute.tainted &&
+      !Navigator._config.taintedRefreshWhiteList.some(page=>page===targetPage);
   }
 }
