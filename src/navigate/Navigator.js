@@ -88,6 +88,21 @@ export default class Navigator {
     console.log('[Navigator] navigateBack:', opts);
     await Navigator._doBack(opts, {sysBack: false});
   }
+
+  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  static async reLaunch(route){
+    console.log('[Navigator] reLaunch:', route);
+    await wxPromise.reLaunch(route);
+    await delay(NAV_BUSY_REMAIN);
+  }
+
+  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  static async switchTab(route){
+    console.log('[Navigator] switchTab:', route);
+    await wxPromise.switchTab(route);
+    await delay(NAV_BUSY_REMAIN);
+  }
+
   /**
    * 监听页面卸载过程；本质是想监听用户的返回操作（点击物理返回键/左上角返回按钮），但似乎并没有相应接口，暂借助页面onUnload过程进行判断
    */
@@ -120,8 +135,11 @@ export default class Navigator {
     let targetRoute = Navigator._history.back(opts);
     let curLength = getCurrentPages().length - (sysBack ? 1 : 0); //当前实际层级（系统返回无法取消，实际层级需要减1）
 
+    if (curLength<=Navigator._history.correctLevel && sysBack) //级数很低时，系统返回行为与逻辑返回行为完全一致，无需额外处理
+      return;
+
     console.log('[Navigator] doBack, hisLength:', Navigator._history.length, 'curLen:', curLength, 'targetRoute:', targetRoute);
-    if (Navigator._history.length < curLength) {  //返回后逻辑层级<当前实际层级，则直接返回到目标层级
+    if (Navigator._history.length < curLength) {  //返回后逻辑层级<当前实际层级，则直接返回到目标层级（如 MAX+2 层调用 navigateBack({delta: 3}) )
       await Navigator._secretBack({
         delta: curLength-Navigator._history.length
       });
@@ -132,13 +150,13 @@ export default class Navigator {
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}); //则刷新
       }
     } else if (Navigator._history.length === curLength) { //返回后逻辑层级===当前实际层级
-      if (!sysBack || //非系统返回
+      if (!sysBack || //非系统返回 （如 MAX+1 层返回 MAX 层）
         (Navigator._config.enableCurtain && curLength==Navigator._config.MAX_LEVEL-1) || //或 当前页为中转空白页
         (Navigator._needTaintedRefresh(targetRoute))) //或 目标页面已被覆盖
       { //则重定向至目标页面；否则，系统返回即符合预期，无需额外处理
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
       }
-    } else { //返回后逻辑层级 > 当前实际层级，则在最后一层载入目标页面
+    } else { //返回后逻辑层级 > 当前实际层级，则在最后一层载入目标页面 （如 MAX+5 层返回 MAX+4 层）
       await (sysBack ? Navigator._secretOpen(targetRoute, {extraParams: {_forcedRefresh: true}}) : Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}));
     }
   }

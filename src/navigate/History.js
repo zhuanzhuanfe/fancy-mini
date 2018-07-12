@@ -113,6 +113,14 @@ export default class History {
     this.doCorrection();
     return this._routes.slice(0);
   }
+
+  /**
+   * 自行维护的逻辑历史栈与系统实际历史栈的前若干项应当始终保持一致
+   * @return {number}
+   */
+  get correctLevel(){
+    return this._correctLevel;
+  }
 }
 
 /**
