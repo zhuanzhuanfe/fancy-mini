@@ -92,15 +92,19 @@ export default class Navigator {
   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
   static async reLaunch(route){
     console.log('[Navigator] reLaunch:', route);
+    Navigator._activeUnload = true;
     await wxPromise.reLaunch(route);
     await delay(NAV_BUSY_REMAIN);
+    Navigator._activeUnload = false;
   }
 
   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
   static async switchTab(route){
     console.log('[Navigator] switchTab:', route);
+    Navigator._activeUnload = true;
     await wxPromise.switchTab(route);
     await delay(NAV_BUSY_REMAIN);
+    Navigator._activeUnload = false;
   }
 
   /**
@@ -108,7 +112,6 @@ export default class Navigator {
    */
   static onPageUnload(){
     if (Navigator._activeUnload) {//调用接口主动进行页面返回，此处不再重复处理
-      Navigator._activeUnload = false;
       return;
     }
 
@@ -134,9 +137,6 @@ export default class Navigator {
   static async _doBack(opts, {sysBack}){
     let targetRoute = Navigator._history.back(opts);
     let curLength = getCurrentPages().length - (sysBack ? 1 : 0); //当前实际层级（系统返回无法取消，实际层级需要减1）
-
-    if (curLength<=Navigator._history.correctLevel && sysBack) //级数很低时，系统返回行为与逻辑返回行为完全一致，无需额外处理
-      return;
 
     console.log('[Navigator] doBack, hisLength:', Navigator._history.length, 'curLen:', curLength, 'targetRoute:', targetRoute);
     if (Navigator._history.length < curLength) {  //返回后逻辑层级<当前实际层级，则直接返回到目标层级（如 MAX+2 层调用 navigateBack({delta: 3}) )
@@ -215,6 +215,7 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.redirectTo(Object.assign({}, route, {url: appendUrlParam(route.url, extraParams)}));
     await delay(NAV_BUSY_REMAIN);
+    Navigator._activeUnload = false;
   }
 
   /**
@@ -227,6 +228,7 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
+    Navigator._activeUnload = false;
   }
 
   /**
