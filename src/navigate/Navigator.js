@@ -25,10 +25,25 @@ wx.getSystemInfo({
  */
 export default class Navigator {
   static _config = {
-    curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
     enableCurtain: true, //是否开启空白中转策略
-    enableTaintedRefresh: true, //是否开启实例覆盖自动刷新策略
-    taintedRefreshWhiteList: [], //实例覆盖自动刷新策略白名单，这些页面不会进行自动刷新，相关数据逻辑页面自行处理
+    curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
+
+    enableTaintedRestore: true, //是否开启实例覆盖自动恢复策略
+
+    /**
+     * 自定义页面数据恢复函数，用于
+     * 1. wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时需予以恢复
+     * 2. 层级过深时，新开页面会替换前一页面，导致前一页面数据丢失，返回时需予以恢复
+     *
+     * @param {string} route.url 页面url，绝对路径
+     * @param {object} route.wxPage  页面卸载前的原生页面实例拷贝
+     * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | levels - 层级问题导致的数据丢失
+     * @return {boolean} res.succeeded  数据恢复是否成功，若成功，则恢复结束；若失败，则模块将继而尝试使用默认恢复策略
+     *
+     * e.g. function({route, context}){return {succeeded: true}}
+     */
+    pageRestoreHandler: null,
+
     MAX_LEVEL: 10, //小程序支持打开的页面层数
   };
   static _history = new History({routes: [{url:''}]}); //完整历史栈
@@ -50,18 +65,21 @@ export default class Navigator {
    */
   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
   static async navigateTo(route){
+    //转为绝对路径 ---------------
     console.log('[Navigator] navigateTo:', route);
     Navigator._history.open({url: route.url});
 
     let curPages = getCurrentPages();
     if (Navigator._config.enableCurtain && curPages.length == Navigator._config.MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
       console.log('[Navigator] replace with curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
+      Navigator._history.savePage(Navigator._history.length-2, curPages[curPages.length-1]); //保存页面数据
       await Navigator._secretReplace({url: Navigator._config.curtainPage});
       console.log('[Navigator] open from curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
       await Navigator._secretOpen(route);
     } else if (curPages.length < Navigator._config.MAX_LEVEL) { //层级未满，直接打开
       await Navigator._secretOpen(route);
     } else {  //层数已占满时，替换最后一层
+      Navigator._history.savePage(Navigator._history.length-2, curPages[curPages.length-1]); //保存页面数据
       await Navigator._secretReplace(route);
     }
   }
@@ -139,25 +157,32 @@ export default class Navigator {
     let curLength = getCurrentPages().length - (sysBack ? 1 : 0); //当前实际层级（系统返回无法取消，实际层级需要减1）
 
     console.log('[Navigator] doBack, hisLength:', Navigator._history.length, 'curLen:', curLength, 'targetRoute:', targetRoute);
+
+    let targetCurtain = Navigator._config.enableCurtain && Navigator._history.length==Navigator._config.MAX_LEVEL-1; //目标页面是否为中转空白页（空白中转策略）
+    let targetTainted = Navigator._config.enableTaintedRestore && targetRoute.tainted; //目标页面数据是否已被覆盖（wepy单页面实例问题）
+
     if (Navigator._history.length < curLength) {  //返回后逻辑层级<当前实际层级，则直接返回到目标层级（如 MAX+2 层调用 navigateBack({delta: 3}) )
       await Navigator._secretBack({
         delta: curLength-Navigator._history.length
       });
 
-      if (Navigator._needTaintedRefresh(targetRoute) || //若目标页面实例已被覆盖（wepy单页面实例问题）
-        (Navigator._config.enableCurtain && Navigator._history.length==Navigator._config.MAX_LEVEL-1)) //或 当前页为中转空白页（空白中转策略）
-      {
-        await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}); //则刷新
+      if (targetCurtain) {//当前页为中转空白页（空白中转策略），则替换为目标页面
+        await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+        await Navigator._doLostRestore(targetRoute);
+      } else if (targetTainted) { //若目标页面实例已被覆盖（wepy单页面实例问题），则进行数据恢复
+        await Navigator._doTaintedRestore(targetRoute);
       }
     } else if (Navigator._history.length === curLength) { //返回后逻辑层级===当前实际层级
-      if (!sysBack || //非系统返回 （如 MAX+1 层返回 MAX 层）
-        (Navigator._config.enableCurtain && curLength==Navigator._config.MAX_LEVEL-1) || //或 当前页为中转空白页
-        (Navigator._needTaintedRefresh(targetRoute))) //或 目标页面已被覆盖
-      { //则重定向至目标页面；否则，系统返回即符合预期，无需额外处理
+      if (!sysBack || targetCurtain) {//非系统返回 （如 MAX+1 层调用navigateBack()）或 当前页为中转空白页，则重定向至目标页面
         await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+        await Navigator._doLostRestore(targetRoute);
+      } else if (targetTainted){ //目标页面已被覆盖
+        await Navigator._doTaintedRestore(targetRoute);
       }
+      //否则，系统返回即符合预期，无需额外处理
     } else { //返回后逻辑层级 > 当前实际层级，则在最后一层载入目标页面 （如 MAX+5 层返回 MAX+4 层）
       await (sysBack ? Navigator._secretOpen(targetRoute, {extraParams: {_forcedRefresh: true}}) : Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}}));
+      await Navigator._doLostRestore(targetRoute);
     }
   }
 
@@ -218,6 +243,7 @@ export default class Navigator {
     Navigator._activeUnload = false;
   }
 
+
   /**
    * 不考虑历史记录问题，实际进行页面返回操作
    * @param opts
@@ -231,16 +257,45 @@ export default class Navigator {
     Navigator._activeUnload = false;
   }
 
-  /**
-   * 实例覆盖自动刷新策略，判断是否需要刷新
-   * @param {object} targetRoute 目标路由
-   * @return {boolean}
-   */
-  static _needTaintedRefresh(targetRoute){
-    let targetPage = targetRoute.url.split('?')[0];
 
-    return Navigator._config.enableTaintedRefresh &&
-      targetRoute.tainted &&
-      !Navigator._config.taintedRefreshWhiteList.some(page=>page===targetPage);
+  /**
+   * 数据恢复：wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时予以恢复
+   * 此时滚动位置等界面状态均正常，恢复数据即可
+   * @param route
+   * @return {Promise<void>}
+   * @private
+   */
+  static async _doTaintedRestore(route){
+    //若有自定义页面数据恢复机制，则尝试以自定义方式恢复数据
+    let res = Navigator._config.pageRestoreHandler && Navigator._config.pageRestoreHandler({
+      route,
+      context: 'tainted'
+    });
+
+    if (res instanceof Promise)
+      res = await res;
+
+    if (res && res.succeeded)
+      return;
+
+    //若自定义恢复失败，则以刷新页面的方式恢复数据（不会保留表单数据和交互状态，但至少保证页面数据不错乱）
+    await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+  }
+
+  /**
+   * 数据恢复：层级过深，新开页面时会替换前一页面，导致前一页面数据丢失，返回时予以恢复
+   * 此时页面处于刷新结束状态，表单数据和交互状态均需自行恢复
+   * @param route
+   * @return {Promise<void>}
+   * @private
+   */
+  static async _doLostRestore(route){
+    //若有自定义页面数据恢复机制，则尝试以自定义方式恢复数据
+    Navigator._config.pageRestoreHandler && Navigator._config.pageRestoreHandler({
+      route,
+      context: 'levels'
+    });
+
+    //否则，页面保持刷新状态，暂不提供默认恢复机制
   }
 }
