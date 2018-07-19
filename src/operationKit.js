@@ -134,3 +134,32 @@ export function appendUrlParam(url, extraParams) {
 
   return newQueries.length>0 ? path + '?' + newQueries.join('&') : url;
 }
+
+/**
+ * 将小程序相对路径转为绝对路径
+ * @param {string} relativePath 相对路径
+ * @param {string} curPath  当前路径
+ * @return {string} 绝对路径
+ */
+export function toAbsolutePath(relativePath, curPath) {
+  if (!(typeof relativePath === 'string' && typeof curPath === 'string') ) {
+    console.error('[toAbsolutePath] bad params, relativePath:', relativePath, 'curPath:', curPath);
+    return relativePath;
+  }
+
+  if (relativePath[0] === '/') //已经是绝对路径
+    return relativePath;
+
+  let levels = curPath.split('/').slice(0,-1).concat(relativePath.split('/'));
+  let absoluteLevels = [];
+  for (let level of levels) {
+    if (level === '' || level==='.')
+      continue;
+    if (level === '..'){
+      absoluteLevels.pop();
+      continue;
+    }
+    absoluteLevels.push(level);
+  }
+  return '/'+absoluteLevels.join('/');
+}

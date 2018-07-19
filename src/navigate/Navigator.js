@@ -1,7 +1,7 @@
 import History from './History';
 import {makeMutex} from '../decorator/noConcurrent';
 import {ctxDependConsole as console} from '../debugKit';
-import {delay, appendUrlParam} from '../operationKit';
+import {delay, appendUrlParam, toAbsolutePath} from '../operationKit';
 import {wxPromise,wxResolve} from '../wxPromise';
 
 const NAV_BUSY_REMAIN = 300;  //实践发现，navigateTo成功回调之后页面也并未完全完成跳转，故将跳转状态短暂延长，单位：ms
@@ -65,11 +65,10 @@ export default class Navigator {
    */
   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
   static async navigateTo(route){
-    //转为绝对路径 ---------------
     console.log('[Navigator] navigateTo:', route);
-    Navigator._history.open({url: route.url});
-
     let curPages = getCurrentPages();
+    Navigator._history.open({url: toAbsolutePath(route.url, curPages[curPages.length-1].route)});
+
     if (Navigator._config.enableCurtain && curPages.length == Navigator._config.MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
       console.log('[Navigator] replace with curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
       Navigator._history.savePage(Navigator._history.length-2, curPages[curPages.length-1]); //保存页面数据
@@ -91,7 +90,8 @@ export default class Navigator {
   // @makeMutex({namespace:globalStore, mutexId:'redirect'}) //考虑到有些页面对特定入参会立马中转至其它页面，redirectTo不作免并发
   static async redirectTo(route){
     console.log('[Navigator] redirectTo:', route);
-    Navigator._history.replace({url: route.url});
+    let curPages = getCurrentPages();
+    Navigator._history.replace({url: toAbsolutePath(route.url, curPages[curPages.length-1].route)});
     await Navigator._secretReplace(route);
   }
 

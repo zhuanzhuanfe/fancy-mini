@@ -66,7 +66,7 @@ export function registerPageHook(hook, handler) {
 export function pageRestoreHandler({route, context}) {
   let path = route.url.split('?')[0];
   let wepyPage = wepy.$instance.$pages[path];
-  dataRestoreWx2Wepy(wepyPage, route.wxPage.data); //check 低版本下data是否可以正常获取 -------
+  dataRestoreWx2Wepy(wepyPage, route.wxPage.data);
 
   return {succeeded: true};
 }
@@ -87,7 +87,7 @@ function dataRestoreWx2Wepy(compThis, data, compPrefix='') {
   }
 
   Object.assign(compThis, selfData);
-  compThis.$apply(); //-----
+  compThis.$apply();
 
   //恢复后代组件的数据
   for (let childName in compThis.$com) {
