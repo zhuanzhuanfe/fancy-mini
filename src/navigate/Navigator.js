@@ -1,5 +1,5 @@
 import History from './History';
-import {makeMutex} from '../decorator/noConcurrent';
+import {makeMutex, noConcurrent} from '../decorator/noConcurrent';
 import {ctxDependConsole as console} from '../debugKit';
 import {delay, appendUrlParam, toAbsolutePath} from '../operationKit';
 import {wxPromise,wxResolve} from '../wxPromise';
@@ -37,7 +37,7 @@ export default class Navigator {
      *
      * @param {string} route.url 页面url，绝对路径
      * @param {object} route.wxPage  页面卸载前的原生页面实例拷贝
-     * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | levels - 层级问题导致的数据丢失
+     * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | unloaded - 层级问题导致的数据丢失
      * @return {boolean} res.succeeded  数据恢复是否成功，若成功，则恢复结束；若失败，则模块将继而尝试使用默认恢复策略
      *
      * e.g. function({route, context}){return {succeeded: true}}
@@ -113,7 +113,6 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.reLaunch(route);
     await delay(NAV_BUSY_REMAIN);
-    Navigator._activeUnload = false;
   }
 
   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
@@ -122,6 +121,20 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.switchTab(route);
     await delay(NAV_BUSY_REMAIN);
+  }
+
+  /**
+   * 主动触发的页面卸载过程结束标记
+   * 目前似乎无法监听接口主动触发的页面卸载过程什么时候结束：
+   * 1. reLaunch、redirectTo等接口会立刻进行success回调，不会等待页面卸载、跳转完成再回调
+   * 2. redirectTo到一个分包页面时，须等待分包加载完成，然后才发生页面卸载、跳转，过程耗时不可预估
+   * 因而采取如下策略判断结束时机：从第一个页面卸载开始，若干延时后，认为该次操作触发的全部页面卸载过程结束
+   * @return {Promise<void>}
+   * @private
+   */
+  @noConcurrent
+  static async _finishActiveUnload(){
+    await delay(300); //reLaunch、switchTab等可能一次性触发多个onUnload，因而须等所有onUnload均触发完毕后才能将_activeUnload置回false
     Navigator._activeUnload = false;
   }
 
@@ -129,7 +142,8 @@ export default class Navigator {
    * 监听页面卸载过程；本质是想监听用户的返回操作（点击物理返回键/左上角返回按钮），但似乎并没有相应接口，暂借助页面onUnload过程进行判断
    */
   static onPageUnload(){
-    if (Navigator._activeUnload) {//调用接口主动进行页面返回，此处不再重复处理
+    if (Navigator._activeUnload) {//调用接口主动进行页面卸载，此处不再重复处理
+      Navigator._finishActiveUnload();
       return;
     }
 
@@ -240,7 +254,6 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.redirectTo(Object.assign({}, route, {url: appendUrlParam(route.url, extraParams)}));
     await delay(NAV_BUSY_REMAIN);
-    Navigator._activeUnload = false;
   }
 
 
@@ -254,7 +267,6 @@ export default class Navigator {
     Navigator._activeUnload = true;
     await wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
-    Navigator._activeUnload = false;
   }
 
 
@@ -279,7 +291,7 @@ export default class Navigator {
       return;
 
     //若自定义恢复失败，则以刷新页面的方式恢复数据（不会保留表单数据和交互状态，但至少保证页面数据不错乱）
-    await Navigator._secretReplace(targetRoute, {extraParams: {_forcedRefresh: true}});
+    await Navigator._secretReplace(route, {extraParams: {_forcedRefresh: true}});
   }
 
   /**
@@ -293,7 +305,7 @@ export default class Navigator {
     //若有自定义页面数据恢复机制，则尝试以自定义方式恢复数据
     Navigator._config.pageRestoreHandler && Navigator._config.pageRestoreHandler({
       route,
-      context: 'levels'
+      context: 'unloaded'
     });
 
     //否则，页面保持刷新状态，暂不提供默认恢复机制

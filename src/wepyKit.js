@@ -60,7 +60,7 @@ export function registerPageHook(hook, handler) {
  * @param {object} route 页面路由对象
  * @param {string} route.url 页面url，绝对路径
  * @param {object} route.wxPage  页面卸载前的原生页面实例拷贝
- * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | levels - 层级问题导致的数据丢失
+ * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | unloaded - 层级问题导致的数据丢失
  * @return {{succeeded: boolean}} 数据恢复是否成功，若成功，则恢复结束；若失败，则模块将继而尝试使用默认恢复策略
  */
 export function pageRestoreHandler({route, context}) {
