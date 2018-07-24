@@ -23,16 +23,26 @@
 ## 使用
 app.wpy:
 ```js
-    import {installGlobalProps} from 'fancy-mini/lib/wepyKit';
-    import AdaptiveToast from 'fancy-mini/lib/AdaptiveToast';
-    
-    let adaptiveToast = new AdaptiveToast({
-      icons: {
-        success: '/images/tipsucc.png',
-        fail: '/images/tipfail.png'
-      }
-    });
-    installGlobalProps(adaptiveToast);
+    import './appPlugin'
+```
+
+appPlugin.js:
+```js
+import {registerToThis} from 'fancy-mini/lib/wepyKit';
+import AdaptiveToast from 'fancy-mini/lib/AdaptiveToast';
+
+//长度自适应的原生toast
+let toast = (new AdaptiveToast({
+  icons: {
+    success: '/images/tipsucc.png',
+    fail: '/images/tipfail.png'
+  }
+})).toast;
+registerToThis('$toast', toast);
+
+export { //导出部分api，方便lib文件使用
+  toast
+}
 ```
 
 页面/组件：
@@ -56,3 +66,5 @@ app.wpy:
 ```
 
 项目引入及非wepy项目使用方式见 [README](../README.md)
+
+[返回首页](../README.md)
