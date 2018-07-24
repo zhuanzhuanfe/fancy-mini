@@ -75,13 +75,10 @@ export default class History {
   doCorrection(){
     let curPages = getCurrentPages();
 
-    if (curPages[0] && !curPages[0].route) //低版本拿不到路径信息，不作校正处理
-      return;
-
     if (curPages.length <= this._correctLevel) {
-      let remainCorrect = this._routes.length===curPages.length && curPages.every((page, idx)=> isSamePage(fullUrl(page.route, page.options), this._routes[idx].url));
+      let remainCorrect = this._routes.length===curPages.length && curPages.every((page, idx)=> isSamePage(fullUrl(page.route||page.__route__, page.options), this._routes[idx].url));
       if (!remainCorrect) {
-        this._routes = curPages.map(page=>Object.assign(resetRoute({}), {url: fullUrl(page.route, page.options)}));
+        this._routes = curPages.map(page=>Object.assign(resetRoute({}), {url: fullUrl(page.route||page.__route__, page.options)}));
         this._checkTainted();
       }
     }
