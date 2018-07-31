@@ -2,9 +2,10 @@ import History from './History';
 import {makeMutex, noConcurrent} from '../decorator/noConcurrent';
 import {ctxDependConsole as console} from '../debugKit';
 import {delay, appendUrlParam, toAbsolutePath} from '../operationKit';
-import {wxPromise,wxResolve} from '../wxPromise';
+import {customWxPromisify} from '../wxPromise';
 
 const NAV_BUSY_REMAIN = 300;  //实践发现，navigateTo成功回调之后页面也并未完全完成跳转，故将跳转状态短暂延长，单位：ms
+let wxPromise=null, wxResolve=null; //部分API支持用户自定义覆盖，因而等到配置环节再予以实例化
 
 let globalStore = {
   env: {
@@ -45,6 +46,8 @@ export default class Navigator {
     pageRestoreHandler: null,
 
     MAX_LEVEL: 10, //小程序支持打开的页面层数
+
+    oriNavOverrides: {}, //自定义覆盖部分/全部底层跳转api（wx.navigateTo、wx.redirectTo等），接口及参数格式同wx
   };
   static _history = new History({routes: [{url:''}]}); //完整历史栈
   static _activeUnload = false;   //是否为主动触发的页面卸载： true-代码主动调用导致； false-用户点击了物理返回键/左上角返回按钮导致
@@ -57,6 +60,9 @@ export default class Navigator {
     //自定义配置
     Object.assign(Navigator._config, options);
     Navigator._history.config({correctLevel: Navigator._config.MAX_LEVEL-2});
+
+    wxPromise = customWxPromisify({overrides: Navigator._config.oriNavOverrides, dealFail: false});
+    wxResolve = customWxPromisify({overrides: Navigator._config.oriNavOverrides, dealFail: true});
   }
 
   /**

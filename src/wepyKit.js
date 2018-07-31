@@ -94,3 +94,15 @@ function dataRestoreWx2Wepy(compThis, data, compPrefix='') {
     dataRestoreWx2Wepy(compThis.$com[childName], data, (compPrefix || '$')+childName+'$');
   }
 }
+
+/**
+ * 支持prefetch等附加功能的路由模块，格式与wx保持一致
+ */
+export const NavRefine = {
+  navigateTo(options){
+    wepy.$instance.__prevPage__.$navigate(options);
+  },
+  redirectTo(options){
+    wepy.$instance.__prevPage__.$redirect(options);
+  }
+}
