@@ -102,7 +102,7 @@ export const NavRefine = {
   navigateTo(options){
     wepy.$instance.__prevPage__.$navigate(options);
   },
-  redirectTo(options){
+  /*redirectTo(options){ //__prevPage__在onShow时赋值，若页面在onLoad中重定向，暂时拿不到当前页面实例
     wepy.$instance.__prevPage__.$redirect(options);
-  }
+  }*/
 }
