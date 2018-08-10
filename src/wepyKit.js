@@ -100,9 +100,16 @@ function dataRestoreWx2Wepy(compThis, data, compPrefix='') {
  */
 export const NavRefine = {
   navigateTo(options){
-    wepy.$instance.__prevPage__.$navigate(options);
+    getCurWepyPage().$navigate(options);
   },
-  /*redirectTo(options){ //__prevPage__在onShow时赋值，若页面在onLoad中重定向，暂时拿不到当前页面实例
-    wepy.$instance.__prevPage__.$redirect(options);
-  }*/
+  redirectTo(options){
+    getCurWepyPage().$redirect(options);
+  }
+}
+
+function getCurWepyPage() {
+  let curPages = getCurrentPages();
+  let curPage = curPages[curPages.length-1];
+  let curPath = '/' + (curPage.route || curPage.__route__);
+  return wepy.$instance.$pages[curPath];
 }
