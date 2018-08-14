@@ -29,7 +29,7 @@ export function registerToThis(lib, propMap) {
   }
 
   for (let prop in propMap)
-    wepy.component.prototype[prop] = lib[propMap[prop]];
+    wepy.component.prototype[prop] = propMap[prop]==='*this' ? lib : lib[propMap[prop]];
 }
 
 /**
