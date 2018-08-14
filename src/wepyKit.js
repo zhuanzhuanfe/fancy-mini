@@ -12,7 +12,7 @@ import wepy from 'wepy';
 
  则所有页面&组件可以以 this.$navigateTo 的形式调用 wx.navigateTo
  */
-export function registerToThis(lib, propMap=lib.installProps) {
+export function registerToThis(lib, propMap) {
   if (typeof lib === "string") {
     let [name, value] = [lib, propMap];
     lib = {
@@ -23,8 +23,8 @@ export function registerToThis(lib, propMap=lib.installProps) {
     };
   }
 
-  if (!(typeof lib==="object" && typeof propMap==="object")) {
-    console.error('[installGlobalProps failed] bad params:', arguments);
+  if (!((typeof lib==="object"||typeof lib==="function") && typeof propMap==="object")) {
+    console.error('[registerToThis failed] bad params:', arguments);
     return;
   }
 
