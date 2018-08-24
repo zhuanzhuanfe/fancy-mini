@@ -107,7 +107,7 @@ export const NavRefine = {
   }
 }
 
-function getCurWepyPage() {
+export function getCurWepyPage() {
   let curPages = getCurrentPages();
   let curPage = curPages[curPages.length-1];
   let curPath = '/' + (curPage.route || curPage.__route__);
