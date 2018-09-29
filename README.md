@@ -11,7 +11,7 @@
   
 - 登录模块
   - 功能：健壮高效的小程序登录机制，封装处理了拒绝授权、登录态过期、免并发、自定义弹窗、静默登录、场景适配、多端复用等，详见[健壮高效的小程序登录方案](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%81%A5%E5%A3%AE%E9%AB%98%E6%95%88%E7%9A%84%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%99%BB%E5%BD%95%E6%96%B9%E6%A1%88.md)
-  - 使用： 参见 [登录模块使用说明]() (working on branch: feature-login) 补充分支链接 -----
+  - 使用： 参见 [登录模块使用说明](https://github.com/zhuanzhuanfe/fancy-mini/blob/feature-login/docs/%E7%99%BB%E5%BD%95%E6%A8%A1%E5%9D%97.md) (working on branch: [feature-login](https://github.com/zhuanzhuanfe/fancy-mini/blob/feature-login/docs/%E7%99%BB%E5%BD%95%E6%A8%A1%E5%9D%97.md))
   
 - cookie模块
   - 问题：很多时候，后端现有接口是先前对接M页/APP开发的，可能会使用cookie进行参数获取/传递；但小程序不支持cookie，导致后端接口复用/多端兼容成本增高。  
