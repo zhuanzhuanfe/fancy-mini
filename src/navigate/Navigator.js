@@ -271,7 +271,7 @@ export default class Navigator {
   static async _secretBack(opts={delta:1}){
     console.log('[Navigator] _secretBack', opts);
     Navigator._activeUnload = true;
-    await wxPromise.navigateBack(opts);
+    wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
   }
 
