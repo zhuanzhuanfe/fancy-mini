@@ -71,25 +71,47 @@
 - 待补充 -----
 
 ### 实用工具函数
-- decorators 
-  - @noConcurrent, @makeMutex  
-    功能：免并发修饰器  
-    示例：用户连续多次点击提交按钮时，只进行一次提交，而不重复处理  
-    使用：参见 [免并发修饰器](./src/decorator/noConcurrent.js)  
-    
-  - @errSafe, @withErrToast  
-    功能：异常捕获修饰器  
-    示例：页面获取数据后交由各子函数进行解析，子函数数据解析异常应予以捕获，避免局部数据问题导致整个页面瘫痪  
-    使用： 参见 [异常捕获修饰器](./src/decorator/errSafe.js)
+- 免并发修饰器 
+  - 免并发 @noConcurrent  
+    功能：在上一次操作结果返回之前，不响应重复操作  
+    示例：用户连续多次点击同一个提交按钮，只响应一次，而不是同时提交多份表单  
+    使用：参见 [@noConcurrent修饰器](./src/decorator/noConcurrent.js)  
 
-  - @mergingStep  
-    功能：步骤并合修饰器，避免公共步骤并发进行  
-    示例：页面内多处同时触发登录时，只实际进行一次登录，并将登录结果返给各触发方  
-    使用：参见[步骤并合修饰器](./src/decorator/mergingStep.js)
+  - 步骤并合 @mergingStep  
+    功能：步骤并合，避免公共步骤重复执行   
+    示例：  
+      页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C  
+      未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次  
+        使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次  
+    使用：参见 [@mergingStep修饰器](./src/decorator/noConcurrent.js)
+    
+  - 单通道执行 @singleAisle  
+    功能： 使得并发调用逐个顺序执行  
+    示例：  
+    页面中多处同时调用弹窗函数  
+    未使用本修饰器时，执行时序：弹窗1、弹窗2、弹窗3同时展现，用户同时看到多个弹窗堆在一起and/or弹窗相互覆盖  
+    使用本修饰器时，执行时序：弹窗1展现、等待交互、用户关闭 => 弹窗2展现、等待交互、用户关闭 => 弹窗3展现、等待交互、用户关闭，弹窗函数依次顺序执行  
+    使用：参见 [@singleAisle修饰器](./src/decorator/noConcurrent.js)
+
+  - 多函数互斥 @makeMutex  
+    功能： 多函数互斥免并发  
+    示例： 跳转相关函数navigateTo、navigateToMiniProgram、reLaunch等相互之间免并发  
+    使用：参见 [@makeMutex修饰器](./src/decorator/noConcurrent.js)
+
+- 异常捕获修饰器
+  - 异常捕获 @errSafe  
+    功能：兼容函数异常  
+    示例：页面获取数据后交由各子函数进行解析，子函数数据解析异常应予以捕获，避免局部数据问题导致整个页面瘫痪  
+    使用： 参见 [@errSafe修饰器](./src/decorator/errSafe.js)  
+
+  - 异常提示 @withErrToast  
+    功能： 兼容异常，响应交互  
+    示例： 页面操作响应过程，若出现异常应予以适当提示，避免交互无响应  
+    使用： 参见 [@withErrToast修饰器](./src/decorator/errSafe.js)  
 
 - wepyKit
   - 功能：wepy工具集，与wepy框架耦合度较高的功能在此模块中提供，如：注册全局this属性、注册全局页面钩子等
-  - 使用： 参见 [wepyKit](./src/wepyKit.js)
+  - 使用： 参见 [wepyKit](./src/wepyKit.js)  
 
 - debugKit  
   待补充 -----
