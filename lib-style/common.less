@@ -1,4 +1,21 @@
 @import "border";
+@import "values";
+@import "compatible";
+
+//吸顶
+.sticky(@top: 0; @zIdx: @zIdx-sticky){
+  & when (@top = 0){
+    position: relative; //兼容不支持sticky的环境，避免影响absolute子元素定位
+  }
+  & when not (@top = 0){
+    position: static; //避免元素位置偏移；不支持sticky、top不为0、absolute子元素定位依赖 的情况不便兼容，尽量规避 （试了下@supports，wxss目前不支持）
+  }
+
+  position: -webkit-sticky;
+  position: sticky;
+  top: @top;
+  z-index: @zIdx;
+}
 
 //绝对定位时占据父元素全部空间
 .takeFullSpace(){
@@ -13,6 +30,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+//多行文本，过长时省略号截断
+.ellipsisLines(@lines){
+  overflow: hidden;
+  text-overflow:ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: @lines;
 }
 
 //清除元素默认样式（场景示例：目前页内转发只能使用button组件，但样式需自定义，故使用前需对button默认样式进行清理）
