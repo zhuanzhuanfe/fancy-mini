@@ -1,0 +1,265 @@
+<!--
+入口构造工具
+便于PM&运营自助构造投放链接、FE&QA 开发/测试线下功能
+使用：
+1. 页面中 import、components注册、dom中引入 本组件
+2. 页面中使用本组件的分享设置：
+   onShareAppMessage(res){
+      return this.$invoke('CustomEntry', 'onShareAppMessage', res);
+    }
+-->
+<template>
+  <form @submit="go">
+    <view class="section url">
+      <view class="field">
+        <text class="name">url</text>：<input class="value" value="{{url}}" maxlength="-1" @blur="onUrlBlur" placeholder="{{urlPlaceHolder}}"/>
+        <picker class="select" @change="onPickPage" value="{{pageIdx}}" range="{{pageList}}">
+          <text>路由表</text>
+        </picker>
+      </view>
+    </view>
+
+    <view class="section extraParams">
+      <view class="title">添加额外参数/覆盖已有参数：</view>
+      <view class="fields">
+        <view class="field" wx:for="{{extraParams}}" wx:for-item="extraParam" wx:key="{{index}}">
+          <input class="name" maxlength="-1" value="{{extraParam.name}}" placeholder="参数名" data-idx="{{index}}" @blur="onExtraParamName"/>：
+          <input class="value" maxlength="-1" value="{{extraParam.value}}" placeholder="参数值" data-idx="{{index}}" @blur="onExtraParamValue"/>
+        </view>
+      </view>
+    </view>
+
+    <button form-type="submit" @touchstart="onOpen">打开页面</button>
+    <button form-type="submit" @touchstart="onReplace">替换当前</button>
+    <button open-type="share" @tap.stop="onDIYShare">定制分享</button>
+  </form>
+  <view class="intro">
+    <view class="title">tips：</view>
+    <view class="content">{{tips}}</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {wxPromise, wxResolve} from 'fancy-mini/lib/wxPromise';
+  import {appendUrlParam, delay} from 'fancy-mini/lib/operationKit';
+
+  export default class extends wepy.component {
+    components = {}
+
+    data = {
+      url: '',
+      urlPlaceHolder: '输入完整url',
+      pageList: [],
+      pageIdx: 0,
+
+      extraParams: [
+        {
+          name: '',
+          value: '',
+        },
+        {
+          name: '',
+          value: '',
+        },
+        {
+          name: '',
+          value: '',
+        },
+        {
+          name: '',
+          value: '',
+        },
+        {
+          name: '',
+          value: '',
+        },
+      ],
+      openType: 'navigateTo',
+
+      tips:
+        `- 测渠道埋点：
+  1. 输入url：pages/.../...?channel=xxx
+  2. 点击“定制分享”，此时分享卡片即为带有指定channel参数的入口页
+  3. 点击分享卡片，开始测试
+
+- 分享本工具：
+  微信右上角按钮 - 转发
+`,
+    }
+
+    computed = {
+      fullUrl(){
+        let url = this.url;
+
+        if (url[0]!='/')
+          url = '/'+url;
+
+        let extraParams = {};
+        for (let extraParam of this.extraParams) {
+          if (!/^\s*$/.test(extraParam.name))
+            extraParams[extraParam.name] = extraParam.value;
+        }
+
+        url = appendUrlParam(url, extraParams);
+
+        return url;
+      }
+    }
+
+    methods = {
+      onUrlBlur(ev){
+        this.url = ev.detail.value;
+      },
+      onPickPage(ev){
+        this.pageIdx = ev.detail.value;
+        this.url = this.pageList[this.pageIdx];
+      },
+      onExtraParamName(ev){
+        this.extraParams[ev.currentTarget.dataset.idx].name = ev.detail.value;
+      },
+      onExtraParamValue(ev){
+        this.extraParams[ev.currentTarget.dataset.idx].value = ev.detail.value;
+      },
+      onOpen(){
+        this.openType = 'navigateTo';
+      },
+      onReplace(){
+        this.openType = 'redirectTo';
+      },
+      onDIYShare(){
+      },
+      go(ev){
+        if (this.isTabPage(this.fullUrl))
+          this.openType = 'switchTab';
+
+        wxPromise[this.openType]({
+          url: this.fullUrl,
+        });
+      },
+    }
+
+    isTabPage(url){
+      let tabBar = this.$root.$parent.config.tabBar;
+      if (!tabBar)
+        return false;
+
+      let pagePath = url.split('?')[0];
+      pagePath = page[0]==='/' ? page.substring(1) : page;
+      return !!tabBar.list.find(item=>item.pagePath===pagePath);
+    }
+
+    async onLoad() {
+      let pages = this.$root.$parent.$pages;
+      let pageList = [];
+      for (let path in pages)
+        pageList.push(path);
+      this.pageList = pageList;
+
+      let draftRes = await wxResolve.getStorage({
+        key: '_customEntry'
+      });
+      if (draftRes.succeeded && draftRes.data) {
+        Object.assign(this, draftRes.data);
+        this.$apply();
+      }
+    }
+
+    onUnload(){
+      wx.setStorage({
+        key: '_customEntry',
+        data: {
+          url: this.url,
+          extraParams: this.extraParams,
+        }
+      })
+      super.onUnload && super.onUnload();
+    }
+
+    onShareAppMessage(res){
+      if (res && res.from && res.from=='button') {
+        return {
+          title: `定制分享，落地链接：${this.fullUrl}`,
+          path: this.fullUrl,
+        };
+      } else {
+        return {
+          title: '入口构造工具仅供内部使用，请勿对外分享',
+          path: '/pages/tools/customEntry',
+        };
+      }
+    }
+  }
+</script>
+
+<style lang="less" rel="stylesheet/less">
+
+</style>
+<style lang="less" rel="stylesheet/less" scoped>
+  @import "../../../node_modules/fancy-mini/lib-style/common";
+  .section {
+    padding: 30rpx;
+    font-size: 30rpx;
+    color: #43474c;
+
+    &.url {
+      height: 36rpx;
+      line-height: 36rpx;
+      .name {
+      }
+      .value {
+        width: 70%;
+        height: 36rpx;
+        vertical-align: middle;
+      }
+      .select {
+        display: inline-block;
+        vertical-align: middle;
+        border: 1rpx solid #ccc;
+        padding: 10rpx;
+        margin: 0 0 0 10rpx;
+      }
+    }
+    &.extraParams {
+      .field {
+        margin: 10rpx 0;
+        .name {
+          width: 35%;
+        }
+        .value {
+          width: 50%;
+        }
+      }
+    }
+    .title {
+      margin: 0 0 15rpx 0;
+    }
+  }
+  input {
+    .clear();
+    border: 1rpx solid #ccc;
+    display: inline-block;
+    text-align: left;
+    box-sizing: border-box;
+  }
+  button {
+    margin: 0 30rpx;
+  }
+  .intro {
+    .title {
+      font-size: 36rpx;
+      font-weight: 400;
+      line-height: 1;
+      color: #43474c;
+      padding: 30rpx 0;
+    }
+    .content {
+      font-size: 30rpx;
+      color: #aaaeb9;
+      font-weight: 400;
+      line-height: 46rpx;
+      white-space: pre-wrap;
+      padding: 0 30rpx;
+    }
+  }
+</style>
