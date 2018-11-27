@@ -9,7 +9,7 @@
     }
 -->
 <template>
-  <form @submit="go">
+  <view>
     <view class="section url">
       <view class="field">
         <text class="name">url</text>：<input class="value" value="{{url}}" maxlength="-1" @blur="onUrlBlur" placeholder="{{urlPlaceHolder}}"/>
@@ -29,10 +29,11 @@
       </view>
     </view>
 
-    <button form-type="submit" @touchstart="onOpen">打开页面</button>
-    <button form-type="submit" @touchstart="onReplace">替换当前</button>
-    <button open-type="share" @tap.stop="onDIYShare">定制分享</button>
-  </form>
+    <button @tap="onOpen">打开页面</button>
+    <button @tap="onCopy">复制链接</button>
+    <button @tap="onQrCode">生成二维码</button>
+    <button open-type="share">生成分享卡片</button>
+  </view>
   <view class="intro">
     <view class="title">tips：</view>
     <view class="content">{{tips}}</view>
@@ -43,9 +44,17 @@
   import wepy from 'wepy';
   import {wxPromise, wxResolve} from 'fancy-mini/lib/wxPromise';
   import {appendUrlParam, delay} from 'fancy-mini/lib/operationKit';
+  import {noConcurrent} from 'fancy-mini/lib/decorator/noConcurrent';
 
   export default class extends wepy.component {
     components = {}
+
+    props = {
+      createQrCodeHandler: {
+        type: Function,
+        default: null,
+      },
+    }
 
     data = {
       url: '',
@@ -75,12 +84,11 @@
           value: '',
         },
       ],
-      openType: 'navigateTo',
 
       tips:
         `- 测渠道埋点：
   1. 输入url：pages/.../...?channel=xxx
-  2. 点击“定制分享”，此时分享卡片即为带有指定channel参数的入口页
+  2. 点击“生成分享卡片”，此时分享卡片即为带有指定channel参数的入口页
   3. 点击分享卡片，开始测试
 
 - 分享本工具：
@@ -121,20 +129,42 @@
       onExtraParamValue(ev){
         this.extraParams[ev.currentTarget.dataset.idx].value = ev.detail.value;
       },
-      onOpen(){
-        this.openType = 'navigateTo';
-      },
-      onReplace(){
-        this.openType = 'redirectTo';
-      },
-      onDIYShare(){
-      },
-      go(ev){
-        if (this.isTabPage(this.fullUrl))
-          this.openType = 'switchTab';
 
-        wxPromise[this.openType]({
-          url: this.fullUrl,
+      @noConcurrent
+      async onOpen(){
+        await delay(200); //等待表单blur、url计算完成
+        let openType = this.isTabPage(this.fullUrl) ? 'switchTab' : 'navigateTo';
+        await this.$wxPromise[openType]({
+          url: this.fullUrl
+        });
+      },
+
+      @noConcurrent
+      async onCopy(){
+        await delay(200); //等待表单blur、url计算完成
+
+        let setRes = await this.$wxResolve.setClipboardData({
+          data: this.fullUrl,
+        });
+
+        await this.$toast({
+          type: setRes.succeeded ? 'success' : 'fail',
+          title: setRes.succeeded ? '链接已复制' : '操作失败',
+        });
+      },
+
+      @noConcurrent
+      async onQrCode(){
+        if (!this.createQrCodeHandler){
+          await this.$toast({
+            title: '该功能未配置'
+          });
+          return;
+        }
+
+        await delay(200); //等待表单blur、url计算完成
+        return this.createQrCodeHandler({
+          url: this.fullUrl
         });
       },
     }
