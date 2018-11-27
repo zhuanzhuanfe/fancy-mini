@@ -10,11 +10,15 @@
       <scroll-view scroll-y="{{options.contentScrollable}}" class="dialog-container-content {{options.contentScrollable ? 'scrollable' : ''}}" style="{{options.contentExtraStyle}}">{{options.content || ''}}</scroll-view>
       <view class="dialog-container-buttons {{options.btnLayout}} {{options.btnStyle}} {{'count'+options.buttons.length}}">
         <view wx:for="{{options.buttons}}" wx:for-item="button" wx:key="text"
-          style="{{button.style}}"
-         class="dialog-container-buttons-button {{button.main ? 'main' : ''}}"
+              style="{{button.style}}"
+              class="dialog-container-buttons-button {{button.main ? 'main' : ''}}"
               @tap="onButton({{index}}, {{$event}})">
           {{button.text}}
-          <button open-type="{{button.openType}}" data-share-data="{{button.shareData}}" @getphonenumber="onGetPhoneNumber({{index}}, {{$event}})">{{button.buttonText}}</button>
+          <button open-type="{{button.openType}}" data-share-data="{{button.shareData}}"
+                  @getphonenumber="onGetPhoneNumber({{index}}, {{$event}})"
+                  @getuserinfo="onGetUserInfo({{index}}, {{$event}})"
+                  @opensetting="onOpenSetting({{index}}, {{$event}})"
+          >{{button.buttonText}}</button>
         </view>
       </view>
     </view>
@@ -22,7 +26,7 @@
 </template>
 <script>
   import wepy from 'wepy'
-  import {deepClone} from '../lib/operationKit';
+  import {deepClone} from 'fancy-mini/lib/operationKit';
 
   export default class extends wepy.component{
     data = {
@@ -64,7 +68,7 @@
       },
       onButton(idx, ev){
         let button = this.options.buttons[idx];
-        if (button.openType == 'getPhoneNumber') { //特殊按钮在特殊事件中处理，不在此处回调
+        if (['getPhoneNumber','getUserInfo','openSetting'].includes(button.openType)) { //特殊按钮在特殊事件中处理，不在此处回调
           if (!button.preventClose)
             this.close();
           return;
@@ -73,8 +77,13 @@
         this.handleBtn(button, ev);
       },
       onGetPhoneNumber(idx, ev){
-        let button = this.options.buttons[idx];
-        this.handleBtn(button, ev);
+        this.handleBtn(this.options.buttons[idx], ev);
+      },
+      onGetUserInfo(idx, ev){
+        this.handleBtn(this.options.buttons[idx], ev);
+      },
+      onOpenSetting(idx, ev){
+        this.handleBtn(this.options.buttons[idx], ev);
       },
       onScroll(){},
     }
@@ -148,7 +157,7 @@
      * @param options 同open函数
      * @return {Promise} resolve为按钮回调函数执行结果 （不关闭弹窗的按钮不予考虑）
      e.g.
-      async function goBind() {
+     async function goBind() {
         let bindRes = await this.$invoke('DialogCommon','asyncOpen',{
           title: '绑定手机号',
           content: '共建真实、安全二手交易环境\n转转承诺不会滥用您提供的信息',
@@ -198,9 +207,9 @@
   }
 </script>
 <style lang="less" rel="stylesheet/less" scoped>
-  @import "../lib-style/common";
+  @import "../../../node_modules/fancy-mini/lib-style/common";
   button { /*目前页内转发只能使用button组件，但样式需自定义，故此处对button默认样式进行清理*/
-   .clear();
+    .clear();
   }
 
   .dialog{
