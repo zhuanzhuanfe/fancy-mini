@@ -1,0 +1,267 @@
+<template>
+  <view>
+    <view class="actions">
+      <button class="action" @tap="onInspect">查看二维码</button>
+      <button class="action" @tap="onOpen">打开二维码</button>
+      <button class="action" @tap="onCheckChannel">测渠道埋点</button>
+    </view>
+    <view class="section">
+      <view class="header">二维码信息</view>
+      <view class="body">
+        <view class="infos">
+          <view wx:for="{{infos}}" wx:for-item="info" class="info">
+            <view class="title">{{info.title}}</view>
+            <view class="content">{{info.content}}</view>
+          </view>
+        </view>
+        <view class="action" @tap="onCopyInfo">复制</view>
+      </view>
+    </view>
+    <view class="section">
+      <view class="header">使用说明</view>
+      <view class="body">
+        <view wx:for="{{tips}}" wx:for-item="tip" class="tip">
+          <view class="title">{{tip.title}}</view>
+          <view class="content">{{tip.content}}</view>
+        </view>
+      </view>
+    </view>
+    <DialogCommon></DialogCommon>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy';
+  import {wxPromise, wxResolve} from 'fancy-mini/lib/wxPromise';
+  import DialogCommon from './DialogCommon';
+
+  export default class extends wepy.component {
+    props = {
+      decodeParamsHandler: {
+        type: Function,
+      },
+    }
+    components = {
+      DialogCommon,
+    }
+
+    data = {
+      infos: [
+        {
+          title: '落地链接：',
+          content: '',
+        },
+        {
+          title: '参数解码：',
+          content: '',
+        },
+      ],
+
+      DIYShare: {
+        title: '',
+        path: '',
+        imageUrl: undefined,
+      },
+
+      tips: [
+        {
+          title: '背景',
+          content: `扫描二维码会直接进入线上版小程序，导致QA在测试阶段难以对二维码进行检查、测试；
+本工具借助扫码API，可以在开发/测试环节提前对二维码进行检测，保证上线质量。`,
+        },
+        {
+          title: '查看二维码',
+          content: '点击“查看二维码” - 扫码 - 检查落地链接和参数 - 判断二维码生成结果是否正确',
+        },
+        {
+          title: '打开二维码',
+          content: '点击“打开二维码” - 扫码 - 在当前开发版/体验版/正式版小程序打开落地链接 - 判断二维码跳转是否正确',
+        },
+        {
+          title: '测渠道埋点',
+          content: '点击“测渠道埋点” - 扫码 - 点击“分享” - 根据落地链接生成分享卡片 - 点击分享卡片 - 判断落地页埋点是否正常携带渠道参数',
+        },
+        {
+          title: '分享本工具',
+          content: '微信右上角按钮-转发',
+        },
+        {
+          title: '查看错误信息',
+          content: 'console中打印了更多细节信息：扫码接口返回结果、解码接口返回结果、……',
+        },
+        {
+          title: '其它说明',
+          content: '由于权限限制，本工具只能识别当前小程序的二维码，无法识别其它小程序二维码',
+        },
+      ]
+    }
+
+    computed = {
+    }
+
+    methods = {
+      async onInspect(){
+        await this.inspectQrCode();
+      },
+      async onOpen(){
+        let info = await this.inspectQrCode();
+
+        if (!info.landingPath)
+          return;
+
+        let navRes = await wxResolve.navigateTo({url: fulfillURL(info.landingPath)});
+        if (!navRes.succeeded && navRes.errMsg.toLowerCase().includes('tabbar')) {
+          this.$invoke('DialogCommon','open',{
+            title: '提示',
+            content: '落地链接为tab页时，请通过“测渠道埋点”的方式打开',
+            buttons: [{
+              text: '知道了',
+              clickHandler: null,
+            }],
+          });
+        }
+      },
+      async onCheckChannel(){
+        let info = await this.inspectQrCode();
+        if (!info.landingPath)
+          return;
+
+        this.DIYShare = {
+          title: `二维码落地链接：${info.landingPath}`,
+          path: fulfillURL(info.landingPath),
+        };
+
+        this.$invoke('DialogCommon','open',{
+          title: '测渠道埋点',
+          content: '点击分享-生成含二维码落地链接的分享卡片-点击分享卡片-开始测试',
+          buttons: [{
+            text: '分享',
+            openType: 'share',
+            clickHandler: null,
+          }],
+        });
+      },
+      async onCopyInfo(){
+        let copyRes = await wxResolve.setClipboardData({
+          data: this.infos.map(info=>`${info.title} ${info.content}`).join('\r\n')
+        });
+        this.$toast({
+          title: copyRes.succeeded ? '复制成功' : '复制失败',
+          type: copyRes.succeeded ? 'success' : 'fail',
+        });
+      }
+    }
+
+    async inspectQrCode(){
+      let scanRes = await wxPromise.scanCode();
+      console.log('scanRes:', scanRes);
+
+      if (!scanRes.path) {
+        await this.$toast({
+          title: '请使用当前小程序的二维码，权限原因其它小程序的二维码无法识别',
+          duration: 2500
+        });
+        return {};
+      }
+
+      let landingPath = scanRes.path;
+      let decodeRes = this.decodeParamsHandler ? (await this.decodeParamsHandler(landingPath)) : {
+        code: -1,
+        errMsg: "未配置解码函数"
+      };
+
+      this.infos = [
+        {
+          title: '落地链接：',
+          content: landingPath,
+        },
+        {
+          title: '参数解码：',
+          content: decodeRes.code==0 ? JSON.stringify(decodeRes.params, null, 2) : "该二维码没有进行参数编码",
+        },
+      ];
+      this.$apply();
+
+      return {
+        landingPath,
+        decodeRes,
+      }
+    }
+
+    onShareAppMessage(res){
+      if (res && res.from && res.from==='button') {
+        return this.DIYShare;
+      } else {
+        return {
+          title: '二维码测试工具',
+          path: '/pages/tools/qrCode',
+        };
+      }
+    }
+  }
+
+  function fulfillURL(url) {
+    return url[0]==='/' ? url : '/'+url;
+  }
+</script>
+
+<style lang="less" rel="stylesheet/less">
+
+</style>
+<style lang="less" rel="stylesheet/less" scoped>
+  @import "../../../node_modules/fancy-mini/lib-style/common";
+  .actions {
+    .action {
+
+    }
+  }
+  .section {
+    margin: 50rpx 0;
+    .header {
+      color: #504a4d;
+      font-size: 28rpx;
+      line-height: 42rpx;
+      font-weight: 500;
+    }
+    .body {
+      padding: 0 0 0 30rpx;
+      .info, .tip{
+        font-size: 28rpx;
+        line-height: 42rpx;
+        font-weight: 400;
+        margin: 20rpx 0;
+        .title {
+          color: #504a4d;
+          &::before {
+            content: '- '
+          }
+        }
+        .content {
+          color: #969696;
+          white-space: pre-wrap;
+        }
+      }
+      .action {
+        font-size: 28rpx;
+        line-height: 48rpx;
+        height: 48rpx;
+        width: 90rpx;
+        text-align: center;
+        font-weight: 400;
+        color: #969696;
+        display: inline-block;
+        position: relative;
+        .border(solid; #969696);
+      }
+    }
+  }
+  .tips {
+    &:extend(.infos .info);
+    .title {
+      &:extend(.infos .info .title);
+    }
+    .content {
+      &:extend(.infos .info .content);
+    }
+  }
+</style>
