@@ -46,11 +46,11 @@
 
 - 入口构造工具
   - 功能：支持PM&运营人员自助生成投放链接，支持FE&QA自助开发/测试没有线上入口的新页面，详见[小程序入口构造工具&二维码测试工具](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md)
-  - 使用： [入口构造工具使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/customEntry.wpy)
+  - 使用： [入口构造工具使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/customEntry.wpy)，[组件源码](./components/CustomEntry.wpy)
    
 - 二维码测试工具
   - 功能：支持扫码进入开发版/体验版小程序，便于测试二维码相关功能，详见[小程序入口构造工具&二维码测试工具](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md)
-  - 使用： [二维码测试工具使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/qrCode.wpy)
+  - 使用： [二维码测试工具使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/qrCode.wpy)，[组件源码](./components/QrCode.wpy)
 
 ### 小程序疑难杂症参考处理
 - toast长度截断问题  
@@ -63,7 +63,7 @@
   - 方案：textarea处于编辑状态时使用原生textarea组件，处于非编辑状态时改用普通&lt;view&gt;元素展现内容
   - 使用：参见 [TextAreaEle 组件](./components/TextAreaEle.wpy)
   
-### 小程序ui组件库
+### 小程序组件库
 - DialogCommon
   - 功能：通用对话框，支持样式配置（单个/多个按钮、横版/竖版、带/不带关闭图标、带/不带顶部图标、自定义内联样式等）、按钮监听、按钮分享、按钮获取手机号、按钮异步处理结果统一返回等
   - 使用： 参见 [DialogCommon 组件](./components/DialogCommon.wpy)
