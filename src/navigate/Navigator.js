@@ -107,7 +107,7 @@ export default class Navigator {
    * 返回
    * @param {Object} opts 返回配置，格式同wx.navigateBack
    */
-  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  //@makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
   static async navigateBack(opts={delta:1}){
     console.log('[Navigator] navigateBack:', opts);
     await Navigator._doBack(opts, {sysBack: false});
