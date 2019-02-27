@@ -121,6 +121,13 @@
   
 - 待补充 -----
 
+## 效果演示
+- 小程序名称：fancyDemos   
+- 访问：  
+![](./docs/images/fancyQrCode.jpg)  
+- 源码：[fancy-mini-demos](https://github.com/zhuanzhuanfe/fancy-mini-demos) （功能逐步补全中）  
+
+
 ## 安装
 `npm install --save fancy-mini`
 
@@ -141,7 +148,7 @@
 - 引用组件  
 待补充 ----  
 
-完整使用demo，参见 [fancy-mini-demos](https://github.com/zhuanzhuanfe/fancy-mini-demos)
+完整使用demo，参见 [fancy-mini-demos](https://github.com/zhuanzhuanfe/fancy-mini-demos)（逐步补全中）
 
 ## 使用 - 非wepy项目
 - 引用js模块  
