@@ -42,7 +42,7 @@
 
 - 跨页面传参
   - 功能：后一页面向前一页面传参（如：发布页-分类列表页-选定分类-自动返回发布页，获取所选分类）、前一页面向后一页面传递大量数据（如：手机估价-卖掉换钱-发布页，获取并填充估价表单）
-  - 使用： 待补充 ------
+  - 使用： 参见[跨页面传参使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/tree/master/src/pages/routeParams)
 
 - 入口构造工具
   - 功能：支持PM&运营人员自助生成投放链接，支持FE&QA自助开发/测试没有线上入口的新页面，详见[小程序入口构造工具&二维码测试工具](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md)
