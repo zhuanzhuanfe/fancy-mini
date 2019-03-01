@@ -75,7 +75,7 @@
   - 免并发 @noConcurrent  
     功能：在上一次操作结果返回之前，不响应重复操作  
     示例：用户连续多次点击同一个提交按钮，只响应一次，而不是同时提交多份表单  
-    使用：参见 [@noConcurrent修饰器](./src/decorator/noConcurrent.js)  
+    使用：参见 [@noConcurrent修饰器使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/NoConcurrent.wpy)  
 
   - 步骤并合 @mergingStep  
     功能：步骤并合，避免公共步骤重复执行   
@@ -83,7 +83,7 @@
       页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C  
       未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次  
         使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次  
-    使用：参见 [@mergingStep修饰器](./src/decorator/noConcurrent.js)
+    使用：参见 [@mergingStep修饰器使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/MergingStep.wpy)
     
   - 单通道执行 @singleAisle  
     功能： 使得并发调用逐个顺序执行  
@@ -91,7 +91,7 @@
     页面中多处同时调用弹窗函数  
     未使用本修饰器时，执行时序：弹窗1、弹窗2、弹窗3同时展现，用户同时看到多个弹窗堆在一起and/or弹窗相互覆盖  
     使用本修饰器时，执行时序：弹窗1展现、等待交互、用户关闭 => 弹窗2展现、等待交互、用户关闭 => 弹窗3展现、等待交互、用户关闭，弹窗函数依次顺序执行  
-    使用：参见 [@singleAisle修饰器](./src/decorator/noConcurrent.js)
+    使用：参见 [@singleAisle修饰器使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/SingleAisle.wpy)
 
   - 多函数互斥 @makeMutex  
     功能： 多函数互斥免并发  
