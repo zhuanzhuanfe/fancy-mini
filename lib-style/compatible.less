@@ -1,4 +1,44 @@
-//@media @iPhoneX {
-//		bottom: 45rpx;
-//	}
-@iPhoneX: ~"only screen and (device-width : 375px) and (device-height : 812px) and (-webkit-device-pixel-ratio : 3)";
+/** 
+ * 判断机型是否为iPhone X，便于结合media query为iPhone X单独设置样式， e.g.
+  .demo {
+    bottom: 0; //普通机型下吸底
+    @media @iPhoneX { //iPhone X下，底部额外留出小黑条的空间
+      bottom: 45rpx;
+    }
+  }
+*/
+@iPhoneX: ~"only screen and (device-width : 375px) and (device-height : 812px) and (-webkit-device-pixel-ratio : 3), only screen and (device-width : 414px) and (device-height : 896px) and (-webkit-device-pixel-ratio : 3), only screen and (device-width : 414px) and (device-height : 896px) and (-webkit-device-pixel-ratio : 2)";
+
+/**
+ * 底部按钮兼容 iPhone X
+ * @baseValue 普通机型下设置的bottom值
+ * @safeExtend iPhone X下额外预留空间
+ * e.g.
+   .demo {
+      .safeBottom();  //普通机型下生效样式：bottom: 0； iPhone X下生效样式： bottom: 45rpx;
+      .safeBottom(10rpx); //普通机型下生效样式：bottom: 10rpx； iPhone X下生效样式： bottom: 55rpx;
+      .safeBottom(10rpx; 30rpx);  //普通机型下生效样式：bottom: 10rpx； iPhone X下生效样式： bottom: 40rpx;
+   }
+ */
+.safeBottom(@baseValue:0; @safeExtend:45rpx;){
+  bottom: @baseValue; //普通机型
+  @media @iPhoneX { //iPhone X下，底部额外留出小黑条的空间
+    bottom: @baseValue + @safeExtend;
+  }
+}
+
+//底部按钮兼容 iPhone X，参数及用法同.safeBottom，作用于padding-bottom
+.safePaddingBottom(@baseValue:0; @safeExtend:45rpx;){
+  padding-bottom: @baseValue; //普通手机
+  @media @iPhoneX {
+    padding-bottom: @baseValue + @safeExtend;
+  }
+}
+
+//底部按钮兼容 iPhone X，参数及用法同.safeBottom，作用于margin-bottom
+.safeMarginBottom(@baseValue:0; @safeExtend:45rpx;){
+  margin-bottom: @baseValue; //普通手机
+  @media @iPhoneX {
+    margin-bottom: @baseValue + @safeExtend;
+  }
+}

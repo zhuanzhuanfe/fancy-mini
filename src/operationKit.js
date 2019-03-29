@@ -163,3 +163,57 @@ export function toAbsolutePath(relativePath, curPath) {
   }
   return '/'+absoluteLevels.join('/');
 }
+
+/**
+ * 剩余时间的语义化表示
+ * @param {number} remainMs 剩余时间，单位：毫秒
+ * @param {number} remainderInterval 最小时间间隔，不足1秒的部分以此计数
+ * @param {string} topLevel 顶层间隔：day|hour|minute|second， 如顶层间隔为'hour'，则返回结果为形如 27小时3分钟 而不是 1天3小时3分钟
+ * @return {{days: number, hours: number, minutes: number, seconds: number, remainderIntervals: number}} 剩余days天hours小时minutes分钟seconds秒remainderIntervals间隔
+ */
+export function semanticRemainTime({remainMs, topLevel='day', remainderInterval=1000}) {
+  const SCALES = {
+    second: 1000,
+    minute: 60*1000,
+    hour: 60*60*1000,
+    day: 24*60*60*1000,
+  };
+
+  let topScale = SCALES[topLevel];
+
+  let [days, hours, minutes, seconds, remainderIntervals] = [
+    SCALES.day, SCALES.hour, SCALES.minute, SCALES.second, remainderInterval
+  ].map((scale, idx, arr)=>{
+    return (scale>=topScale || idx===0) ? remainMs/scale : remainMs%arr[idx-1]/scale
+  }).map(Math.floor);
+
+  return {
+    days, hours, minutes, seconds, remainderIntervals
+  }
+}
+
+/**
+ * 若字符串长度小于指定长度，则在前方拼接指定字符
+ * es6中string的padStart函数目前存在兼容性问题，暂以此替代
+ * @param str 字符串
+ * @param minLen 指定长度
+ * @param leadChar 指定字符
+ * @return {string} 新字符串
+ */
+export function padStart(str, minLen, leadChar) {
+  str = String(str);
+  while (str.length < minLen)
+    str = leadChar+str;
+  return str;
+}
+
+/**
+ * 查询元素在页面中的坐标，单位：px
+ * @param {string} selector 元素选择器
+ * @return {Promise<Object>} 元素坐标
+ */
+export async function queryRect(selector){
+  return new Promise((resolve, reject)=>{
+    wx.createSelectorQuery().select(selector).boundingClientRect(resolve).exec();
+  });
+}
