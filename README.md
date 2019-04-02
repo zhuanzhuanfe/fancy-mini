@@ -42,7 +42,7 @@
 
 - 跨页面传参
   - 功能：后一页面向前一页面传参（如：发布页-分类列表页-选定分类-自动返回发布页，获取所选分类）、前一页面向后一页面传递大量数据（如：手机估价-卖掉换钱-发布页，获取并填充估价表单）
-  - 使用： 参见[跨页面传参使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/tree/master/src/pages/routeParams)
+  - 使用： 参见 [跨页面传参使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/tree/master/src/pages/routeParams)
 
 - 入口构造工具
   - 功能：支持PM&运营人员自助生成投放链接，支持FE&QA自助开发/测试没有线上入口的新页面，详见[小程序入口构造工具&二维码测试工具](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md)
@@ -64,9 +64,18 @@
   - 使用：参见 [TextAreaEle 组件](./components/TextAreaEle.wpy)
   
 ### 小程序组件库
-- DialogCommon
+- 通用弹窗
   - 功能：通用对话框，支持样式配置（单个/多个按钮、横版/竖版、带/不带关闭图标、带/不带顶部图标、自定义内联样式等）、按钮监听、按钮分享、按钮获取手机号、按钮异步处理结果统一返回等
   - 使用： 参见 [DialogCommon 组件](./components/DialogCommon.wpy)
+
+- 新手引导
+  - 功能：新手引导、新功能操作引导
+  - 特点：
+    - 就地高亮：引导蒙层中高亮区域即为页面中实际操作区域
+    - 就地交互：高亮区域可直接进行点击等交互
+    - 依次引导：展示引导蒙层->响应用户点击->等待交互完毕->展示下一个引导蒙层->...
+    - 公共逻辑抽离：公共逻辑统一封装，高亮元素只需进行少量配置，不必关注引导细节
+  - 使用： [使用说明](./components/operationGuide/OperationGuideModal.wpy)、[使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/operationGuide/operationGuide.wpy)
 
 - 待补充 -----
 

@@ -32,17 +32,17 @@ e.g.：
 </template>
 <script>
   import {operationGuideAction} from 'fancy-mini/components/operationGuide/operationGuide';
-  
+
   export default class extends wepy.component {
     data = {
       guidingStyle: '', //新手引导状态附加样式
     },
-    
+
     methods = {
        @operationGuideAction({eleId: 'withdrawArea'}) //操作区域处理函数使用@operationGuideAction修饰器，入参：eleId-操作区域高亮元素id
       async onWithdraw(){}
     }
-    
+
     //展示新手引导
     async showOperationGuide(){
       await this.$root.$invoke('OperationGuideModal', 'open', {
@@ -51,7 +51,7 @@ e.g.：
           this.guidingStyle = style;
           this.$apply();
         },
-        
+
         tip: {
           show: true,
           text: '金币可以提现到微信钱包，快去试试吧',
@@ -72,27 +72,27 @@ e.g.：
   3. 高亮元素不能依赖父元素宽高，因为高亮时position: fixed，容器会变成viewport
 -->
 <template>
-  <view @tap="onModal" wx:if="{{show}}" class="modal">
+  <view wx:if="{{show}}" class="modal"  @tap="onModal" @touchmove.stop="preventDefault">
     <view class="highlightArea" style="z-index: {{zIdx}};{{highlightAreaStyle}}"></view>
     <view class="guide {{options.guideUI}}">
       <view class="tip" wx:if="{{options.tip.show}}" style="{{tipPosStr}};z-index:{{zIdx+1}}">{{options.tip.text}}<view class="triangle {{options.tip.pointTo}}"></view></view>
 
       <view class="pointer {{options.pointer.pointTo}}" wx:if="{{options.pointer.show}}"
-             style="{{pointerPosStr}}; z-index:{{zIdx+1}}"
+            style="{{pointerPosStr}}; z-index:{{zIdx+1}}"
       ></view>
     </view>
   </view>
-  
+
 </template>
 
 <script>
   import wepy from 'wepy';
   import {deepAssign, deepClone} from 'fancy-mini/lib/operationKit';
   import {guideStatus} from './operationGuide';
-  
+
   export default class extends wepy.component {
     props = {}
-    
+
     data = {
       zIdx: 1000,
       show: false,
@@ -102,7 +102,7 @@ e.g.：
       tipPosStr: '',
       pointerPosStr: '',
       highlightAreaStyle: '',
-      
+
       options: {},
       defaultOpts: {
         eleId: '', //操作区域顶层元素
@@ -111,13 +111,13 @@ e.g.：
           extend: "10 10 10 10", //操作区域四周额外高亮范围，最多接受四个值，依次为：上右下左，单位：rpx
           borderRadius: 0, //高亮区域边框圆角：number-应用于四个角 | string-同css，如"0 36rpx 36rpx 0"
         },
-        
+
         //引导版式
         guideUI: 'hand', //版式：hand-小手指引（动态，效果参见种树项目）| bear-小熊指引（静态，效果参见寻宝项目）
         //引导文案
         tip: {
           show: true, //是否展示
-          text: '', //文案内容，支持'\n'换行
+          text: '', //文案内容
           top: '', //文案位置，文案框（不含小三角）相对于操作区域，单位：rpx
           right: '',
           bottom: '',
@@ -127,20 +127,27 @@ e.g.：
         //引导图标（手型指针）
         pointer: {
           show: true, //是否展示
-          top: '', //图标位置，相对于操作区域定位
+          top: '', //图标位置
           right: '',
           bottom: '',
           left: '',
           pointTo: 'left', //指向哪个方向：left、right、top、bottom
         },
+
+        tapModalAction: 'skip', //点击蒙层时响应方式：skip-关闭蒙层，结束引导 | persist-不响应，继续等待用户点击高亮区域
       }
     }
-    
+
     methods = {
       onModal(){
-        guideStatus.onActionStart && guideStatus.onActionStart();
-        guideStatus.onActionFinish && guideStatus.onActionFinish();
-      }
+        if (this.options.tapModalAction === 'skip') {
+          guideStatus.onActionStart && guideStatus.onActionStart();
+          guideStatus.onActionFinish && guideStatus.onActionFinish();
+        }
+      },
+      preventDefault(){
+        return false;
+      },
     }
 
     calculateWidgetsStyle(){
@@ -150,7 +157,7 @@ e.g.：
         right: this.sysInfo.windowWidth - this.actionRect.right,
         bottom: this.sysInfo.windowHeight - this.actionRect.bottom,
       };
-      
+
       //文案框
       let tipPos = '';
       for (let side of ['top', 'bottom', 'left', 'right']){
@@ -161,7 +168,7 @@ e.g.：
       }
       tipPos = tipPos || `top: ${actionRelativeRect.top-70*this.rpx2px}px; left:  ${actionRelativeRect.left-200*this.rpx2px}px;`;
       this.tipPosStr = tipPos;
-      
+
       //指针（小手）
       let pointerPos = '';
       for (let side of ['top', 'bottom', 'left', 'right']){
@@ -172,16 +179,16 @@ e.g.：
       }
       pointerPos = pointerPos || `top: ${actionRelativeRect.top+actionRelativeRect.height-10*this.rpx2px}px; left:  ${actionRelativeRect.left+actionRelativeRect.width/2-127*this.rpx2px}px;`;
       this.pointerPosStr = pointerPos;
-      
+
       //高亮区域
       let highlightExtend = String(this.options.highlightArea.extend).split(/\s+/).map(v=>Number(v));
       highlightExtend[1] = 2>highlightExtend.length ? highlightExtend[0] : highlightExtend[1];
       highlightExtend[2] = 3>highlightExtend.length ? highlightExtend[0] : highlightExtend[2];
-      highlightExtend[3] = 4>highlightExtend.length ? highlightExtend[1] : highlightExtend[3]; 
-      
+      highlightExtend[3] = 4>highlightExtend.length ? highlightExtend[1] : highlightExtend[3];
+
       let highlightBorderRadius = this.options.highlightArea.borderRadius;
       highlightBorderRadius += typeof highlightBorderRadius==='number' ? 'rpx' : '';
-      
+
       this.highlightAreaStyle = `
         top: ${this.actionRect.top-highlightExtend[0]*this.rpx2px}px;
         left: ${this.actionRect.left-highlightExtend[3]*this.rpx2px}px;
@@ -190,7 +197,7 @@ e.g.：
         border-radius: ${highlightBorderRadius};
       `;
     }
-    
+
     /**
      * 展示新手引导
      * @param {Object} options 参见页面顶部使用说明及data中defaultOpts相关注释
@@ -203,19 +210,19 @@ e.g.：
         return;
       }
       this.options = deepAssign({}, deepClone(this.defaultOpts), options);
-      
+
       //微信版本过低，不展示引导
-      if (!wx.createSelectorQuery) 
+      if (!wx.createSelectorQuery)
         return;
 
       //调整操作区域z-index值和样式，使其展示于蒙层之上
       this.actionRect = await new Promise((resolve,reject)=>{
         wx.createSelectorQuery().select(`#${this.options.eleId}`).boundingClientRect(resolve).exec();
       });
-      
+
       let eleStyle= `position: fixed; z-index: ${this.zIdx+1}; top: ${this.actionRect.top}px; left: ${this.actionRect.left}px;`;
       this.options.eleStyleRenderer(eleStyle);
-      
+
       //展示蒙层
       this.calculateWidgetsStyle();
       this.show = true;
@@ -223,11 +230,11 @@ e.g.：
 
       //等待用户交互
       guideStatus.eleId = this.options.eleId;
-      
+
       let listenActionStart =  new Promise((resolve,reject)=>{
         guideStatus.onActionStart = resolve;
       });
-      
+
       let listenActionFinish = new Promise((resolve,reject)=>{
         guideStatus.onActionFinish = resolve;
       });
@@ -241,14 +248,14 @@ e.g.：
 
       //用户交互完毕
       await listenActionFinish;
-      
+
       guideStatus.eleId = ''; //重置引导状态
       guideStatus.onActionStart = null;
       guideStatus.onActionFinish = null;
-      
+
       //本次引导结束
     }
-    
+
     onLoad(){
       this.$wxPromise.getSystemInfo().then(sysInfo=>{
         this.rpx2px = sysInfo.windowWidth/750;
@@ -265,12 +272,12 @@ e.g.：
 </style>
 <style lang="less" rel="stylesheet/less" scoped>
   @import (reference)"../../lib-style/common";
-  
+
   @pointerMoveHalfDist: 10rpx;
   @keyframes pointLeft {
     0% {
       transform: translateX(0);
-    }  
+    }
     25% {
       transform: translateX(-@pointerMoveHalfDist);
     }
@@ -335,7 +342,7 @@ e.g.：
       transform: translateY(0);
     }
   }
-  
+
   .modal {
     position: absolute;
     .takeFullSpace();
@@ -355,13 +362,13 @@ e.g.：
         line-height: 37rpx;
         white-space: pre-wrap;
         padding: 15rpx 26rpx;
-        
+
         @tipBgColor: #fff7ee;
         @tipBorder: solid 2rpx #f9e44a;
         background: @tipBgColor;
         border-radius: 74rpx;
         border: @tipBorder;
-        
+
         .triangle {
           width: 20rpx;
           height: 20rpx;
@@ -393,7 +400,7 @@ e.g.：
             transform: rotate(135deg);
           }
         }
-        
+
       }
       .pointer {
         position: fixed;
@@ -402,28 +409,28 @@ e.g.：
           width: 86rpx;
           height: 61rpx;
           background-image: url("https://img1.zhuanstatic.com/open/zhuanzhuan/zzwa/main/tree2/widgets/operationGuide/pointLeft.png");
-          
+
           animation: pointLeft 1s infinite;
         }
         &.right {
           width: 86rpx;
           height: 61rpx;
           background-image: url("https://img1.zhuanstatic.com/open/zhuanzhuan/zzwa/main/tree2/widgets/operationGuide/pointRight.png");
-          
+
           animation: pointRight 1s infinite;
         }
         &.top {
           width: 61rpx;
           height: 86rpx;
           background-image: url("https://img1.zhuanstatic.com/open/zhuanzhuan/zzwa/main/tree2/widgets/operationGuide/pointTop.png");
-          
+
           animation: pointTop 1s infinite;
         }
         &.bottom {
           width: 61rpx;
           height: 86rpx;
           background-image: url("https://img1.zhuanstatic.com/open/zhuanzhuan/zzwa/main/tree2/widgets/operationGuide/pointBottom.png");
-          
+
           animation: pointBottom 1s infinite;
         }
       }
@@ -438,7 +445,7 @@ e.g.：
         line-height: 34rpx;
         white-space: pre-wrap;
         padding: 30rpx;
-        
+
         background: #fff;
         border-radius: 35rpx;
 
