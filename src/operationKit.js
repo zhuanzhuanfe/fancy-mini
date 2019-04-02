@@ -217,3 +217,34 @@ export async function queryRect(selector){
     wx.createSelectorQuery().select(selector).boundingClientRect(resolve).exec();
   });
 }
+
+/**
+ * 将内联样式字符串解析为对象形式
+ * @param {string} styleStr 内联样式，e.g. 'color: red; transform: translate(20px, 30px)'
+ * @return {Object} 内联样式对象，e.g. {color:"red",transform:"translate(20px, 30px)"}
+ */
+export function parseInlineStyle(styleStr) {
+  if (!styleStr)
+    return {};
+
+  let styleObj = {};
+
+  let declarations = styleStr.split(';');
+  for (let declaration of declarations) {
+    let [prop, value] = declaration.split(':').map(part=>part.replace(/^\s*|\s*$/g, ''));
+    styleObj[prop] = value;
+  }
+
+  return styleObj;
+}
+/**
+ * 将样式对象转为内联样式字符串
+ * @param {Object} styleObj 内联样式对象，e.g. {color:"red",transform:"translate(20px, 30px)"}
+ * @return {string} 内联样式，e.g. 'color: red; transform: translate(20px, 30px)'
+ */
+export function toInlineStyle(styleObj) {
+  let declarations = [];
+  for (let prop in styleObj)
+    declarations.push(`${prop}:${styleObj[prop]}`);
+  return declarations.join('; ');
+}
