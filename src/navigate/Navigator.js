@@ -73,7 +73,8 @@ export default class Navigator {
   static async navigateTo(route){
     console.log('[Navigator] navigateTo:', route);
     let curPages = getCurrentPages();
-    Navigator._history.open({url: toAbsolutePath(route.url, curPages[curPages.length-1].route)});
+    let curPage = curPages[curPages.length-1];
+    Navigator._history.open({url: toAbsolutePath(route.url, curPage.route||curPage.__route__)});
 
     if (Navigator._config.enableCurtain && curPages.length == Navigator._config.MAX_LEVEL-1) { //空白中转策略：倒数第二层开最后一层时，先把倒二层换成空白页，再打开最后一层
       console.log('[Navigator] replace with curtain', 'time:', Date.now(), 'getCurrentPages:', getCurrentPages());
@@ -97,7 +98,8 @@ export default class Navigator {
   static async redirectTo(route){
     console.log('[Navigator] redirectTo:', route);
     let curPages = getCurrentPages();
-    Navigator._history.replace({url: toAbsolutePath(route.url, curPages[curPages.length-1].route)});
+    let curPage = curPages[curPages.length-1];
+    Navigator._history.replace({url: toAbsolutePath(route.url, curPage.route||curPage.__route__)});
     await Navigator._secretReplace(route);
   }
 

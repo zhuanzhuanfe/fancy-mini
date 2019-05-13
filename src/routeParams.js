@@ -20,7 +20,7 @@ class RouteParams
   _openFromHistoryStack = []; //前一页面路由栈，用于校验层级关系，避免openFrom数据未及时清理，对其它页面造成持续干扰
 
   static _getHistorySnapShot(history=getCurrentPages()){
-    return history.map(page=>page.route);
+    return history.map(page=>page.route||page.__route__);
   }
 
   /**
