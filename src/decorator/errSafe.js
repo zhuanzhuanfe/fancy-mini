@@ -38,9 +38,17 @@ export function errSafe(target, funcName, descriptor) {
   let oriFunc = descriptor.value;
   descriptor.value = function () {
     try {
-      return oriFunc.apply(this, arguments);
+      let res = oriFunc.apply(this, arguments);
+
+      if (res instanceof Promise) {
+        res.catch((e)=>{
+          console.error('[errSafe decorator] caught err with func:',funcName, e.message, e);
+        });
+      }
+
+      return res;
     } catch (e) {
-      console.error('[errSafe decorator] caught err with func:',funcName, e);
+      console.error('[errSafe decorator] caught err with func:',funcName, e.message, e); //真机下不支持打印错误栈，导致e打印出来是个空对象；故先单独打印一次e.message
     }
   }
 }
