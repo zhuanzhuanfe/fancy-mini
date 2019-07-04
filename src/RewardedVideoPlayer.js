@@ -7,6 +7,7 @@ import {ctxDependConsole as debugConsole} from './debugKit';
  * 1. 初始化：this.rewardedVideoPlayer = new rewardedVideoPlayer({adUnitId: '广告位id'})
  * 2. 监听页面onShow: onShow(){ this.rewardedVideoPlayer.handlePageChange() };
  * 3. 播放视频：
+        let playRes = await this.rewardedVideoPlayer.play();
         if (playRes.code !== 0) { //播放异常（微信版本过低/视频加载失败/其它异常情况）
           wx.showToast({ title: playRes.errMsg })
         } else if (!playRes.isEnded) { //用户提前关闭视频
