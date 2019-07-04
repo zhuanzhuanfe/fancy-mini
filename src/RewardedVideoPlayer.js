@@ -4,7 +4,7 @@ import {ctxDependConsole as debugConsole} from './debugKit';
 /**
  * 激励视频播放器，封装激励视频加载、播放时序
  * 使用：
- * 1. 初始化：this.rewardedVideoPlayer = new rewardedVideoPlayer({adUnitId: '广告位id'})
+ * 1. 初始化：this.rewardedVideoPlayer = new RewardedVideoPlayer({adUnitId: '广告位id'})
  * 2. 监听页面onShow: onShow(){ this.rewardedVideoPlayer.handlePageChange() };
  * 3. 播放视频：
         let playRes = await this.rewardedVideoPlayer.play();
