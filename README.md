@@ -52,6 +52,10 @@
   - 功能：支持扫码进入开发版/体验版小程序，便于测试二维码相关功能，详见[小程序入口构造工具&二维码测试工具](https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md)
   - 使用： [二维码测试工具使用示例](https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/qrCode.wpy)，[组件源码](./components/QrCode.wpy)
 
+- 激励视频播放器
+  - 功能：封装激励视频的加载、播放时序，使时序细节对外透明，便于调用；Promise化封装。
+  - 使用：[RewardedVideoPlayer](./src/RewardedVideoPlayer.js)
+  
 ### 小程序疑难杂症参考处理
 - toast长度截断问题  
   - 问题：原生toast内容超过7个汉字时会被截断无法展示完整，自定义toast又无法覆盖textarea、video等层级最高的原生组件
