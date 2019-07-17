@@ -69,10 +69,10 @@ class Toast {
       return this.sysToastModal(options);
 
     let title = options.title;
-    if (!title.includes('\n')) { //折成字数相等的两行
+    /*if (!title.includes('\n')) { //折成字数相等的两行 （安卓机下有时第一行会变成'...'不能正常展示，且与内容编码无关，纯英文字符串亦可复现；原因不明，暂去掉自动换行逻辑）
       let mid = Math.ceil(title.length/2);
       title = title.substring(0, mid)+'\n'+title.substring(mid);
-    }
+    }*/
 
     wx.showToast({
       title,
