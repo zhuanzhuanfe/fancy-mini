@@ -351,8 +351,9 @@ e.g.：
   }
   .highlightArea {
     position: fixed;
-    box-shadow: 0 0 0 1200px rgba(0,0,0,0.7); //除操作区域外其余部分覆盖半透明蒙层
+    box-shadow: 0 0 10px 1200px rgba(0,0,0,0.7); //除操作区域外其余部分覆盖半透明蒙层
     //注：H5下建议用 clip-path+svg，不仅视觉上可以留出高亮区域，层级上也不会遮挡，对引导元素侵入更低
+    //注2：iOS下box-shadow spread过大有时会不展示，将blur从0改为一个较小的值可修复此问题 https://stackoverflow.com/questions/46898544/border-radius-and-large-spread-drop-shadow-in-safari
   }
   .guide {
     &.hand {
