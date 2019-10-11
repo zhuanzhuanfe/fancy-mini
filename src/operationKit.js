@@ -248,3 +248,36 @@ export function toInlineStyle(styleObj) {
     declarations.push(`${prop}:${styleObj[prop]}`);
   return declarations.join('; ');
 }
+
+/**
+ * 将实例方法封装为通用函数，使之可以在任何this对象上执行
+ * @param {Object} instance 实例对象
+ * @param {String} method 方法名
+ * @param {Object|Boolean} [rcvThis] 保存触发源的this对象
+ * @param {Number} [rcvThis.argIdx] 将this对象保存到下标为argIdx的参数的argProp属性上
+ * @param {String} [rcvThis.argProp] 将this对象保存到下标为argIdx的参数的argProp属性上
+ */
+export function makeAssignableMethod({instance, method, rcvThis}) {
+  //无需记录触发源this对象，直接绑定this，返回
+  if (!rcvThis)
+    return instance[method].bind(instance);
+  
+  //参数处理
+  const defaultRcv = {
+    argIdx: 0,
+    argProp: 'thisIssuer'
+  };
+  
+  rcvThis = typeof rcvThis === "object" ? rcvThis : {};
+  rcvThis = Object.assign({}, defaultRcv, rcvThis);
+  
+  //封装函数
+  return function (...args) {
+    //记录触发源this对象
+    args[rcvThis.argIdx] = args[rcvThis.argIdx] || {};
+    args[rcvThis.argIdx][rcvThis.argProp] = args[rcvThis.argIdx][rcvThis.argProp] || this;
+    
+    //将this重置为指定实例
+    return instance[method].apply(instance, args);
+  }
+}
