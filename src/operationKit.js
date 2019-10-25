@@ -8,7 +8,7 @@
  * @return {*}   源参数的深度拷贝
  */
 export function deepClone(source){
-  if (typeof source !== "object")
+  if (typeof source !== "object" || source === null)
     return source;
 
   var clone = Array.isArray(source) ? [] : {};
@@ -29,6 +29,9 @@ export function deepEqual(o1, o2) {
   if (typeof o1 !== "object" || typeof o2 !== "object")
     return o1 === o2;
 
+  if (o1 === null || o2 === null)
+    return o1 === o2;
+  
   for (var p in o1) {
     if (!deepEqual(o1[p], o2[p]))
       return false;
@@ -57,19 +60,21 @@ export function deepEqual(o1, o2) {
  *    target = {x: 2, y: {a: 2, b:1 }, z: 1}
  */
 export function deepAssign(target, ...sources) {
-  if (typeof target !== "object") {
+  if (typeof target !== "object" || target === null) {
     console.error('[deepAssign] bad parameters, target should be an object, parameters:', arguments);
     return target;
   }
 
   for (let source of sources) {
-    if (source!=null && typeof source !== "object") {
+    if (source === null || source === undefined)
+      continue;
+    if (typeof source !== "object") {
       console.warn('[deepAssign] bad parameters, source should all be object, parameters:', arguments);
       continue;
     }
 
     for (var p in source) {
-      if (typeof target[p] === "object" && typeof source[p] === "object")
+      if (typeof target[p] === "object" && target[p]!==null && typeof source[p] === "object")
         deepAssign(target[p], source[p]);
       else
         target[p] = source[p];
