@@ -65,29 +65,20 @@ export default class Cookie {
     //字段配置
     let setKey = ''; //要赋值的key
     let setValue = ''; //要赋值的value
-    let configOptions = { //配置项
-      'expires': '', 
-      'domain': '',
-      'path': '', 
-      'secure': '', 
-      'max-age': '', 
-      'version': '',
-    };
+    let configOptions = {}; //配置项：domain、path、expires等
     
     //字段解析
     let fieldStrArr = setStr.split(/\s*;\s*/);
-    for (let fieldStr of fieldStrArr) {
-      let idx = fieldStr.indexOf('=');
-      let name = fieldStr.substring(0, idx);
-      let value = fieldStr.substring(idx+1);
+    for (let [fieldIdx, fieldStr] of fieldStrArr.entries()) {
+      let sepIdx = fieldStr.indexOf('=');
+      let name = fieldStr.substring(0, sepIdx);
+      let value = fieldStr.substring(sepIdx+1);
       
-      if (name.toLowerCase() in configOptions) { //配置项
-        configOptions[name.toLowerCase()] = value;
-      } else if (!setKey) { //第一个未知选项，认为是要赋值的key
+      if (fieldIdx === 0) { //第一个选项，认为是要赋值的key
         setKey = name;
         setValue = value;
-      } else { //有多个未知选项，打warning，存在识别不正确处理不得当的风险
-        console.warn('[setCookie] unknown option:',name,'for string:', setStr);
+      } else { //其它选项，认为是配置项
+        configOptions[name.toLowerCase()] = value;
       }
     } 
     

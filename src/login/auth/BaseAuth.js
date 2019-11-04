@@ -19,6 +19,7 @@ export default class BaseAuth {
 
   /**
    * 进行授权登录之前的准备工作
+   * 时序：beforeAuthLogin -> 用户交互，同意授权 -> authLogin
    * @param {Object} loginOptions  登录函数调用参数
    * @param {Object} configOptions 登录模块配置参数
    * @return {Promise<*>} 需要传递给authLogin的数据
