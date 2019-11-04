@@ -8,7 +8,7 @@
  * @return {*}   源参数的深度拷贝
  */
 export function deepClone(source){
-  if (typeof source !== "object" || source === null)
+  if (!isNonNullObject(source))
     return source;
 
   var clone = Array.isArray(source) ? [] : {};
@@ -26,10 +26,7 @@ export function deepClone(source){
  * @return {boolean}  参数1、参数2 是否相等
  */
 export function deepEqual(o1, o2) {
-  if (typeof o1 !== "object" || typeof o2 !== "object")
-    return o1 === o2;
-
-  if (o1 === null || o2 === null)
+  if (!( isNonNullObject(o1) && isNonNullObject(o2) ))
     return o1 === o2;
   
   for (var p in o1) {
@@ -51,7 +48,7 @@ export function deepEqual(o1, o2) {
  * @param target 目标对象
  * @param sources  若干个源对象
  *
- * e.g.
+ * @example
  * 修改前：
  *    target = {x: 1, y: {a: 1, b:1 }, z: 1};
  *    source = {x: 2, y: {a: 2}};
@@ -60,7 +57,7 @@ export function deepEqual(o1, o2) {
  *    target = {x: 2, y: {a: 2, b:1 }, z: 1}
  */
 export function deepAssign(target, ...sources) {
-  if (typeof target !== "object" || target === null) {
+  if (!isNonNullObject(target)) {
     console.error('[deepAssign] bad parameters, target should be an object, parameters:', arguments);
     return target;
   }
@@ -74,7 +71,7 @@ export function deepAssign(target, ...sources) {
     }
 
     for (var p in source) {
-      if (typeof target[p] === "object" && target[p]!==null && typeof source[p] === "object")
+      if (isNonNullObject(target[p]) && typeof source[p] === "object")
         deepAssign(target[p], source[p]);
       else
         target[p] = source[p];
@@ -82,6 +79,87 @@ export function deepAssign(target, ...sources) {
   }
 
   return target;
+}
+
+/**
+ * 覆盖目标字段，剔除多余字段
+ * 将源对象的值覆盖目标对象，相同结构相同参数部分直接覆盖，其它部分予以剔除
+ * @param {object} target 目标对象
+ * @param {object} sources 若干个源对象
+ * 
+ * @example
+    //模块中指定的可配项列表及其默认值
+    const defaultOptions = {
+      x: 1,
+      y: {a: 1, b: 1}
+    };
+
+    //调用方传入的自定义配置
+    let customOptions = {
+      y: {a: 2}, //可能只指定了部分配置
+      zz: 2, //可能还含有一堆杂七杂八的属性
+      zzz: 2,
+    };
+
+    //初始配置（target为空对象时，取source[0]作为蓝本，只保留sources[0]中的属性）
+    let options = peerAssign({}, defaultOptions, customOptions);
+    console.log('options:', options); //{x: 1, y: {a:2, b:1}} 所需属性予以覆盖，多余属性予以剔除
+    
+    //增量配置（target不为空时，取target作为蓝本，只保留target中的属性）
+    peerAssign(options, {x:3, y: {b:3}, zz:3});
+    console.log('options:', options); //{x: 3, y: {a:2, b:3}} 
+ */
+export function peerAssign(target, ...sources) {
+  if (!isNonNullObject(target)) {
+    console.error('[peerAssign] bad parameters, target should be an object, got:', target, 'sources:', ...sources);
+    return target;
+  }
+  
+  let blueprint = isNonEmptyObject(target) ? target : (sources[0] || {});
+  
+  for (let source of sources) {
+    if (source === null || source === undefined)
+      continue;
+    if (typeof source !== "object") {
+      console.warn('[peerAssign] bad parameters, source should all be object, parameters:', arguments);
+      continue;
+    }
+
+    for (let p in blueprint) {
+      if (!(p in source))
+        continue;
+      
+      if (isNonEmptyObject(blueprint[p])) { //蓝本中为非空对象，只保留蓝本中指定的字段
+        target[p] = target[p] || {};
+        peerAssign(target[p], source[p]);
+      } else if (isNonNullObject(blueprint[p])) { //蓝本中为空对象，接受任意字段
+        target[p] = target[p] || {};
+        deepAssign(target[p], source[p]);
+      } else { //其它情况，直接覆盖
+        target[p] = source[p];
+      }
+    }
+  }
+
+  return target;
+}
+
+/**
+ * 判断一个变量是否为非null对象
+ * @param item
+ * @return {boolean}
+ */
+export function isNonNullObject(item) {
+  return typeof item === "object" && item !== null;
+}
+
+/**
+ * 判断一个变量是否为非空对象
+ * @param item
+ * @return {boolean}
+ */
+export function isNonEmptyObject(item) {
+  return isNonNullObject(item) && Object.getOwnPropertyNames(item).length>0;
 }
 
 /**

@@ -1,4 +1,4 @@
-import {deepClone, makeAssignableMethod} from '../operationKit';
+import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
 import {mergingStep, errSafe} from '../decorators';
 
 @requireConfig //确保调用API时已完成项目信息配置
@@ -93,7 +93,7 @@ export default class BaseLogin {
       loginStepAddOn: null,
     };
 
-    Object.assign(this._configOptions, defaultOpts, configOptions); //todo: 只保留所需字段，避免调用方传入过多字段污染变量
+    Object.assign(this._configOptions, peerAssign({}, defaultOpts, configOptions));
     
     //初始化
     this._init();
