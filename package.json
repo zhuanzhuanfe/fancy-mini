@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "compile": "babel -d lib/ src/ --copy-files",
+    "dev": "npm run compile -- --watch --compact false --no-minified",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run compile",
     "previewDev": "npm run compile && npm link"
