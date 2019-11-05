@@ -286,7 +286,7 @@ export default class BaseLogin {
     let authType = userAuthRes.authType;
     let authEngine = this._configOptions.authEngineMap[authType];
     if (!authEngine) {
-      console.error(`[login] 当前指定的登录方式：${authType}，不存在对应的处理器`);
+      console.error(`[login] 当前指定的登录方式：${authType}，不存在对应的鉴权器`);
       return {code: -500, errMsg: 'internal error'};
     }
     let authRes = await authEngine.authLogin({

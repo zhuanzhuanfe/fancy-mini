@@ -21,11 +21,22 @@ export default class CookiePlugin extends BasePlugin{
 
   //接收返回结果头部中的cookie信息
   afterRequest({reqOptions, reqRes}){
+    //请求失败，不作处理
     if (!reqRes.succeeded)
       return;
+
+    //请求结果中没有设置头部信息，不作处理
+    if (!reqRes.header)
+      return;
     
-    if(reqRes.header && reqRes.header['set-cookie']) {
-      let setCookies = Array.isArray(reqRes.header['set-cookie']) ? reqRes.header['set-cookie'] : [reqRes.header['set-cookie']];
+    //将标头转为全小写（http标头不区分大小写）
+    let header = {};
+    for (let field of Object.getOwnPropertyNames(reqRes.header))
+      header[field.toLowerCase()] = reqRes.header[field];
+    
+    //处理结果头部中的cookie信息
+    if(header['set-cookie']) {
+      let setCookies = header['set-cookie'].split(','); //wx.request会把返回头部中的多个set-cookie按逗号拼接
       for (let setCookie of setCookies)
         this.cookie.setCookie(setCookie);
     }
