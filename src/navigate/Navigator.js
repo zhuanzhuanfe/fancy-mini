@@ -3,6 +3,7 @@ import {makeMutex, noConcurrent} from '../decorator/noConcurrent';
 import {ctxDependConsole as console} from '../debugKit';
 import {delay, appendUrlParam, toAbsolutePath} from '../operationKit';
 import {customWxPromisify} from '../wxPromise';
+import {supportWXCallback} from '../decorator/compatible';
 
 const NAV_BUSY_REMAIN = 300;  //实践发现，navigateTo成功回调之后页面也并未完全完成跳转，故将跳转状态短暂延长，单位：ms
 let wxPromise=null, wxResolve=null; //部分API支持用户自定义覆盖，因而等到配置环节再予以实例化
@@ -69,7 +70,15 @@ export default class Navigator {
    * 打开新页面
    * @param {Object} route 页面配置，格式同wx.navigateTo
    */
-  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  @supportWXCallback //兼容success、fail、complete回调
+  @makeMutex({ //避免跳转相关函数并发执行
+    namespace:globalStore, 
+    mutexId:'navigate', 
+    discardRes: {
+      succeeded: false,
+      errMsg: 'discarded by noConcurrent strategy'
+    }
+  }) 
   static async navigateTo(route){
     console.log('[Navigator] navigateTo:', route);
     let curPages = getCurrentPages();
@@ -88,19 +97,22 @@ export default class Navigator {
       Navigator._history.savePage(Navigator._history.length-2, curPages[curPages.length-1]); //保存页面数据
       await Navigator._secretReplace(route);
     }
+    
+    return {succeeded: true, errMsg: 'ok'};
   }
 
   /**
    * 替换当前页面
    * @param {Object} route 页面配置，格式同wx.redirectTo
    */
-  // @makeMutex({namespace:globalStore, mutexId:'redirect'}) //考虑到有些页面对特定入参会立马中转至其它页面，redirectTo不作免并发
+  @supportWXCallback //兼容success、fail、complete回调
   static async redirectTo(route){
     console.log('[Navigator] redirectTo:', route);
     let curPages = getCurrentPages();
     let curPage = curPages[curPages.length-1];
     Navigator._history.replace({url: toAbsolutePath(route.url, curPage.route||curPage.__route__)});
-    await Navigator._secretReplace(route);
+    await Navigator._secretReplace(route)
+    return {succeeded: true, errMsg: 'ok'};
   }
 
 
@@ -109,26 +121,45 @@ export default class Navigator {
    * 返回
    * @param {Object} opts 返回配置，格式同wx.navigateBack
    */
-  //@makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  @supportWXCallback //兼容success、fail、complete回调
   static async navigateBack(opts={delta:1}){
     console.log('[Navigator] navigateBack:', opts);
     await Navigator._doBack(opts, {sysBack: false});
+    return {succeeded: true, errMsg: 'ok'};
   }
 
-  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  @supportWXCallback //兼容success、fail、complete回调 
+  @makeMutex({ //避免跳转相关函数并发执行
+    namespace:globalStore, 
+    mutexId:'navigate',
+    discardRes: {
+      succeeded: false,
+      errMsg: 'discarded by noConcurrent strategy'
+    }
+  }) 
   static async reLaunch(route){
     console.log('[Navigator] reLaunch:', route);
     Navigator._activeUnload = true;
     await wxPromise.reLaunch(route);
     await delay(NAV_BUSY_REMAIN);
+    return {succeeded: true, errMsg: 'ok'};
   }
 
-  @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+  @supportWXCallback //兼容success、fail、complete回调
+  @makeMutex({ //避免跳转相关函数并发执行
+    namespace:globalStore,
+    mutexId:'navigate',
+    discardRes: {
+      succeeded: false,
+      errMsg: 'discarded by noConcurrent strategy'
+    }
+  })
   static async switchTab(route){
     console.log('[Navigator] switchTab:', route);
     Navigator._activeUnload = true;
     await wxPromise.switchTab(route);
     await delay(NAV_BUSY_REMAIN);
+    return {succeeded: true, errMsg: 'ok'};
   }
 
   /**
@@ -273,7 +304,7 @@ export default class Navigator {
   static async _secretBack(opts={delta:1}){
     console.log('[Navigator] _secretBack', opts);
     Navigator._activeUnload = true;
-    wxPromise.navigateBack(opts);
+    await wxPromise.navigateBack(opts);
     await delay(globalStore.env.os=='ios' ? NAV_BUSY_REMAIN*3 : NAV_BUSY_REMAIN);
   }
 

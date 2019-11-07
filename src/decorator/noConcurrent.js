@@ -30,13 +30,14 @@ export const singleAisle  = makeNoConcurrent({mode: 'wait'});
  *     discard - 丢弃模式，无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
  *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，后续并发请求直接共享该次登录流程执行结果；
  *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
- *
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
+ * 
  * 说明：
  *    同步函数由于js的单线程特性没有并发问题，无需使用此修饰器
  *    异步时序，为便于区分操作结束时机，此修饰器只支持修饰async函数/返回值为Promise的函数
  */
-export function makeNoConcurrent({mode}) {
-  return _noConcurrentTplt.bind(null, {mutexStore:'_noConCurrentLocks', mode});
+export function makeNoConcurrent({mode, discardRes}) {
+  return _noConcurrentTplt.bind(null, {mutexStore:'_noConCurrentLocks', mode, discardRes});
 }
 
 /**
@@ -47,7 +48,8 @@ export function makeNoConcurrent({mode}) {
  *     discard - 丢弃模式（默认），无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
  *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，后续并发请求直接共享该次登录流程执行结果；
  *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
- *
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
+ * 
  * 使用示例：
  * import {makeMutex} from 'fancy-mini/lib/decorators';
  * let globalStore = {};
@@ -59,13 +61,13 @@ export function makeNoConcurrent({mode}) {
       static async navigateToMiniProgram(route){...}
  * }
  */
-export function makeMutex({namespace, mutexId, mode}) {
+export function makeMutex({namespace, mutexId, mode, discardRes}) {
   if (typeof namespace !== "object") {
     console.error('[makeNoConcurrent] bad parameters, namespace shall be a global object shared by all mutex funcs, got:', namespace);
     return function () {}
   }
 
-  return _noConcurrentTplt.bind(null, {namespace, mutexStore:'_noConCurrentLocksNS', mutexId, mode});
+  return _noConcurrentTplt.bind(null, {namespace, mutexStore:'_noConCurrentLocksNS', mutexId, mode, discardRes});
 }
 
 
@@ -78,12 +80,13 @@ export function makeMutex({namespace, mutexId, mode}) {
  *     discard - 丢弃模式（默认），无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
  *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，各并发请求直接共享该次登录流程执行结果；
  *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
  * @param target
  * @param funcName
  * @param descriptor
  * @private
  */
-function _noConcurrentTplt({namespace={}, mutexStore='_noConCurrentLocks', mutexId, mode='discard'}, target, funcName, descriptor) {
+function _noConcurrentTplt({namespace={}, mutexStore='_noConCurrentLocks', mutexId, mode='discard', discardRes=undefined}, target, funcName, descriptor) {
   namespace[mutexStore] = namespace[mutexStore] || {};
   mutexId = mutexId || funcName;
 
@@ -106,7 +109,7 @@ function _noConcurrentTplt({namespace={}, mutexStore='_noConCurrentLocks', mutex
     if (statusControl.running) { //上一次操作尚未结束
       switch (mode) {
         case 'discard': //丢弃模式，无视本次调用
-          return;
+          return discardRes;
         case 'merge':   //合并模式，直接使用上次操作结果作为本次调用结果返回
           let lastRes = await new Promise((resolve,reject)=>{
             statusControl.listeners.push({
