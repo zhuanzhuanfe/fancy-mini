@@ -143,8 +143,9 @@ export default class BaseLogin {
    * @param {string} [options.mode] 登录模式
    *    common - 通用模式，适合大部分页面场景
    *    silent - 静默模式，适合免打扰场景：只尝试静默登录，不触发授权弹窗；不管成功失败都不影响页面功能和后续接口调用
-   *    force - 强制模式，适合解码场景：刷新微信session，保证解码加密数据时session不过期
-   *    silentForce - 静默刷新模式，适合静默解码场景：对老用户，刷新微信session，保证解码加密数据时session不过期；对新用户，不触发授权
+   *    force - 强制模式，刷新登录态
+   *    forceSilent - 强制静默登录，对老用户，刷新登录态；对新用户，不触发授权
+   *    forceAuth - 强制授权登录，强制展示授权界面
    * @param {Function} [options.userAuthHandler] 自定义用户授权逻辑
    * @param {string} [options.silentAuthType] 指定静默登录时使用哪种鉴权方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
@@ -160,11 +161,8 @@ export default class BaseLogin {
    *   -400  附加步骤返回失败结果
    *   -500 模块内部异常
    */
-  async login(options){
-    //参数处理
-    if (typeof options === "function") //兼容旧版入参格式
-      options = {callback: options};
-    
+  async login(options={}){
+    //填充默认值
     const defaultOpts = {
       callback: null,
       mode: 'common',
@@ -201,21 +199,33 @@ export default class BaseLogin {
   }
   
   async _login(options){
-    //若已登录且不是强制模式，直接返回
-    if (options.mode!=='force' && options.mode!=='silentForce' && this.checkLogin())
-      return {code:0, errMsg:'ok'};
+    //初始状态：未开始
+    let loginRes = {code: -1, errMsg: 'idle'};
+    
+    //尝试复用本地登录态
+    let canUseLocal = !['force', 'forceSilent', 'forceAuth'].includes(options.mode); //是否可复用本地登录态
+    loginRes = canUseLocal && this.checkLogin() ? {code: 0, errMsg: 'ok'} :  loginRes; //本地登录状态
+    if (loginRes.code === 0) //当前已登录且模式无特殊要求，按成功返回
+      return {code: 0, errMsg: 'ok'};
     
     //尝试静默登录
-    let silentRes = await this._silentLogin(options);
-    if (silentRes.code === 0) //静默登录成功，结束
+    let canUseSilent = !['forceAuth'].includes(options.mode); //是否可尝试静默登录
+    loginRes = canUseSilent ? await this._silentLogin(options) : loginRes;
+    if (loginRes.code === 0) //静默登录成功，结束
+      return {code: 0, errMsg: 'ok'};
+    
+    //尝试授权登录
+    let canUseAuth = !['silent', 'forceSilent'].includes(options.mode); //是否可尝试授权登录
+    loginRes = canUseAuth ?  await this._authLogin(options) : loginRes;
+    if (loginRes.code === 0) //授权登录成功，结束
       return {code: 0, errMsg: 'ok'};
 
-    //静默模式，只尝试静默登录，不触发授权弹窗；不管成功失败都不影响页面功能和后续接口调用
-    if (options.mode==='silent' || options.mode==='silentForce')
-      return {code: -200, errMsg: 'login failed silently'};
-
-    //尝试授权登录
-    return await this._authLogin(options);
+    //全部尝试失败，根据模式调整返回值
+    if (['silent', 'forceSilent'].includes(options.mode)) //静默模式错误码调整为统一值（这些模式不想让用户感知到登录失败）
+      loginRes.code = -200;
+    
+    //返回最终失败结果
+    return loginRes;
   }
   
   @mergingStep
@@ -225,7 +235,7 @@ export default class BaseLogin {
     let authEngine = this._configOptions.authEngineMap[authType];
     if (!authEngine) {
       console.error('[login] _silentLogin, cannot find authEngine for authType:', authType);
-      return {code: -500, errMsg: 'internal error'};
+      return {code: -500, errMsg: 'login failed silently: internal error'};
     }
     
     //尝试静默登录
@@ -245,7 +255,7 @@ export default class BaseLogin {
     
     //登录失败，返回
     if (!silentRes.succeeded)
-      return {code: -200, errMsg: 'login failed silently'};
+      return {code: -200, errMsg: 'login failed silently: normal'};
     
     //登录成功，保存相关信息
     return this._afterFetchInfoPack({
