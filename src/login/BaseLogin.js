@@ -1,6 +1,9 @@
 import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
 import {mergingStep, errSafe} from '../decorators';
 
+/**
+ * 登录模块
+ */
 @requireConfig //确保调用API时已完成项目信息配置
 export default class BaseLogin {
   //配置
@@ -19,7 +22,11 @@ export default class BaseLogin {
   _stateInfo = {
     isConfigReady: false, //是否已完成模块配置
   };
-  
+
+  /**
+   * 构造函数
+   * @param {object} [configOptions] 配置项，格式参见config函数
+   */
   constructor(configOptions){
     configOptions && this.config(configOptions);
   }
@@ -27,6 +34,39 @@ export default class BaseLogin {
   /**
    * 模块配置
    * @param {Object} configOptions 
+   * @param {String} [configOptions.loginInfoStorage] 登录相关信息存储到storage时使用的key
+   * @param {Requester} configOptions.requester 请求管理器，为Requester对象（参见/src/request/Requester）
+   * @param {Function} [configOptions.onUserAuthFailed] 钩子函数，获取用户授权信息失败时触发
+   * @param {Function} [configOptions.onUserAuthSucceeded] 钩子函数，获取用户授权信息成功时触发
+   * @param {Function} [configOptions.onNewlyLogin] 钩子函数，刚刚登录成功时触发（未登录=>已登录）
+   * @param {Function} [configOptions.onLoginFailed] 钩子函数，登录失败时触发
+        入参：登录结果，格式形如：{
+            code: 0,   //状态码，0为成功，其它为失败
+            errMsg:'login api failed...',  //详细错误日志，debug用
+            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
+         }
+   * @param {Object} configOptions.authEngineMap 鉴权器映射表
+        key为登录方式，value为对应的鉴权器（BaseAuth对象，参见/src/login/auth/BaseAuth）
+        e.g. {
+          'wechat' : new WechatAuth(), //微信登录，WechatAuth应继承于BaseAuth
+          'phone' : new PhoneAuth(), //手机号登录，PhoneAuth应继承于BaseAuth
+        }
+   * @param {String} configOptions.defaultAuthType 默认登录方式
+   * @param {Function} configOptions.userAuthHandler 授权交互处理函数（async），负责跟用户交互，收集鉴权所需信息
+        入参：无
+        返回值：形如 {
+          succeeded: true, //是否成功
+          errMsg: '', //错误信息，调试用
+          authType: '', //用户选择的登录方式
+          authData: {}, //交互数据，格式由该登录方式对应的鉴权器指定
+        }
+   * @param {Function} [configOptions.loginStepAddOn] 登录流程自定义附加步骤，为一个async函数，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
+        入参：无
+        处理结果，格式形如：{
+            succeeded: true,   //是否成功
+            errMsg:'login api failed...',  //详细失败原因，debug用
+            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
+         }
    */
   config(configOptions){
     //参数校验
@@ -40,36 +80,13 @@ export default class BaseLogin {
     
     //参数处理
     const defaultOpts = {
-      /**
-       * 登录相关信息存储到storage时使用的key
-       */
       loginInfoStorage: '__loginInfo',
-      /**
-       * 请求管理器，为Requester对象
-       */
+      
       requester: null,
       
-      /**
-       * 钩子函数，获取用户授权信息失败时触发
-       * @param {string} type  失败类型： deny-用户拒绝授权 | unknown-其它原因
-       */
       onUserAuthFailed: null,
-      /**
-       * 钩子函数，获取用户授权信息成功时触发
-       */
       onUserAuthSucceeded: null,
-      /**
-       * 钩子函数，刚刚登录成功时调用（未登录=>已登录）
-       */
       onNewlyLogin: null,
-      /**
-       * 钩子函数，登录失败时调用
-       * @param {Object} res 登录结果，格式形如：{
-            code: 0,   //状态码，0为成功，其它为失败
-            errMsg:'login api failed...',  //详细错误日志，debug用
-            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
-         }
-       */
       onLoginFailed(res){
         wx.showToast({
           title: res.toastMsg || '登录失败',
@@ -82,14 +99,6 @@ export default class BaseLogin {
       defaultAuthType: '',
       userAuthHandler: null,
       
-      /**
-       * 登录流程自定义附加步骤，为一个处理函数，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
-       *  @return {Promise<Object>} res 处理结果，格式形如：{
-            succeeded: true,   //是否成功
-            errMsg:'login api failed...',  //详细失败原因，debug用
-            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
-         }
-       */
       loginStepAddOn: null,
     };
 
@@ -146,7 +155,7 @@ export default class BaseLogin {
    *    force - 强制模式，刷新登录态
    *    forceSilent - 强制静默登录，对老用户，刷新登录态；对新用户，不触发授权
    *    forceAuth - 强制授权登录，强制展示授权界面
-   * @param {Function} [options.userAuthHandler] 自定义用户授权逻辑
+   * @param {Function} [options.userAuthHandler] 自定义用户授权交互
    * @param {string} [options.silentAuthType] 指定静默登录时使用哪种鉴权方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
    * @return {Promise<Object>} res 登录结果，格式形如：{
@@ -393,7 +402,7 @@ export default class BaseLogin {
    *退出登录
    * @return {Object} res 退出登录结果，格式形如：{code:0, errMsg:'ok'}
    */
-  async logout(){
+  logout(){
     this.clearLogin();
     return {code: 0};
   }
