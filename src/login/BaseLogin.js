@@ -156,7 +156,6 @@ export default class BaseLogin {
    *    forceSilent - 强制静默登录，对老用户，刷新登录态；对新用户，不触发授权
    *    forceAuth - 强制授权登录，强制展示授权界面
    * @param {Function} [options.userAuthHandler] 自定义用户授权交互
-   * @param {string} [options.silentAuthType] 指定静默登录时使用哪种鉴权方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
    * @return {Promise<Object>} res 登录结果，格式形如：{
             code: 0,   //状态码，0为成功，其它为失败
@@ -240,7 +239,7 @@ export default class BaseLogin {
   @mergingStep
   async _silentLogin(options){
     //判断使用的验证方式
-    let authType = options.silentAuthType || this._loginInfo.authType;
+    let authType = this._loginInfo.authType;
     if (authType === 'none')
       return {code: -200, errMsg: 'login failed silently: disabled'};
 
