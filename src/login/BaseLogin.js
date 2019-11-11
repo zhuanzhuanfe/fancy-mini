@@ -40,11 +40,15 @@ export default class BaseLogin {
    * @param {Function} [configOptions.onUserAuthSucceeded] 钩子函数，获取用户授权信息成功时触发
    * @param {Function} [configOptions.onNewlyLogin] 钩子函数，刚刚登录成功时触发（未登录=>已登录）
    * @param {Function} [configOptions.onLoginFailed] 钩子函数，登录失败时触发
-        入参：登录结果，格式形如：{
+        入参：
+        参数0：登录结果，格式形如：{
             code: 0,   //状态码，0为成功，其它为失败
             errMsg:'login api failed...',  //详细错误日志，debug用
             toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
          }
+        参数1：选项，格式形如：{
+            failAction: 'auto', //调用方希望的失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它约定值
+        }
    * @param {Object} configOptions.authEngineMap 鉴权器映射表
         key为登录方式，value为对应的鉴权器（BaseAuth对象，参见/src/login/auth/BaseAuth）
         e.g. {
@@ -87,12 +91,20 @@ export default class BaseLogin {
       onUserAuthFailed: null,
       onUserAuthSucceeded: null,
       onNewlyLogin: null,
-      onLoginFailed(res){
-        wx.showToast({
-          title: res.toastMsg || '登录失败',
-          image: '/images/tipfail.png',
-          duration: 3000
-        });
+      onLoginFailed(res, {failAction}){
+        switch (failAction) { //调用方希望的失败处理方式
+          case 'auto': //自动处理
+            wx.showToast({
+              title: res.toastMsg || '登录失败',
+              image: '/images/tipfail.png',
+              duration: 3000
+            });
+            break;
+          case 'none': //调用方自行处理
+            break;
+          default:
+            console.error('[onLoginFailed] unknown failAction:', failAction);
+        }
       },
       
       authEngineMap: {}, //key: authType, value: BaseAuth
@@ -156,7 +168,9 @@ export default class BaseLogin {
    *    forceSilent - 强制静默登录，对老用户，刷新登录态；对新用户，不触发授权
    *    forceAuth - 强制授权登录，强制展示授权界面
    * @param {Function} [options.userAuthHandler] 自定义用户授权交互
+   * @param {String} [options.failAction] 失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它-和onLoginFailed钩子函数约定的其它处理方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
+   *
    * @return {Promise<Object>} res 登录结果，格式形如：{
             code: 0,   //状态码，0为成功，其它为失败
             errMsg:'login api failed...',  //详细错误日志，debug用
@@ -175,6 +189,7 @@ export default class BaseLogin {
       callback: null,
       mode: 'common',
       userAuthHandler: this._configOptions.userAuthHandler,
+      failAction: 'auto',
       thisIssuer: null, //触发登录的组件的this对象，供钩子函数使用
     };
 
@@ -195,7 +210,7 @@ export default class BaseLogin {
     
     //触发钩子
     if (loginRes.code!==0 && loginRes.code!==-200) { //钩子：登录失败
-      this._configOptions.onLoginFailed && await this._configOptions.onLoginFailed.call(options.thisIssuer, loginRes)
+      this._configOptions.onLoginFailed && await this._configOptions.onLoginFailed.call(options.thisIssuer, loginRes, {failAction: options.failAction})
     }
     if (loginRes.code===0 && isNewlyLogin) { //钩子：刚刚登录
       this._configOptions.onNewlyLogin && await this._configOptions.onNewlyLogin.call(options.thisIssuer);
