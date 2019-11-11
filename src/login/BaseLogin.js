@@ -239,8 +239,12 @@ export default class BaseLogin {
   
   @mergingStep
   async _silentLogin(options){
-    //获取当前验证方式对应的鉴权器
+    //判断使用的验证方式
     let authType = options.silentAuthType || this._loginInfo.authType;
+    if (authType === 'none')
+      return {code: -200, errMsg: 'login failed silently: disabled'};
+
+    //获取验证方式对应的鉴权器
     let authEngine = this._configOptions.authEngineMap[authType];
     if (!authEngine) {
       console.error('[login] _silentLogin, cannot find authEngine for authType:', authType);
@@ -400,10 +404,11 @@ export default class BaseLogin {
   
   /**
    *退出登录
+   * @param {boolean} needClearAuth 是否需要清除鉴权信息：false-仅清除登录态，下次还可以静默登录 | true-同时清除鉴权信息，下次必须授权登录
    * @return {Object} res 退出登录结果，格式形如：{code:0, errMsg:'ok'}
    */
-  logout(){
-    this.clearLogin();
+  logout({needClearAuth = false}={}){
+    this.clearLogin({needClearAuth});
     return {code: 0};
   }
 
@@ -418,11 +423,13 @@ export default class BaseLogin {
 
   /**
    * 清除前端登录态
+   * @param {boolean} needClearAuth 是否需要清除鉴权信息：false-仅清除登录态，下次还可以静默登录 | true-同时清除鉴权信息，下次必须授权登录
    */
-  clearLogin(){
+  clearLogin({needClearAuth=false}={}){
     this._loginInfo.isLogin = false;
     this._loginInfo.userInfo = {};
     this._loginInfo.expireTime = -1;
+    this._loginInfo.authType = needClearAuth ? 'none' : this._loginInfo.authType;
     
     wx.setStorage({
       key: this._configOptions.loginInfoStorage,
