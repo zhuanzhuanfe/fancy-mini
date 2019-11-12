@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>fancy-mini Source: decorator/noConcurrent.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">fancy-mini</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="BaseLogin.html">BaseLogin</a></li><li><a href="module.exports.html">module.exports</a></li><li><a href="RouteParams.html">RouteParams</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#afterRequest">afterRequest</a></li><li><a href="global.html#afterRequestAsync">afterRequestAsync</a></li><li><a href="global.html#appendUrlParam">appendUrlParam</a></li><li><a href="global.html#authLogin">authLogin</a></li><li><a href="global.html#back">back</a></li><li><a href="global.html#beforeAuthLogin">beforeAuthLogin</a></li><li><a href="global.html#beforeRequest">beforeRequest</a></li><li><a href="global.html#beforeRequestAsync">beforeRequestAsync</a></li><li><a href="global.html#compareVersion">compareVersion</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#cookieObjToStr">cookieObjToStr</a></li><li><a href="global.html#cookieStrToObj">cookieStrToObj</a></li><li><a href="global.html#correctLevel">correctLevel</a></li><li><a href="global.html#ctxDependConsole">ctxDependConsole</a></li><li><a href="global.html#curRoute">curRoute</a></li><li><a href="global.html#customWxPromisify">customWxPromisify</a></li><li><a href="global.html#dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li><li><a href="global.html#deepAssign">deepAssign</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deepEqual">deepEqual</a></li><li><a href="global.html#delay">delay</a></li><li><a href="global.html#doCorrection">doCorrection</a></li><li><a href="global.html#errSafe">errSafe</a></li><li><a href="global.html#fullUrl">fullUrl</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getCookie">getCookie</a></li><li><a href="global.html#handlePageChange">handlePageChange</a></li><li><a href="global.html#history">history</a></li><li><a href="global.html#isNonEmptyObject">isNonEmptyObject</a></li><li><a href="global.html#isNonNullObject">isNonNullObject</a></li><li><a href="global.html#isSamePage">isSamePage</a></li><li><a href="global.html#length">length</a></li><li><a href="global.html#listeners">listeners</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeAssignableMethod">makeAssignableMethod</a></li><li><a href="global.html#makeMutex">makeMutex</a></li><li><a href="global.html#makeNoConcurrent">makeNoConcurrent</a></li><li><a href="global.html#mergeCookieStr">mergeCookieStr</a></li><li><a href="global.html#mergingStep">mergingStep</a></li><li><a href="global.html#mount">mount</a></li><li><a href="global.html#navigateBack">navigateBack</a></li><li><a href="global.html#navigateTo">navigateTo</a></li><li><a href="global.html#NavRefine">NavRefine</a></li><li><a href="global.html#noConcurrent">noConcurrent</a></li><li><a href="global.html#notify">notify</a></li><li><a href="global.html#onLoadStateChange">onLoadStateChange</a></li><li><a href="global.html#onPageUnload">onPageUnload</a></li><li><a href="global.html#open">open</a></li><li><a href="global.html#padStart">padStart</a></li><li><a href="global.html#pageRestoreHandler">pageRestoreHandler</a></li><li><a href="global.html#parseInlineStyle">parseInlineStyle</a></li><li><a href="global.html#peerAssign">peerAssign</a></li><li><a href="global.html#play">play</a></li><li><a href="global.html#queryRect">queryRect</a></li><li><a href="global.html#redirectTo">redirectTo</a></li><li><a href="global.html#registerPageHook">registerPageHook</a></li><li><a href="global.html#registerToThis">registerToThis</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#requestWithLogin">requestWithLogin</a></li><li><a href="global.html#requireConfig">requireConfig</a></li><li><a href="global.html#resetRoute">resetRoute</a></li><li><a href="global.html#routes">routes</a></li><li><a href="global.html#savePage">savePage</a></li><li><a href="global.html#semanticRemainTime">semanticRemainTime</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#silentLogin">silentLogin</a></li><li><a href="global.html#singleAisle">singleAisle</a></li><li><a href="global.html#subscribe">subscribe</a></li><li><a href="global.html#supportWXCallback">supportWXCallback</a></li><li><a href="global.html#toAbsolutePath">toAbsolutePath</a></li><li><a href="global.html#toInlineStyle">toInlineStyle</a></li><li><a href="global.html#withErrToast">withErrToast</a></li><li><a href="global.html#wxLogin">wxLogin</a></li><li><a href="global.html#wxPromise">wxPromise</a></li><li><a href="global.html#wxResolve">wxResolve</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: decorator/noConcurrent.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">/**
+ * 免并发修饰器，在上一次操作结果返回之前，不响应重复操作
+ * e.g.
+ * 用户连续多次点击同一个提交按钮，希望只响应一次，而不是同时提交多份表单
+ */
+export const noConcurrent = makeNoConcurrent({mode: 'discard'});
+
+/**
+ * 步骤并合修饰器，避免公共步骤重复并发执行
+ * 将公共步骤单例化：若步骤未在进行，则发起该步骤；若步骤正在进行，则监听并使用其执行结果，而不是重新发起该步骤
+ * e.g.
+ * 页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C
+ * 未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次
+ * 使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次
+ */
+export const mergingStep = makeNoConcurrent({mode: 'merge'});
+
+/**
+ * 单通道修饰器，使得并发调用逐个顺序执行
+ * e.g.
+ * 页面中多处同时调用弹窗函数
+ * 未使用本修饰器时，执行时序：弹窗1、弹窗2、弹窗3同时展现，用户同时看到多个弹窗堆在一起and/or弹窗相互覆盖
+ * 使用本修饰器时，执行时序：弹窗1展现、等待交互、用户关闭 => 弹窗2展现、等待交互、用户关闭 => 弹窗3展现、等待交互、用户关闭，弹窗函数依次顺序执行
+ */
+export const singleAisle  = makeNoConcurrent({mode: 'wait'});
+
+/**
+ * 免并发修饰器模板
+ * @param {string} mode 互斥模式：
+ *     discard - 丢弃模式，无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
+ *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，后续并发请求直接共享该次登录流程执行结果；
+ *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
+ * 
+ * 说明：
+ *    同步函数由于js的单线程特性没有并发问题，无需使用此修饰器
+ *    异步时序，为便于区分操作结束时机，此修饰器只支持修饰async函数/返回值为Promise的函数
+ */
+export function makeNoConcurrent({mode, discardRes}) {
+  return _noConcurrentTplt.bind(null, {mutexStore:'_noConCurrentLocks', mode, discardRes});
+}
+
+/**
+ * 多函数免并发，具有相同互斥标识的函数不会并发执行
+ * @param {Object} namespace 互斥函数间共享的一个全局变量，用于存储并发信息
+ * @param {string} mutexId   互斥标识，具有相同标识的函数不会并发执行
+ * @param {string} mode 互斥模式：
+ *     discard - 丢弃模式（默认），无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
+ *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，后续并发请求直接共享该次登录流程执行结果；
+ *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
+ * 
+ * 使用示例：
+ * import {makeMutex} from 'fancy-mini/lib/decorators';
+ * let globalStore = {};
+ * class Navigator {
+      @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+      static async navigateTo(route){...}
+
+      @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+      static async navigateToMiniProgram(route){...}
+ * }
+ */
+export function makeMutex({namespace, mutexId, mode, discardRes}) {
+  if (typeof namespace !== "object") {
+    console.error('[makeNoConcurrent] bad parameters, namespace shall be a global object shared by all mutex funcs, got:', namespace);
+    return function () {}
+  }
+
+  return _noConcurrentTplt.bind(null, {namespace, mutexStore:'_noConCurrentLocksNS', mutexId, mode, discardRes});
+}
+
+
+/**
+ * 免并发修饰器通用模板
+ * @param {Object} namespace 互斥函数间共享的一个全局变量，用于存储并发信息，多函数互斥时需提供；单函数自身免并发无需提供，以本地私有变量实现
+ * @param {string} mutexStore 在namespace中占据一个变量名用于状态存储
+ * @param {string} mutexId   互斥标识，具有相同标识的函数不会并发执行，缺省值：函数名
+ * @param {string} mode 互斥模式：
+ *     discard - 丢弃模式（默认），无视后续并发操作，场景示例：用户连续快速多次点击同一按钮，只执行一次监听函数，无视后续并发点击；
+ *     merge - 合并模式，共享执行结果，场景示例：页面中多处同时触发登录过程，只执行一次登录流程，各并发请求直接共享该次登录流程执行结果；
+ *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
+ * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
+ * @param target
+ * @param funcName
+ * @param descriptor
+ * @private
+ */
+function _noConcurrentTplt({namespace={}, mutexStore='_noConCurrentLocks', mutexId, mode='discard', discardRes=undefined}, target, funcName, descriptor) {
+  namespace[mutexStore] = namespace[mutexStore] || {};
+  mutexId = mutexId || funcName;
+
+  namespace[mutexStore][mutexId] = namespace[mutexStore][mutexId] || {
+    running: false, //是否有实例正在执行
+    /**
+     * 监听队列，当前函数实例执行完毕时调用
+     * Array&lt;Object>  {
+     *    block: false,  //是否需要继续保持免并发状态
+     *    handler: null, //处理函数，入参：刚结束的函数实例执行结果
+     * }
+     */
+    listeners: [],
+  };
+
+  let oriFunc = descriptor.value;
+  descriptor.value = async function () {
+    let statusControl = namespace[mutexStore][mutexId];
+    //免并发处理
+    if (statusControl.running) { //上一次操作尚未结束
+      switch (mode) {
+        case 'discard': //丢弃模式，无视本次调用
+          return discardRes;
+        case 'merge':   //合并模式，直接使用上次操作结果作为本次调用结果返回
+          let lastRes = await new Promise((resolve,reject)=>{
+            statusControl.listeners.push({
+              block: false, //无需继续免并发状态
+              handler: resolve,
+            });
+          });
+          return lastRes;
+        case 'wait':    //等待模式，等待上次操作结束后再开始本次操作
+          await new Promise((resolve,reject)=>{
+            statusControl.listeners.push({
+              block: true, //继续保持免并发状态
+              handler: resolve,
+            });
+          });
+          break;
+        default:
+          console.error('[_noConcurrentTplt] unknown mode:', mode);
+          return;
+      }
+    }
+
+    //释放并发锁处理
+    let handleRunFinish = async function (res) {
+      while (statusControl.listeners.length > 0){
+        let listener = statusControl.listeners[0];
+        statusControl.listeners = statusControl.listeners.slice(1);
+
+        listener.handler(res);
+        if (listener.block) //阻塞性监听，则继续保持免并发状态；本轮处理结束，后续监听处理及互斥锁释放过程由监听函数接管
+          return;
+        //否则继续进行后续监听处理
+      }
+
+      statusControl.running = false; //监听函数全部处理完毕，则释放并发锁
+      return;
+    };
+
+    //操作开始
+    statusControl.running = true;
+    let res = oriFunc.apply(this, arguments);
+
+    if (res instanceof Promise)
+      res.then(()=>{
+        handleRunFinish(res);
+      }).catch((e)=> {
+        console.error(funcName, e);
+        handleRunFinish(res);
+      });
+    else {
+      console.error('noConcurrent decorator shall be used with async function, yet got sync usage:', funcName);
+      handleRunFinish(res);
+    }
+
+    return res;
+  }
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Tue Nov 12th 2019
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

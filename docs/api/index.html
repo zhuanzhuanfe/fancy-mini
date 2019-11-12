@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>fancy-mini Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">fancy-mini</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="BaseLogin.html">BaseLogin</a></li><li><a href="module.exports.html">module.exports</a></li><li><a href="RouteParams.html">RouteParams</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#afterRequest">afterRequest</a></li><li><a href="global.html#afterRequestAsync">afterRequestAsync</a></li><li><a href="global.html#appendUrlParam">appendUrlParam</a></li><li><a href="global.html#authLogin">authLogin</a></li><li><a href="global.html#back">back</a></li><li><a href="global.html#beforeAuthLogin">beforeAuthLogin</a></li><li><a href="global.html#beforeRequest">beforeRequest</a></li><li><a href="global.html#beforeRequestAsync">beforeRequestAsync</a></li><li><a href="global.html#compareVersion">compareVersion</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#cookieObjToStr">cookieObjToStr</a></li><li><a href="global.html#cookieStrToObj">cookieStrToObj</a></li><li><a href="global.html#correctLevel">correctLevel</a></li><li><a href="global.html#ctxDependConsole">ctxDependConsole</a></li><li><a href="global.html#curRoute">curRoute</a></li><li><a href="global.html#customWxPromisify">customWxPromisify</a></li><li><a href="global.html#dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li><li><a href="global.html#deepAssign">deepAssign</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deepEqual">deepEqual</a></li><li><a href="global.html#delay">delay</a></li><li><a href="global.html#doCorrection">doCorrection</a></li><li><a href="global.html#errSafe">errSafe</a></li><li><a href="global.html#fullUrl">fullUrl</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getCookie">getCookie</a></li><li><a href="global.html#handlePageChange">handlePageChange</a></li><li><a href="global.html#history">history</a></li><li><a href="global.html#isNonEmptyObject">isNonEmptyObject</a></li><li><a href="global.html#isNonNullObject">isNonNullObject</a></li><li><a href="global.html#isSamePage">isSamePage</a></li><li><a href="global.html#length">length</a></li><li><a href="global.html#listeners">listeners</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeAssignableMethod">makeAssignableMethod</a></li><li><a href="global.html#makeMutex">makeMutex</a></li><li><a href="global.html#makeNoConcurrent">makeNoConcurrent</a></li><li><a href="global.html#mergeCookieStr">mergeCookieStr</a></li><li><a href="global.html#mergingStep">mergingStep</a></li><li><a href="global.html#mount">mount</a></li><li><a href="global.html#navigateBack">navigateBack</a></li><li><a href="global.html#navigateTo">navigateTo</a></li><li><a href="global.html#NavRefine">NavRefine</a></li><li><a href="global.html#noConcurrent">noConcurrent</a></li><li><a href="global.html#notify">notify</a></li><li><a href="global.html#onLoadStateChange">onLoadStateChange</a></li><li><a href="global.html#onPageUnload">onPageUnload</a></li><li><a href="global.html#open">open</a></li><li><a href="global.html#padStart">padStart</a></li><li><a href="global.html#pageRestoreHandler">pageRestoreHandler</a></li><li><a href="global.html#parseInlineStyle">parseInlineStyle</a></li><li><a href="global.html#peerAssign">peerAssign</a></li><li><a href="global.html#play">play</a></li><li><a href="global.html#queryRect">queryRect</a></li><li><a href="global.html#redirectTo">redirectTo</a></li><li><a href="global.html#registerPageHook">registerPageHook</a></li><li><a href="global.html#registerToThis">registerToThis</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#requestWithLogin">requestWithLogin</a></li><li><a href="global.html#requireConfig">requireConfig</a></li><li><a href="global.html#resetRoute">resetRoute</a></li><li><a href="global.html#routes">routes</a></li><li><a href="global.html#savePage">savePage</a></li><li><a href="global.html#semanticRemainTime">semanticRemainTime</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#silentLogin">silentLogin</a></li><li><a href="global.html#singleAisle">singleAisle</a></li><li><a href="global.html#subscribe">subscribe</a></li><li><a href="global.html#supportWXCallback">supportWXCallback</a></li><li><a href="global.html#toAbsolutePath">toAbsolutePath</a></li><li><a href="global.html#toInlineStyle">toInlineStyle</a></li><li><a href="global.html#withErrToast">withErrToast</a></li><li><a href="global.html#wxLogin">wxLogin</a></li><li><a href="global.html#wxPromise">wxPromise</a></li><li><a href="global.html#wxResolve">wxResolve</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1>fancy-mini</h1><p>小程序代码库，封装一些常用的功能模块和ui组件。<br>开发过程使用<a href="https://tencent.github.io/wepy/">wepy</a>框架，对非wepy项目亦有一定程度兼容。  </p>
+<h2>功能</h2><h3>小程序能力搭建/增强</h3><ul>
+<li><p>无限层级路由策略</p>
+<ul>
+<li>问题：小程序原生页面存在层级限制，最多只能同时打开10层页面，超过10层时便会无法打开新页面  </li>
+<li>方案：自行维护完整历史记录，超出层级限制后在最后一层进行模拟导航，详见<a href="https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%97%A0%E9%99%90%E5%B1%82%E7%BA%A7%E8%B7%AF%E7%94%B1%E6%96%B9%E6%A1%88.md">无限层级路由方案</a></li>
+<li>使用：参见 <a href="./docs/无限层级路由方案.md">无限层级路由模块使用说明</a></li>
+</ul>
+</li>
+<li><p>登录模块</p>
+<ul>
+<li>功能：健壮高效的小程序登录机制，封装处理了拒绝授权、登录态过期、免并发、自定义弹窗、静默登录、场景适配、多端复用等，详见<a href="https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%81%A5%E5%A3%AE%E9%AB%98%E6%95%88%E7%9A%84%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%99%BB%E5%BD%95%E6%96%B9%E6%A1%88.md">健壮高效的小程序登录方案</a></li>
+<li>使用： 参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini/blob/feature-login/docs/%E7%99%BB%E5%BD%95%E6%A8%A1%E5%9D%97.md">登录模块使用说明</a> (working on branch: <a href="https://github.com/zhuanzhuanfe/fancy-mini/blob/feature-login/docs/%E7%99%BB%E5%BD%95%E6%A8%A1%E5%9D%97.md">feature-login</a>)</li>
+</ul>
+</li>
+<li><p>cookie模块</p>
+<ul>
+<li>问题：很多时候，后端现有接口是先前对接M页/APP开发的，可能会使用cookie进行参数获取/传递；但小程序不支持cookie，导致后端接口复用/多端兼容成本增高。  </li>
+<li>方案：利用前端存储，自行模拟&amp;管理cookie；封装接口调用过程，植入cookie逻辑。</li>
+<li>使用： 待补充 ----</li>
+</ul>
+</li>
+<li><p>canvas工具集</p>
+<ul>
+<li>功能：封装了一些常用的canvas操作，如图片居中裁剪、圆形头像、border-radius、多行文本、字符串过长截断/添加省略号等</li>
+<li>使用：参见 <a href="./src/canvasKit.js">canvasKit</a></li>
+</ul>
+</li>
+<li><p>wx Promise化</p>
+<ul>
+<li>问题：目前小程序API均以回调形式提供，当逻辑较为复杂时会造成回调函数层层嵌套，影响代码可读性和逻辑清晰性，且不利于并发时序控制</li>
+<li>方案：将小程序API统一改造成Promise形式使用</li>
+<li>使用：参见 <a href="./docs/Promise化的小程序API.md">Promise化的小程序API</a></li>
+</ul>
+</li>
+<li><p>wxRefine</p>
+<ul>
+<li>功能：对小程序部分API做自定义改造，以优化性能/满足特定需求，可与wxPromise、无限层级路由方案等结合使用，如：改造wx.getSystemInfo、wx.getLocation、wx.setStorage，引入缓存逻辑以优化性能</li>
+<li>使用：待补充 ----</li>
+</ul>
+</li>
+<li><p>渠道埋点策略</p>
+<ul>
+<li>问题：需求中经常需要统计各个活动各个投放入口带来的流量和各步骤转化率，入口标识须层层传递，导致埋点过程繁琐，效率低下</li>
+<li>方案：利用小程序存在APP级生命周期的特性，在打开小程序时记录流量来源，并自动携带到该次访问的所有页面的所有埋点中，使得渠道逻辑投放入口逻辑对埋点过程透明</li>
+<li>使用： 待补充 -----</li>
+</ul>
+</li>
+<li><p>M页内嵌&amp;交互方案</p>
+<ul>
+<li>功能：封装了小程序与小程序内嵌M页交互过程，并做了登录、支付、多端兼容等处理</li>
+<li>使用： 待补充 -----</li>
+</ul>
+</li>
+<li><p>跨页面传参</p>
+<ul>
+<li>功能：后一页面向前一页面传参（如：发布页-分类列表页-选定分类-自动返回发布页，获取所选分类）、前一页面向后一页面传递大量数据（如：手机估价-卖掉换钱-发布页，获取并填充估价表单）</li>
+<li>使用： 参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/tree/master/src/pages/routeParams">跨页面传参使用示例</a></li>
+</ul>
+</li>
+<li><p>入口构造工具</p>
+<ul>
+<li>功能：支持PM&amp;运营人员自助生成投放链接，支持FE&amp;QA自助开发/测试没有线上入口的新页面，详见<a href="https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md">小程序入口构造工具&amp;二维码测试工具</a></li>
+<li>使用： <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/customEntry.wpy">入口构造工具使用示例</a>，<a href="./components/CustomEntry.wpy">组件源码</a></li>
+</ul>
+</li>
+<li><p>二维码测试工具</p>
+<ul>
+<li>功能：支持扫码进入开发版/体验版小程序，便于测试二维码相关功能，详见<a href="https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3%E6%9E%84%E9%80%A0%E5%B7%A5%E5%85%B7%26%E4%BA%8C%E7%BB%B4%E7%A0%81%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7.md">小程序入口构造工具&amp;二维码测试工具</a></li>
+<li>使用： <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/tools/qrCode.wpy">二维码测试工具使用示例</a>，<a href="./components/QrCode.wpy">组件源码</a></li>
+</ul>
+</li>
+<li><p>激励视频播放器</p>
+<ul>
+<li>功能：封装激励视频的加载、播放时序，使时序细节对外透明，便于调用；Promise化封装。</li>
+<li>使用：<a href="./src/RewardedVideoPlayer.js">RewardedVideoPlayer</a></li>
+</ul>
+</li>
+</ul>
+<h3>小程序疑难杂症参考处理</h3><ul>
+<li><p>toast长度截断问题  </p>
+<ul>
+<li>问题：原生toast内容超过7个汉字时会被截断无法展示完整，自定义toast又无法覆盖textarea、video等层级最高的原生组件</li>
+<li>方案：根据内容长度自动选择合适的原生提示：带图标的原生toast、不带图标的原生toast、系统弹窗</li>
+<li>使用：参见 <a href="./docs/不受长度限制、不受层级约束的原生toast.md">不受长度限制、不受层级约束的原生toast</a></li>
+</ul>
+</li>
+<li><p>textarea遮盖浮层问题</p>
+<ul>
+<li>问题：textarea为原生组件层级最高，会遮盖价格填写蒙层、红包选择蒙层、绑定手机号提示框等各种普通浮层元素；特别是页面交互较复杂、浮层元素较多、出现时机较不确定时，难以有效规避。</li>
+<li>方案：textarea处于编辑状态时使用原生textarea组件，处于非编辑状态时改用普通&lt;view&gt;元素展现内容</li>
+<li>使用：参见 <a href="./components/TextAreaEle.wpy">TextAreaEle 组件</a></li>
+</ul>
+</li>
+</ul>
+<h3>小程序组件库</h3><ul>
+<li><p>通用弹窗</p>
+<ul>
+<li>功能：通用对话框，支持样式配置（单个/多个按钮、横版/竖版、带/不带关闭图标、带/不带顶部图标、自定义内联样式等）、按钮监听、按钮分享、按钮获取手机号、按钮异步处理结果统一返回等</li>
+<li>使用： 参见 <a href="./components/DialogCommon.wpy">DialogCommon 组件</a></li>
+</ul>
+</li>
+<li><p>新手引导</p>
+<ul>
+<li>功能：新手引导、新功能操作引导</li>
+<li>特点：<ul>
+<li>就地高亮：引导蒙层中高亮区域即为页面中实际操作区域</li>
+<li>就地交互：高亮区域可直接进行点击等交互</li>
+<li>依次引导：展示引导蒙层-&gt;响应用户点击-&gt;等待交互完毕-&gt;展示下一个引导蒙层-&gt;...</li>
+<li>公共逻辑抽离：公共逻辑统一封装，高亮元素只需进行少量配置，不必关注引导细节</li>
+</ul>
+</li>
+<li>使用： <a href="./components/operationGuide/OperationGuideModal.wpy">使用说明</a>、<a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/operationGuide/operationGuide.wpy">使用示例</a></li>
+</ul>
+</li>
+<li><p>待补充 -----</p>
+</li>
+</ul>
+<h3>实用工具函数</h3><ul>
+<li><p>免并发修饰器 </p>
+<ul>
+<li><p>免并发 @noConcurrent<br>功能：在上一次操作结果返回之前，不响应重复操作<br>示例：用户连续多次点击同一个提交按钮，只响应一次，而不是同时提交多份表单<br>使用：参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/NoConcurrent.wpy">@noConcurrent修饰器使用示例</a>  </p>
+</li>
+<li><p>步骤并合 @mergingStep<br>功能：步骤并合，避免公共步骤重复执行<br>示例：<br>  页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C<br>  未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次  </p>
+<pre class="prettyprint source"><code>使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次  </code></pre><p>使用：参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/MergingStep.wpy">@mergingStep修饰器使用示例</a></p>
+</li>
+<li><p>单通道执行 @singleAisle<br>功能： 使得并发调用逐个顺序执行<br>示例：<br>页面中多处同时调用弹窗函数<br>未使用本修饰器时，执行时序：弹窗1、弹窗2、弹窗3同时展现，用户同时看到多个弹窗堆在一起and/or弹窗相互覆盖<br>使用本修饰器时，执行时序：弹窗1展现、等待交互、用户关闭 =&gt; 弹窗2展现、等待交互、用户关闭 =&gt; 弹窗3展现、等待交互、用户关闭，弹窗函数依次顺序执行<br>使用：参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/noConcurrent/components/SingleAisle.wpy">@singleAisle修饰器使用示例</a></p>
+</li>
+<li><p>多函数互斥 @makeMutex<br>功能： 多函数互斥免并发<br>示例： 跳转相关函数navigateTo、navigateToMiniProgram、reLaunch等相互之间免并发<br>使用：参见 <a href="./src/decorator/noConcurrent.js">@makeMutex修饰器</a></p>
+</li>
+</ul>
+</li>
+<li><p>异常捕获修饰器</p>
+<ul>
+<li><p>异常捕获 @errSafe<br>功能：兼容函数异常<br>示例：页面获取数据后交由各子函数进行解析，子函数数据解析异常应予以捕获，避免局部数据问题导致整个页面瘫痪<br>使用： 参见 <a href="./src/decorator/errSafe.js">@errSafe修饰器</a>  </p>
+</li>
+<li><p>异常提示 @withErrToast<br>功能： 兼容异常，响应交互<br>示例： 页面操作响应过程，若出现异常应予以适当提示，避免交互无响应<br>使用： 参见 <a href="./src/decorator/errSafe.js">@withErrToast修饰器</a>  </p>
+</li>
+</ul>
+</li>
+<li><p>wepyKit</p>
+<ul>
+<li>功能：wepy工具集，与wepy框架耦合度较高的功能在此模块中提供，如：注册全局this属性、注册全局页面钩子等</li>
+<li>使用： 参见 <a href="./src/wepyKit.js">wepyKit</a>  </li>
+</ul>
+</li>
+<li><p>debugKit<br>待补充 -----</p>
+</li>
+<li><p>operationKit<br>待补充 -----</p>
+</li>
+<li><p>待补充 -----</p>
+</li>
+</ul>
+<h2>效果演示</h2><ul>
+<li>小程序名称：fancyDemos   </li>
+<li>访问：<br><img src="./docs/images/fancyQrCode.jpg" alt="">  </li>
+<li>源码：<a href="https://github.com/zhuanzhuanfe/fancy-mini-demos">fancy-mini-demos</a> （功能逐步补全中）  </li>
+</ul>
+<h2>安装</h2><p><code>npm install --save fancy-mini</code></p>
+<h2>使用 - wepy项目</h2><ul>
+<li><p>关于代码包大小<br>为避免代码包膨胀，各模块没有合并导出，而是作为单独的文件各自引入，<br>这样，只有项目中实际有引用的模块才会被打进小程序代码包中，无任何引用的部分不会影响小程序的代码包体积。    </p>
+</li>
+<li><p>引用js模块<br>  普通模块直接根据路径引入即可使用，如：</p>
+<pre class="prettyprint source lang-js"><code>  import canvasKit from 'fancy-mini/lib/canvasKit'; //引入需要的模块
+
+  console.log('canvasKit:', canvasKit, 'canvasKit.fillText:', canvasKit.fillText); //使用该模块</code></pre><p>  复杂模块可能还需进行些许配置，具体参见模块各自的使用说明。</p>
+</li>
+<li><p>引用组件<br>待补充 ----  </p>
+</li>
+</ul>
+<p>完整使用demo，参见 <a href="https://github.com/zhuanzhuanfe/fancy-mini-demos">fancy-mini-demos</a>（逐步补全中）</p>
+<h2>使用 - 非wepy项目</h2><ul>
+<li><p>引用js模块<br>js模块中与wepy框架耦合的部分均已抽离至<a href="./src/wepyKit.js">wepyKit模块</a>，并以配置的形式单独引入。<br>非wepy项目引用方式可参考&quot;使用 - wepy项目&quot;小节，只是若配置过程中使用到了wepyKit模块，需自行实现wepyKit相关功能并予以替换。  </p>
+</li>
+<li><p>引用组件<br>本代码库组件部分均基于wepy框架开发，不直接支持非wepy项目，如有需要，请下载源码自行改造。</p>
+</li>
+</ul>
+<h2>TODO</h2><ul>
+<li>补全模块</li>
+<li>补全文档</li>
+<li><p>补全demo</p>
+</li>
+<li><p>wpy-npm-workaround</p>
+<ul>
+<li>目前wepy在引用包含多个组件的npm包时，存在bug：  <ul>
+<li>wepy 1.7.0以上 &amp;&amp; Mac环境，可以正常引用， 见issue：https://github.com/Tencent/wepy/issues/851</li>
+<li>wepy 1.7.0以下 || Windows环境，无法正常引用， 见issue：https://github.com/Tencent/wepy/issues/1035  </li>
+</ul>
+</li>
+<li>可直接拷贝至本地目录使用，但最好能提供更友好的引用方式</li>
+</ul>
+</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Tue Nov 12th 2019
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

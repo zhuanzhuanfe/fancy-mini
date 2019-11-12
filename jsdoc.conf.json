@@ -1,0 +1,41 @@
+{
+  "source": {
+    "include": ["src"],
+    "exclude": [],
+    "includePattern": ".+\\.js(doc)?$",
+    "excludePattern": "(^|\\/|\\\\)_"
+  },
+  "opts": {
+    "encoding": "utf8",               
+    "destination": "./docs/api/",          
+    "recurse": true,
+    "template": "./node_modules/ink-docstrap/template",
+    "readme": "./README.md"
+  },
+  "tags": {
+    "allowUnknownTags": true
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "logoFile": "",
+    "cleverLinks": true,
+    "monospaceLinks": false,
+    "dateFormat": "ddd MMM Do YYYY",
+    "outputSourceFiles": true,
+    "outputSourcePath": true,
+    "systemName": "fancy-mini",
+    "footer": "",
+    "copyright": "",
+    "navType": "vertical",
+    "theme": "cosmo",
+    "linenums": false,
+    "collapseSymbols": true,
+    "inverseNav": true,
+    "protocol": "html://",
+    "methodHeadingReturns": false
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true
+  }
+} 

@@ -12,7 +12,8 @@
     "compile": "babel -d lib/ src/ --copy-files",
     "dev": "npm run compile -- --watch --compact false --no-minified",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run compile",
+    "doc": "jsdoc -c jsdoc.conf.json",
+    "prepublishOnly": "npm run compile && npm run doc",
     "previewDev": "npm run compile && npm link"
   },
   "repository": {
@@ -28,6 +29,7 @@
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1"
+    "babel-preset-env": "^1.6.1",
+    "ink-docstrap": "^1.3.2"
   }
 }

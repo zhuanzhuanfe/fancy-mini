@@ -1,4 +1,83 @@
-import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>fancy-mini Source: login/BaseLogin.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">fancy-mini</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="BaseLogin.html">BaseLogin</a></li><li><a href="module.exports.html">module.exports</a></li><li><a href="RouteParams.html">RouteParams</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#afterRequest">afterRequest</a></li><li><a href="global.html#afterRequestAsync">afterRequestAsync</a></li><li><a href="global.html#appendUrlParam">appendUrlParam</a></li><li><a href="global.html#authLogin">authLogin</a></li><li><a href="global.html#back">back</a></li><li><a href="global.html#beforeAuthLogin">beforeAuthLogin</a></li><li><a href="global.html#beforeRequest">beforeRequest</a></li><li><a href="global.html#beforeRequestAsync">beforeRequestAsync</a></li><li><a href="global.html#compareVersion">compareVersion</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#cookieObjToStr">cookieObjToStr</a></li><li><a href="global.html#cookieStrToObj">cookieStrToObj</a></li><li><a href="global.html#correctLevel">correctLevel</a></li><li><a href="global.html#ctxDependConsole">ctxDependConsole</a></li><li><a href="global.html#curRoute">curRoute</a></li><li><a href="global.html#customWxPromisify">customWxPromisify</a></li><li><a href="global.html#dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li><li><a href="global.html#deepAssign">deepAssign</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deepEqual">deepEqual</a></li><li><a href="global.html#delay">delay</a></li><li><a href="global.html#doCorrection">doCorrection</a></li><li><a href="global.html#errSafe">errSafe</a></li><li><a href="global.html#fullUrl">fullUrl</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getCookie">getCookie</a></li><li><a href="global.html#handlePageChange">handlePageChange</a></li><li><a href="global.html#history">history</a></li><li><a href="global.html#isNonEmptyObject">isNonEmptyObject</a></li><li><a href="global.html#isNonNullObject">isNonNullObject</a></li><li><a href="global.html#isSamePage">isSamePage</a></li><li><a href="global.html#length">length</a></li><li><a href="global.html#listeners">listeners</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeAssignableMethod">makeAssignableMethod</a></li><li><a href="global.html#makeMutex">makeMutex</a></li><li><a href="global.html#makeNoConcurrent">makeNoConcurrent</a></li><li><a href="global.html#mergeCookieStr">mergeCookieStr</a></li><li><a href="global.html#mergingStep">mergingStep</a></li><li><a href="global.html#mount">mount</a></li><li><a href="global.html#navigateBack">navigateBack</a></li><li><a href="global.html#navigateTo">navigateTo</a></li><li><a href="global.html#NavRefine">NavRefine</a></li><li><a href="global.html#noConcurrent">noConcurrent</a></li><li><a href="global.html#notify">notify</a></li><li><a href="global.html#onLoadStateChange">onLoadStateChange</a></li><li><a href="global.html#onPageUnload">onPageUnload</a></li><li><a href="global.html#open">open</a></li><li><a href="global.html#padStart">padStart</a></li><li><a href="global.html#pageRestoreHandler">pageRestoreHandler</a></li><li><a href="global.html#parseInlineStyle">parseInlineStyle</a></li><li><a href="global.html#peerAssign">peerAssign</a></li><li><a href="global.html#play">play</a></li><li><a href="global.html#queryRect">queryRect</a></li><li><a href="global.html#redirectTo">redirectTo</a></li><li><a href="global.html#registerPageHook">registerPageHook</a></li><li><a href="global.html#registerToThis">registerToThis</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#requestWithLogin">requestWithLogin</a></li><li><a href="global.html#requireConfig">requireConfig</a></li><li><a href="global.html#resetRoute">resetRoute</a></li><li><a href="global.html#routes">routes</a></li><li><a href="global.html#savePage">savePage</a></li><li><a href="global.html#semanticRemainTime">semanticRemainTime</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#silentLogin">silentLogin</a></li><li><a href="global.html#singleAisle">singleAisle</a></li><li><a href="global.html#subscribe">subscribe</a></li><li><a href="global.html#supportWXCallback">supportWXCallback</a></li><li><a href="global.html#toAbsolutePath">toAbsolutePath</a></li><li><a href="global.html#toInlineStyle">toInlineStyle</a></li><li><a href="global.html#withErrToast">withErrToast</a></li><li><a href="global.html#wxLogin">wxLogin</a></li><li><a href="global.html#wxPromise">wxPromise</a></li><li><a href="global.html#wxResolve">wxResolve</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: login/BaseLogin.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
 import {mergingStep, errSafe} from '../decorators';
 
 /**
@@ -28,7 +107,7 @@ class BaseLogin {
    * @param {object} [configOptions] 配置项，格式参见config函数
    */
   constructor(configOptions){
-    configOptions && this.config(configOptions);
+    configOptions &amp;&amp; this.config(configOptions);
   }
 
   /**
@@ -153,7 +232,7 @@ class BaseLogin {
     this._loginInfo.authType = this._loginInfo.authType || this._configOptions.defaultAuthType;
     
     //有指定前端登录态过期时间时，进行过期处理
-    if (this._loginInfo.expireTime>0 && Date.now()>this._loginInfo.expireTime)
+    if (this._loginInfo.expireTime>0 &amp;&amp; Date.now()>this._loginInfo.expireTime)
       this.clearLogin();
   }
   
@@ -171,7 +250,7 @@ class BaseLogin {
    * @param {String} [options.failAction] 失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它-和onLoginFailed钩子函数约定的其它处理方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
    *
-   * @return {Promise<Object>} res 登录结果，格式形如：{
+   * @return {Promise&lt;Object>} res 登录结果，格式形如：{
             code: 0,   //状态码，0为成功，其它为失败
             errMsg:'login api failed...',  //详细错误日志，debug用
             toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
@@ -205,19 +284,19 @@ class BaseLogin {
     } catch (e){
       loginRes = {code: -500, errMsg:'internal error'};
       //真机下不支持打印错误栈，导致e打印出来是个空对象；故先单独打印一次e.message
-      console.error('[login failed] uncaught error:',e && e.message, e); 
+      console.error('[login failed] uncaught error:',e &amp;&amp; e.message, e); 
     }
     
     //触发钩子
-    if (loginRes.code!==0 && loginRes.code!==-200) { //钩子：登录失败
-      this._configOptions.onLoginFailed && await this._configOptions.onLoginFailed.call(options.thisIssuer, loginRes, {failAction: options.failAction})
+    if (loginRes.code!==0 &amp;&amp; loginRes.code!==-200) { //钩子：登录失败
+      this._configOptions.onLoginFailed &amp;&amp; await this._configOptions.onLoginFailed.call(options.thisIssuer, loginRes, {failAction: options.failAction})
     }
-    if (loginRes.code===0 && isNewlyLogin) { //钩子：刚刚登录
-      this._configOptions.onNewlyLogin && await this._configOptions.onNewlyLogin.call(options.thisIssuer);
+    if (loginRes.code===0 &amp;&amp; isNewlyLogin) { //钩子：刚刚登录
+      this._configOptions.onNewlyLogin &amp;&amp; await this._configOptions.onNewlyLogin.call(options.thisIssuer);
     }
     
     //返回结果
-    options.callback && options.callback(loginRes);
+    options.callback &amp;&amp; options.callback(loginRes);
     return loginRes;
   }
 
@@ -230,7 +309,7 @@ class BaseLogin {
     
     //尝试复用本地登录态
     let canUseLocal = !['force', 'forceSilent', 'forceAuth'].includes(options.mode); //是否可复用本地登录态
-    loginRes = canUseLocal && this.checkLogin() ? {code: 0, errMsg: 'ok'} :  loginRes; //本地登录状态
+    loginRes = canUseLocal &amp;&amp; this.checkLogin() ? {code: 0, errMsg: 'ok'} :  loginRes; //本地登录状态
     if (loginRes.code === 0) //当前已登录且模式无特殊要求，按成功返回
       return {code: 0, errMsg: 'ok'};
     
@@ -258,7 +337,7 @@ class BaseLogin {
    * 静默登录
    * 在用户无感知的情况下悄悄完成登录过程
    * @param options
-   * @return {Promise<*>}
+   * @return {Promise&lt;*>}
    * @private
    */
   @mergingStep
@@ -288,7 +367,7 @@ class BaseLogin {
     }
 
     //更新匿名信息（登录成功前使用的临时标识，成功后继续关联）
-    silentRes.anonymousInfo && this._saveAnonymousInfo(silentRes.anonymousInfo);
+    silentRes.anonymousInfo &amp;&amp; this._saveAnonymousInfo(silentRes.anonymousInfo);
     
     //登录失败，返回
     if (!silentRes.succeeded)
@@ -320,14 +399,14 @@ class BaseLogin {
     
     //交互失败（e.g.用户取消登录）
     if (!userAuthRes.succeeded) {
-      this._configOptions.onUserAuthFailed && this._configOptions.onUserAuthFailed.call(options.thisIssuer,{});
+      this._configOptions.onUserAuthFailed &amp;&amp; this._configOptions.onUserAuthFailed.call(options.thisIssuer,{});
       return {code: -100, errMsg: 'user auth failed:' + userAuthRes.errMsg}
     }
     
     //交互成功
     
     //触发钩子：onUserAuthSucceeded
-    this._configOptions.onUserAuthSucceeded && this._configOptions.onUserAuthSucceeded.call(options.thisIssuer);
+    this._configOptions.onUserAuthSucceeded &amp;&amp; this._configOptions.onUserAuthSucceeded.call(options.thisIssuer);
     
     //根据用户提供的信息进行登录
     let authType = userAuthRes.authType;
@@ -344,7 +423,7 @@ class BaseLogin {
     });
 
     //更新匿名信息（登录成功前使用的临时标识，成功后继续关联）
-    authRes.anonymousInfo && this._saveAnonymousInfo(authRes.anonymousInfo);
+    authRes.anonymousInfo &amp;&amp; this._saveAnonymousInfo(authRes.anonymousInfo);
     
     //登录失败，返回
     if (!authRes.succeeded)
@@ -362,7 +441,7 @@ class BaseLogin {
   /**
    * 
    * @param options
-   * @return {Promise<{succeeded: boolean, errMsg: string, authType: string, authData: {}}>} 
+   * @return {Promise&lt;{succeeded: boolean, errMsg: string, authType: string, authData: {}}>} 
    * 交互结果，格式形如： {
       succeeded: true, //是否成功
       errMsg: '', //错误信息，调试用
@@ -411,7 +490,7 @@ class BaseLogin {
   
   /**
    * 支持使用方配置自定义附加步骤，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
-   * @return {Promise<*>}
+   * @return {Promise&lt;*>}
    */
   async _handleAddOn(){
     if (!this._configOptions.loginStepAddOn)
@@ -522,4 +601,171 @@ function requireConfig(target) {
   }
 }
 
-export default BaseLogin;
+export default BaseLogin;</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Tue Nov 12th 2019
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
