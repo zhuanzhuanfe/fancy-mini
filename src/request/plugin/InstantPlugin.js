@@ -1,6 +1,6 @@
 import BasePlugin from "./BasePlugin";
 
-export default class InstantPlugin extends BasePlugin{
+class InstantPlugin extends BasePlugin{
   hooks = {};
   
   constructor(options){
@@ -28,3 +28,5 @@ export default class InstantPlugin extends BasePlugin{
     return this.hooks.afterRequestAsync && this.hooks.afterRequestAsync.apply(this, args);
   }
 }
+
+export default InstantPlugin;

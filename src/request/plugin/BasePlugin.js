@@ -1,4 +1,4 @@
-export default class BasePlugin {
+class BasePlugin {
   pluginName = ''; //插件名称，主要用于打印日志和调试，便于追溯操作源
   requester = null;
 
@@ -112,3 +112,5 @@ export default class BasePlugin {
    */
   afterRequestAsync({reqOptions, thisIssuer, reqRes}){};
 }
+
+export default BasePlugin;

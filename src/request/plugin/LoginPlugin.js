@@ -1,7 +1,7 @@
 import BasePlugin from "./BasePlugin";
 import {makeAssignableMethod} from '../../operationKit';
 
-export default class LoginPlugin extends BasePlugin{
+class LoginPlugin extends BasePlugin{
   loginCenter = null;
   apiAuthFailChecker = null;
   
@@ -73,3 +73,5 @@ export default class LoginPlugin extends BasePlugin{
     }
   }
 }
+
+export default LoginPlugin;

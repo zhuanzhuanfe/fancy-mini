@@ -1,7 +1,7 @@
 /**
  * 事件中心，用于跨组件/跨页面事件通信
  */
-export default class EventHub {
+class EventHub {
   _validEvents = []; //事件列表
   _listeners = []; //监听列表
 
@@ -61,3 +61,5 @@ export default class EventHub {
     this._listeners = this._listeners.filter(listener=>!(listener.limitCount>0 && listener.limitCount<=listener.triggerCount));
   }
 }
+
+export default EventHub;

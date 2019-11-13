@@ -6,7 +6,7 @@
  * 
  * 注：目前仅支持基础的取值赋值操作，domain、path、expires等各种配置选项暂未支持，会予以忽略
  */
-export default class Cookie {
+class Cookie {
   _cookieStorage = ''; //cookie相关信息存储到storage时使用的key
   _cookieStr = ''; //当前cookie列表，格式：'key1=value1;key2=value2'
 
@@ -144,5 +144,7 @@ export default class Cookie {
     return Cookie.cookieObjToStr(cookieObj);
   }
 }
+
+export default Cookie;
 
 

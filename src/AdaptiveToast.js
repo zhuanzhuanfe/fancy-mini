@@ -1,6 +1,6 @@
 import {delay, deepAssign} from './operationKit';
 
-class Toast {
+class AdaptiveToast {
   _options = {
     icons: {
       success: '/images/tipsucc.png',
@@ -107,4 +107,4 @@ class Toast {
   }
 }
 
-export default Toast;
+export default AdaptiveToast;

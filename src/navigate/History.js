@@ -4,7 +4,7 @@ import {deepClone} from '../operationKit';
  * 历史记录
  * 由于小程序只支持最多5级页面，但需求上希望维护更长的历史栈，故自行维护完整历史记录
  */
-export default class History {
+class History {
   _routes = []; //历史栈
   _correctLevel = 1; //自行维护的逻辑历史栈与系统实际历史栈的前若干项应当始终保持一致
 
@@ -174,3 +174,5 @@ function resetRoute(route={}) {
   route.tainted = false;
   return route;
 }
+
+export default History;

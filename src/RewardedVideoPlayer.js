@@ -17,7 +17,7 @@ import {ctxDependConsole as debugConsole} from './debugKit';
         }
  * 更多用法详见各函数注释
  */
-export default class RewardedVideoPlayer {
+class RewardedVideoPlayer {
   _adUnitId = ''; //广告位id
   
   _rewardedVideo = null; //原生视频实例
@@ -192,3 +192,5 @@ export default class RewardedVideoPlayer {
     this._playStateValue = newState;
   }
 }
+
+export default RewardedVideoPlayer;

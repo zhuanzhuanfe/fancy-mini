@@ -1,6 +1,6 @@
 import BasePlugin from './BasePlugin';
 
-export default class FailRecoverPlugin extends BasePlugin{
+class FailRecoverPlugin extends BasePlugin{
   requestFailRecoverer = null;
   
   constructor({pluginName, requestFailRecoverer}){
@@ -34,3 +34,5 @@ export default class FailRecoverPlugin extends BasePlugin{
     }
   }
 }
+
+export default FailRecoverPlugin;

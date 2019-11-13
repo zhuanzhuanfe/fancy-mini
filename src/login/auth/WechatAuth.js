@@ -1,7 +1,7 @@
 import BaseAuth from './BaseAuth';
 import {wxPromise, wxResolve} from '../../wxPromise';
 
-export default class WechatAuth extends BaseAuth{
+class WechatAuth extends BaseAuth{
   async silentLogin({loginOptions, configOptions}){
     let wxLoginRes = await this.wxLogin();
     return this.loginByWxSilent({wxLoginRes, loginOptions, configOptions});
@@ -49,3 +49,5 @@ export default class WechatAuth extends BaseAuth{
     }
   }
 }
+
+export default WechatAuth;

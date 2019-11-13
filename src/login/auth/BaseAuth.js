@@ -1,4 +1,4 @@
-export default class BaseAuth {
+class BaseAuth {
   /**
    * 静默登录
    * 可以在用户无感知的情况下后台悄悄完成的登录过程
@@ -46,3 +46,5 @@ export default class BaseAuth {
     }
   }
 }
+
+export default BaseAuth;

@@ -1,7 +1,7 @@
 import BasePlugin from './BasePlugin';
 import Cookie from '../../Cookie';
 
-export default class CookiePlugin extends BasePlugin{
+class CookiePlugin extends BasePlugin{
   cookie = null; //cookie管理器，类型：Cookie对象实例
   
   constructor({pluginName, cookie}){
@@ -34,3 +34,5 @@ export default class CookiePlugin extends BasePlugin{
       this.cookie.setCookie(setStr);
   }
 }
+
+export default CookiePlugin;

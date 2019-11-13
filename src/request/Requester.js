@@ -12,7 +12,7 @@ import {makeAssignableMethod} from '../operationKit';
 /**
  * 请求管理器，负责对接口请求进行各种封装处理
  */
-export default class Requester{
+class Requester{
   _underlayRequest = null; //底层网络api，功能格式同wx.request
   _plugins = []; //插件列表
 
@@ -271,3 +271,5 @@ export default class Requester{
     })
   }
 }
+
+export default Requester;

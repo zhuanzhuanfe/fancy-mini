@@ -1,6 +1,6 @@
 import BasePlugin from './BasePlugin';
 
-export default class FormPlugin extends BasePlugin{
+class FormPlugin extends BasePlugin{
   defaultContentType = '';
   
   constructor({pluginName, defaultContentType}={}){
@@ -25,3 +25,5 @@ export default class FormPlugin extends BasePlugin{
     }
   }
 }
+
+export default FormPlugin;

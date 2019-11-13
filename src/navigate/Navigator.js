@@ -25,7 +25,7 @@ wx.getSystemInfo({
  * 由于小程序只支持最多5级页面（后放宽至10级），但需求上希望维护更长的历史栈，故自行维护完整历史栈并改写默认导航操作
  * 使用：详见 docs/无限层级路由方案.md
  */
-export default class Navigator {
+class Navigator {
   static _config = {
     enableCurtain: true, //是否开启空白中转策略
     curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
@@ -350,3 +350,5 @@ export default class Navigator {
     //否则，页面保持刷新状态，暂不提供默认恢复机制
   }
 }
+
+export default Navigator;
