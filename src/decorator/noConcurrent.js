@@ -1,7 +1,13 @@
 /**
+ * 修饰器，实现各种免并发处理
+ * @module
+ */
+
+/**
  * 免并发修饰器，在上一次操作结果返回之前，不响应重复操作
  * e.g.
  * 用户连续多次点击同一个提交按钮，希望只响应一次，而不是同时提交多份表单
+ * @function
  */
 export const noConcurrent = makeNoConcurrent({mode: 'discard'});
 
@@ -12,6 +18,7 @@ export const noConcurrent = makeNoConcurrent({mode: 'discard'});
  * 页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C
  * 未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次
  * 使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次
+ * @function
  */
 export const mergingStep = makeNoConcurrent({mode: 'merge'});
 
@@ -21,6 +28,7 @@ export const mergingStep = makeNoConcurrent({mode: 'merge'});
  * 页面中多处同时调用弹窗函数
  * 未使用本修饰器时，执行时序：弹窗1、弹窗2、弹窗3同时展现，用户同时看到多个弹窗堆在一起and/or弹窗相互覆盖
  * 使用本修饰器时，执行时序：弹窗1展现、等待交互、用户关闭 => 弹窗2展现、等待交互、用户关闭 => 弹窗3展现、等待交互、用户关闭，弹窗函数依次顺序执行
+ * @function
  */
 export const singleAisle  = makeNoConcurrent({mode: 'wait'});
 
@@ -50,15 +58,17 @@ export function makeNoConcurrent({mode, discardRes}) {
  *     wait - 等待模式，依次顺序执行，场景示例：页面中多处同时调用弹窗函数，一次只展示一个弹窗，用户关闭后再展示第二个，依次顺序展示
  * @param {*} discardRes （丢弃模式）被丢弃时函数返回结果
  * 
- * 使用示例：
+ * @example
  * import {makeMutex} from 'fancy-mini/lib/decorators';
+ * 
  * let globalStore = {};
+ * 
  * class Navigator {
-      @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
-      static async navigateTo(route){...}
-
-      @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
-      static async navigateToMiniProgram(route){...}
+ *    @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+ *    static async navigateTo(route){...}
+ *
+ *    @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+ *    static async navigateToMiniProgram(route){...}
  * }
  */
 export function makeMutex({namespace, mutexId, mode, discardRes}) {

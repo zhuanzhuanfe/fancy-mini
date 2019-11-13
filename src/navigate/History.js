@@ -140,6 +140,7 @@ class History {
 
 /**
  * 将路径和参数拼成完整url
+ * @ignore
  * @param path  路径
  * @param options 参数
  * @return {string} url
@@ -157,6 +158,7 @@ function fullUrl(path='', options={}) {
 
 /**
  * 判断两个url是否为同一个页面的实例
+ * @ignore
  * @param url1
  * @param url2
  * @return {boolean}
@@ -167,6 +169,7 @@ function isSamePage(url1='', url2='') {
 
 /**
  * 重置路由对象
+ * @ignore
  * @param route
  */
 function resetRoute(route={}) {

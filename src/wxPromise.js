@@ -1,4 +1,9 @@
 /**
+ * 将微信原生api封装为Promise形式使用
+ * @module
+ */
+
+/**
  * 小程序API的Promise封装，用法与wx一致，只是返回结果为Promise形式
  * 示例：
  async func(){

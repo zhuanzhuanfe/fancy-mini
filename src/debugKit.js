@@ -1,3 +1,8 @@
+/**
+ * @module
+ * @ignore
+ */
+
 const debug = false; //调试开关， todo:根据运行模式/其它条件自动判断是否开启调试
 
 /**

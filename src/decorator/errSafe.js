@@ -1,4 +1,9 @@
 /**
+ * 修饰器，实现各种错误处理
+ * @module 
+ */
+
+/**
  * 捕获async函数中的异常，并进行错误提示
  * 函数正常结束时应 return 'ok'，return其它文案时将toast指定文案，无返回值或产生异常时将toast默认文案
  * @param {string} defaultMsg  默认文案

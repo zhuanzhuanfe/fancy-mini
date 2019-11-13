@@ -497,6 +497,7 @@ class BaseLogin {
 
 /**
  * 类修饰器，确保调用API时已完成项目信息配置
+ * @ignore
  * @param target
  */
 function requireConfig(target) {

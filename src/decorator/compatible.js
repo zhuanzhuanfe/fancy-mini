@@ -1,4 +1,9 @@
 /**
+ * 修饰器，实现各种兼容用法
+ * @module
+ */
+
+/**
  * 提供微信api形式的回调
  * 主要适用场景：将微信api改写为promise形式后，兼容旧代码
  * 被修饰函数应该返回一个promise，成功时resolve，失败时reject，或返回{succeeded: true/false, ...}格式，通过succeeded字段标识成功失败
