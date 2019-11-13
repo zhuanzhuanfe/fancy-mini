@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>fancy-mini Source: routeParams.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">fancy-mini</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="BaseLogin.html">BaseLogin</a></li><li><a href="module.exports.html">module.exports</a></li><li><a href="RouteParams.html">RouteParams</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="tutorial-adaptiveToast.html">不受长度限制、不受层级约束的原生toast</a></li><li><a href="tutorial-navigate.html">无限层级路由方案</a></li><li><a href="tutorial-wxPromise.html">Promise化的小程序API</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#afterRequest">afterRequest</a></li><li><a href="global.html#afterRequestAsync">afterRequestAsync</a></li><li><a href="global.html#appendUrlParam">appendUrlParam</a></li><li><a href="global.html#authLogin">authLogin</a></li><li><a href="global.html#back">back</a></li><li><a href="global.html#beforeAuthLogin">beforeAuthLogin</a></li><li><a href="global.html#beforeRequest">beforeRequest</a></li><li><a href="global.html#beforeRequestAsync">beforeRequestAsync</a></li><li><a href="global.html#compareVersion">compareVersion</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#cookieObjToStr">cookieObjToStr</a></li><li><a href="global.html#cookieStrToObj">cookieStrToObj</a></li><li><a href="global.html#correctLevel">correctLevel</a></li><li><a href="global.html#ctxDependConsole">ctxDependConsole</a></li><li><a href="global.html#curRoute">curRoute</a></li><li><a href="global.html#customWxPromisify">customWxPromisify</a></li><li><a href="global.html#dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li><li><a href="global.html#deepAssign">deepAssign</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deepEqual">deepEqual</a></li><li><a href="global.html#delay">delay</a></li><li><a href="global.html#doCorrection">doCorrection</a></li><li><a href="global.html#errSafe">errSafe</a></li><li><a href="global.html#fullUrl">fullUrl</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getCookie">getCookie</a></li><li><a href="global.html#handlePageChange">handlePageChange</a></li><li><a href="global.html#history">history</a></li><li><a href="global.html#isNonEmptyObject">isNonEmptyObject</a></li><li><a href="global.html#isNonNullObject">isNonNullObject</a></li><li><a href="global.html#isSamePage">isSamePage</a></li><li><a href="global.html#length">length</a></li><li><a href="global.html#listeners">listeners</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeAssignableMethod">makeAssignableMethod</a></li><li><a href="global.html#makeMutex">makeMutex</a></li><li><a href="global.html#makeNoConcurrent">makeNoConcurrent</a></li><li><a href="global.html#mergeCookieStr">mergeCookieStr</a></li><li><a href="global.html#mergingStep">mergingStep</a></li><li><a href="global.html#mount">mount</a></li><li><a href="global.html#navigateBack">navigateBack</a></li><li><a href="global.html#navigateTo">navigateTo</a></li><li><a href="global.html#NavRefine">NavRefine</a></li><li><a href="global.html#noConcurrent">noConcurrent</a></li><li><a href="global.html#notify">notify</a></li><li><a href="global.html#onLoadStateChange">onLoadStateChange</a></li><li><a href="global.html#onPageUnload">onPageUnload</a></li><li><a href="global.html#open">open</a></li><li><a href="global.html#padStart">padStart</a></li><li><a href="global.html#pageRestoreHandler">pageRestoreHandler</a></li><li><a href="global.html#parseInlineStyle">parseInlineStyle</a></li><li><a href="global.html#peerAssign">peerAssign</a></li><li><a href="global.html#play">play</a></li><li><a href="global.html#queryRect">queryRect</a></li><li><a href="global.html#redirectTo">redirectTo</a></li><li><a href="global.html#registerPageHook">registerPageHook</a></li><li><a href="global.html#registerToThis">registerToThis</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#requestWithLogin">requestWithLogin</a></li><li><a href="global.html#requireConfig">requireConfig</a></li><li><a href="global.html#resetRoute">resetRoute</a></li><li><a href="global.html#routes">routes</a></li><li><a href="global.html#savePage">savePage</a></li><li><a href="global.html#semanticRemainTime">semanticRemainTime</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#silentLogin">silentLogin</a></li><li><a href="global.html#singleAisle">singleAisle</a></li><li><a href="global.html#subscribe">subscribe</a></li><li><a href="global.html#supportWXCallback">supportWXCallback</a></li><li><a href="global.html#toAbsolutePath">toAbsolutePath</a></li><li><a href="global.html#toInlineStyle">toInlineStyle</a></li><li><a href="global.html#withErrToast">withErrToast</a></li><li><a href="global.html#wxLogin">wxLogin</a></li><li><a href="global.html#wxPromise">wxPromise</a></li><li><a href="global.html#wxResolve">wxResolve</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: routeParams.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript ">import {deepEqual} from './operationKit';
+/**
+ * 用于页面间传递参数
+ * 场景一：
+ *    后一页面返回数据给前一页面，如：A页面-点击“选择地址”-地址页-选择完毕返回A页面，此时需将选择结果传给A页面
+ * 场景二：
+ *    前一页面传递参数给后一页面，一般直接在url中加参数即可，但若数据复杂，亦可考虑使用此数据对象进行传递
+ * 利用ES6导出的是符号连接特性，不同页面引入的是同一实例，A页面对数据进行操作，B页面即时生效，因而可当作全局数据对象使用
+ * 相比于使用storage传参，此方式为内存操作，即时性更强，效率更高
+ * 相比于直接调用前一页面的指定成员方法，此方式更通用，页面间耦合性更低
+ */
+class RouteParams
+{
+  _backFromRoute = '';  //后一页面（backFrom）路由
+  _backFromData = '';   //后一页面传递给前一页面的数据
+  _backFromHistoryStack = []; //后一页面路由栈，用于校验层级关系，避免backFrom数据未及时清理，对其它页面造成持续干扰
+
+  _openFromRoute = '';  //前一页面（openFrom）路由
+  _openFromData = '';   //前一页面传递给后一页面的数据
+  _openFromHistoryStack = []; //前一页面路由栈，用于校验层级关系，避免openFrom数据未及时清理，对其它页面造成持续干扰
+
+  static _getHistorySnapShot(history=getCurrentPages()){
+    return history.map(page=>page.route||page.__route__);
+  }
+
+  /**
+   * 后一页面向前一页面传递数据
+   * @param {*} data  数据内容
+   */
+  setBackFromData(data){
+    let history = getCurrentPages();
+    let curPage = history[history.length-1];
+    this._backFromRoute = curPage.route || curPage.__route__;
+    this._backFromData = data;
+    this._backFromHistoryStack = RouteParams._getHistorySnapShot(history);
+  }
+
+  /**
+   * 返回前一页面时，获取后一页面的页面路径
+   * @return {string} 后一页面页面路径
+   */
+  getBackFromRoute(){
+    let curStack = RouteParams._getHistorySnapShot();
+    if (!(curStack.length===this._backFromHistoryStack.length-1 &amp;&amp; deepEqual(curStack, this._backFromHistoryStack.slice(0,-1)))) //路由栈不匹配，说明此为n久前其它页面遗留数据，应予以清理
+      this.clearBackFrom();
+
+    return this._backFromRoute;
+  }
+  /**
+   * 返回前一页面时，获取后一页面传递过来的数据
+   * @return {string} 后一页面传递过来的数据
+   */
+  getBackFromData(){
+    let curStack = RouteParams._getHistorySnapShot();
+    if (!(curStack.length===this._backFromHistoryStack.length-1 &amp;&amp; deepEqual(curStack, this._backFromHistoryStack.slice(0,-1)))) //路由栈不匹配，说明此为n久前其它页面遗留数据，应予以清理
+      this.clearBackFrom();
+
+    return this._backFromData;
+  }
+  /**
+   * 清除后一页面向前一页面的传递内容
+   */
+  clearBackFrom(){
+    this._backFromRoute = '';
+    this._backFromData = '';
+  }
+
+  /**
+   * 前一页面向后一页面传递数据
+   * @param {*} data  数据内容
+   */
+  setOpenFromData(data){
+    let history = getCurrentPages();
+    let curPage = history[history.length-1];
+    this._openFromRoute = curPage.route || curPage.__route__;
+    this._openFromData = data;
+    this._openFromHistoryStack = RouteParams._getHistorySnapShot(history);
+  }
+  /**
+   * 进到后一页面时，获取前一页面的页面路径
+   * @return {string} 前一页面页面路径
+   */
+  getOpenFromRoute(){
+    let curStack = RouteParams._getHistorySnapShot();
+    let hisMatch = (curStack.length===this._openFromHistoryStack.length+1 &amp;&amp; deepEqual(curStack.slice(0,-1), this._openFromHistoryStack)) ||         //navigateTo
+      (curStack.length===this._openFromHistoryStack.length &amp;&amp; deepEqual(curStack.slice(0,-1), this._openFromHistoryStack.slice(0,-1)));  //redirectTo
+    if (!hisMatch) //路由栈不匹配，说明此为n久前其它页面遗留数据，应予以清理
+      this.clearOpenFrom();
+
+    return this._openFromRoute;
+  }
+  /**
+   * 进到后一页面时，获取前一页面传递过来的数据
+   * @return {string} 前一页面传递过来的数据
+   */
+  getOpenFromData(){
+    let curStack = RouteParams._getHistorySnapShot();
+    let hisMatch = (curStack.length===this._openFromHistoryStack.length+1 &amp;&amp; deepEqual(curStack.slice(0,-1), this._openFromHistoryStack)) ||         //navigateTo
+      (curStack.length===this._openFromHistoryStack.length &amp;&amp; deepEqual(curStack.slice(0,-1), this._openFromHistoryStack.slice(0,-1)));  //redirectTo
+    if (!hisMatch) //路由栈不匹配，说明此为n久前其它页面遗留数据，应予以清理
+      this.clearOpenFrom();
+
+    return this._openFromData;
+  }
+  /**
+   * 清除前一页面向后一页面的传递内容
+   */
+  clearOpenFrom(){
+    this._openFromRoute = '';
+    this._openFromData = '';
+  }
+}
+
+export default new RouteParams();
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on Wed Nov 13th 2019
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

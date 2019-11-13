@@ -7,10 +7,11 @@
   },
   "opts": {
     "encoding": "utf8",               
-    "destination": "./docs/api/",          
+    "destination": "./docs/",          
     "recurse": true,
     "template": "./node_modules/ink-docstrap/template",
-    "readme": "./README.md"
+    "readme": "./README.md",
+    "tutorials": "./docs-src/"
   },
   "tags": {
     "allowUnknownTags": true

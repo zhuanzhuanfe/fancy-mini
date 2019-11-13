@@ -1,0 +1,12 @@
+{
+  "navigate" : {
+    "title" : "无限层级路由方案",
+    "children" : {}
+  },
+  "wxPromise" : {
+    "title" : "Promise化的小程序API"
+  },
+  "adaptiveToast" : {
+    "title" : "不受长度限制、不受层级约束的原生toast"
+  }
+}
