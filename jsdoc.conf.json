@@ -19,7 +19,7 @@
   "plugins": ["plugins/markdown"],
   "templates": {
     "logoFile": "",
-    "cleverLinks": true,
+    "cleverLinks": false,
     "monospaceLinks": false,
     "dateFormat": "ddd MMM Do YYYY",
     "outputSourceFiles": true,
@@ -38,5 +38,26 @@
   "markdown": {
     "parser": "gfm",
     "hardwrap": true
+  },
+  "docdash": {
+    "sectionOrder": [
+      "Tutorials",
+      "Classes",
+      "Modules",
+      "Externals",
+      "Events",
+      "Namespaces",
+      "Mixins",
+      "Interfaces"
+    ],
+    "search": true,
+    "menu": {              
+      "GitHub repo": {
+        "href":"https://github.com/zhuanzhuanfe/fancy-mini",
+        "target":"_blank",
+        "class":"menu-item",
+        "id":"website_link"
+      }
+    }
   }
 } 
