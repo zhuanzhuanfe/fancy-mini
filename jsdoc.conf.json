@@ -9,7 +9,7 @@
     "encoding": "utf8",               
     "destination": "./docs/",          
     "recurse": true,
-    "template": "./node_modules/ink-docstrap/template",
+    "template": "./node_modules/docdash",
     "readme": "./README.md",
     "tutorials": "./docs-src/"
   },
