@@ -1,12 +1,71 @@
 {
-  "navigate" : {
-    "title" : "无限层级路由方案",
-    "children" : {}
+  "0-getStarted" : {
+    "title" : "setup"
   },
-  "wxPromise" : {
-    "title" : "Promise化的小程序API"
+  "1-demoProject" : {
+    "title" : "demo"
   },
-  "adaptiveToast" : {
-    "title" : "不受长度限制、不受层级约束的原生toast"
+  "2.1-login" : {
+    "title" : "[基础能力] 健壮高效的登录方案"
+  },
+  "2.2-navigate" : {
+    "title" : "[基础能力] 无限层级路由方案"
+  },
+  "2.3-request" : {
+    "title" : "[基础能力] 灵活易扩展的请求方案"
+  },
+  "2.4-cookie" : {
+    "title" : "[基础能力] cookie机制"
+  },
+  "2.5-canvasKit" : {
+    "title" : "[基础能力] canvas工具集"
+  },
+  "2.6-wxPromise" : {
+    "title" : "[基础能力] 微信接口Promise化"
+  },
+  "2.7-routeParams" : {
+    "title" : "[基础能力] 跨页面传参"
+  },
+  "2.8-eventHub" : {
+    "title" : "[基础能力] 跨页面事件"
+  },
+  "2.9-customEntry" : {
+    "title" : "[基础能力] 入口构造工具"
+  },
+  "2.a-qrTest" : {
+    "title" : "[基础能力] 二维码测试工具"
+  },
+  "2.b-rewardedVideoPlayer" : {
+    "title" : "[基础能力] 激励视频播放器"
+  },
+  
+  "3.1-adaptiveToast" : {
+    "title" : "[疑难杂症] toast截断问题"
+  },
+  "3.2-textArea" : {
+    "title" : "[疑难杂症] textarea遮盖浮层问题"
+  },
+
+  "4.1-dialogCommon" : {
+    "title" : "[组件库] 通用弹窗"
+  },
+  "4.2-operationGuide" : {
+    "title" : "[组件库] 新手引导"
+  },
+  
+  "5.1-noConcurrent" : {
+    "title" : "[工具库] 免并发修饰器"
+  },
+  "5.2-errSafe" : {
+    "title" : "[工具库] 异常捕获修饰器"
+  },
+  "5.3-compatible" : {
+    "title" : "[工具库] 快捷兼容修饰器"
+  },
+  "5.4-wepyKit" : {
+    "title" : "[工具库] wepy框架工具集"
+  },
+  "5.5-operationKit" : {
+    "title" : "[工具库] 基础操作工具集"
   }
 }

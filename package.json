@@ -12,7 +12,7 @@
     "compile": "babel -d lib/ src/ --copy-files",
     "dev": "npm run compile -- --watch --compact false --no-minified",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "jsdoc -c jsdoc.conf.json",
+    "doc": "jsdoc -c jsdoc.conf.json && node ./scripts/docPatch.js",
     "prepublishOnly": "npm run compile && npm run doc",
     "previewDev": "npm run compile && npm link"
   },

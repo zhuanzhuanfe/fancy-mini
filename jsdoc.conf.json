@@ -40,6 +40,8 @@
     "hardwrap": true
   },
   "docdash": {
+    "static": true,
+    "sort": true,
     "sectionOrder": [
       "Tutorials",
       "Classes",
@@ -50,7 +52,11 @@
       "Mixins",
       "Interfaces"
     ],
-    "search": true,
+    "search" : true,
+    "collapse" : false,
+    "wrap" : true,
+    "typedefs" : true,
+    "navLevel" : 5,
     "menu": {              
       "GitHub repo": {
         "href":"https://github.com/zhuanzhuanfe/fancy-mini",
