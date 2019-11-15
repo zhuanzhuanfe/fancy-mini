@@ -1,90 +1,55 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width">
-	<title>fancy-mini Source: decorator/errSafe.js</title>
-
-	<!--[if lt IE 9]>
-	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-	<![endif]-->
-	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
-
-	<link type="text/css" rel="stylesheet" href="styles/site.cosmo.css">
-
+    
+    <meta charset="utf-8">
+    <title>decorator/errSafe.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-
 <body>
 
-<div class="navbar navbar-default navbar-fixed-top navbar-inverse">
-<div class="container">
-	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">fancy-mini</a>
-		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-        </button>
-	</div>
-	<div class="navbar-collapse collapse" id="topNavigation">
-		<ul class="nav navbar-nav">
-			
-			<li class="dropdown">
-				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="BaseLogin.html">BaseLogin</a></li><li><a href="module.exports.html">module.exports</a></li><li><a href="RouteParams.html">RouteParams</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="tutorial-adaptiveToast.html">不受长度限制、不受层级约束的原生toast</a></li><li><a href="tutorial-navigate.html">无限层级路由方案</a></li><li><a href="tutorial-wxPromise.html">Promise化的小程序API</a></li>
-				</ul>
-			</li>
-			
-			<li class="dropdown">
-				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
-				<ul class="dropdown-menu ">
-					<li><a href="global.html#afterRequest">afterRequest</a></li><li><a href="global.html#afterRequestAsync">afterRequestAsync</a></li><li><a href="global.html#appendUrlParam">appendUrlParam</a></li><li><a href="global.html#authLogin">authLogin</a></li><li><a href="global.html#back">back</a></li><li><a href="global.html#beforeAuthLogin">beforeAuthLogin</a></li><li><a href="global.html#beforeRequest">beforeRequest</a></li><li><a href="global.html#beforeRequestAsync">beforeRequestAsync</a></li><li><a href="global.html#compareVersion">compareVersion</a></li><li><a href="global.html#config">config</a></li><li><a href="global.html#cookieObjToStr">cookieObjToStr</a></li><li><a href="global.html#cookieStrToObj">cookieStrToObj</a></li><li><a href="global.html#correctLevel">correctLevel</a></li><li><a href="global.html#ctxDependConsole">ctxDependConsole</a></li><li><a href="global.html#curRoute">curRoute</a></li><li><a href="global.html#customWxPromisify">customWxPromisify</a></li><li><a href="global.html#dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li><li><a href="global.html#deepAssign">deepAssign</a></li><li><a href="global.html#deepClone">deepClone</a></li><li><a href="global.html#deepEqual">deepEqual</a></li><li><a href="global.html#delay">delay</a></li><li><a href="global.html#doCorrection">doCorrection</a></li><li><a href="global.html#errSafe">errSafe</a></li><li><a href="global.html#fullUrl">fullUrl</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getCookie">getCookie</a></li><li><a href="global.html#handlePageChange">handlePageChange</a></li><li><a href="global.html#history">history</a></li><li><a href="global.html#isNonEmptyObject">isNonEmptyObject</a></li><li><a href="global.html#isNonNullObject">isNonNullObject</a></li><li><a href="global.html#isSamePage">isSamePage</a></li><li><a href="global.html#length">length</a></li><li><a href="global.html#listeners">listeners</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#loadState">loadState</a></li><li><a href="global.html#makeAssignableMethod">makeAssignableMethod</a></li><li><a href="global.html#makeMutex">makeMutex</a></li><li><a href="global.html#makeNoConcurrent">makeNoConcurrent</a></li><li><a href="global.html#mergeCookieStr">mergeCookieStr</a></li><li><a href="global.html#mergingStep">mergingStep</a></li><li><a href="global.html#mount">mount</a></li><li><a href="global.html#navigateBack">navigateBack</a></li><li><a href="global.html#navigateTo">navigateTo</a></li><li><a href="global.html#NavRefine">NavRefine</a></li><li><a href="global.html#noConcurrent">noConcurrent</a></li><li><a href="global.html#notify">notify</a></li><li><a href="global.html#onLoadStateChange">onLoadStateChange</a></li><li><a href="global.html#onPageUnload">onPageUnload</a></li><li><a href="global.html#open">open</a></li><li><a href="global.html#padStart">padStart</a></li><li><a href="global.html#pageRestoreHandler">pageRestoreHandler</a></li><li><a href="global.html#parseInlineStyle">parseInlineStyle</a></li><li><a href="global.html#peerAssign">peerAssign</a></li><li><a href="global.html#play">play</a></li><li><a href="global.html#queryRect">queryRect</a></li><li><a href="global.html#redirectTo">redirectTo</a></li><li><a href="global.html#registerPageHook">registerPageHook</a></li><li><a href="global.html#registerToThis">registerToThis</a></li><li><a href="global.html#replace">replace</a></li><li><a href="global.html#request">request</a></li><li><a href="global.html#requestWithLogin">requestWithLogin</a></li><li><a href="global.html#requireConfig">requireConfig</a></li><li><a href="global.html#resetRoute">resetRoute</a></li><li><a href="global.html#routes">routes</a></li><li><a href="global.html#savePage">savePage</a></li><li><a href="global.html#semanticRemainTime">semanticRemainTime</a></li><li><a href="global.html#set">set</a></li><li><a href="global.html#setCookie">setCookie</a></li><li><a href="global.html#silentLogin">silentLogin</a></li><li><a href="global.html#singleAisle">singleAisle</a></li><li><a href="global.html#subscribe">subscribe</a></li><li><a href="global.html#supportWXCallback">supportWXCallback</a></li><li><a href="global.html#toAbsolutePath">toAbsolutePath</a></li><li><a href="global.html#toInlineStyle">toInlineStyle</a></li><li><a href="global.html#withErrToast">withErrToast</a></li><li><a href="global.html#wxLogin">wxLogin</a></li><li><a href="global.html#wxPromise">wxPromise</a></li><li><a href="global.html#wxResolve">wxResolve</a></li>
-				</ul>
-			</li>
-			
-		</ul>
-        
-            <div class="col-sm-3 col-md-3">
-                <form class="navbar-form" role="search">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                        <div class="input-group-btn">
-                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        
-	</div>
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
 
-</div>
-</div>
+<label for="nav-trigger" class="overlay"></label>
 
-
-<div class="container" id="toc-content">
-<div class="row">
-
-	
-	<div class="col-md-12">
-	
-		<div id="main">
-			
-
-		<h1 class="page-title">Source: decorator/errSafe.js</h1>
+<nav class="wrap">
     
-<section>
-    <article>
-        <pre
-            class="sunlight-highlight-javascript ">/**
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/zhuanzhuanfe/fancy-mini" target="_blank" class="menu-item" id="website_link" >GitHub repo</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-0-getStarted.html">setup</a></li><li><a href="tutorial-1-demoProject.html">demo</a></li><li><a href="tutorial-2.1-login.html">[基础能力] 健壮高效的登录机制</a></li><li><a href="tutorial-2.2-navigate.html">[基础能力] 无限层级的路由机制</a></li><li><a href="tutorial-2.3-request.html">[基础能力] 灵活易扩展的请求管理</a></li><li><a href="tutorial-2.4-cookie.html">[基础能力] cookie机制</a></li><li><a href="tutorial-2.5-canvasKit.html">[基础能力] canvas工具集</a></li><li><a href="tutorial-2.6-wxPromise.html">[基础能力] 微信接口Promise化</a></li><li><a href="tutorial-2.7-routeParams.html">[基础能力] 跨页面传参</a></li><li><a href="tutorial-2.8-eventHub.html">[基础能力] 跨页面事件</a></li><li><a href="tutorial-2.9-customEntry.html">[基础能力] 入口构造工具</a></li><li><a href="tutorial-2.a-qrTest.html">[基础能力] 二维码测试工具</a></li><li><a href="tutorial-2.b-rewardedVideoPlayer.html">[基础能力] 激励视频播放器</a></li><li><a href="tutorial-3.1-adaptiveToast.html">[疑难杂症] toast截断问题</a></li><li><a href="tutorial-3.2-textArea.html">[疑难杂症] textarea遮盖浮层问题</a></li><li><a href="tutorial-4.1-dialogCommon.html">[组件库] 通用弹窗</a></li><li><a href="tutorial-4.2-operationGuide.html">[组件库] 新手引导</a></li><li><a href="tutorial-5.1-noConcurrent.html">[工具库] 免并发修饰器</a></li><li><a href="tutorial-5.2-errSafe.html">[工具库] 异常捕获修饰器</a></li><li><a href="tutorial-5.3-compatible.html">[工具库] 快捷兼容修饰器</a></li><li><a href="tutorial-5.4-wepyKit.html">[工具库] wepy框架工具集</a></li><li><a href="tutorial-5.5-operationKit.html">[工具库] 基础操作工具集</a></li></ul><h3>Classes</h3><ul><li><a href="BaseAuth.html">BaseAuth</a><ul class='methods'><li data-type='method'><a href="BaseAuth.html#authLogin">authLogin</a></li><li data-type='method'><a href="BaseAuth.html#beforeAuthLogin">beforeAuthLogin</a></li><li data-type='method'><a href="BaseAuth.html#silentLogin">silentLogin</a></li></ul></li><li><a href="BaseLogin.html">BaseLogin</a><ul class='methods'><li data-type='method'><a href="BaseLogin.html#_appendConfig">_appendConfig</a></li><li data-type='method'><a href="BaseLogin.html#_handleAddOn">_handleAddOn</a></li><li data-type='method'><a href="BaseLogin.html#_handleUserAuth">_handleUserAuth</a></li><li data-type='method'><a href="BaseLogin.html#_init">_init</a></li><li data-type='method'><a href="BaseLogin.html#checkLogin">checkLogin</a></li><li data-type='method'><a href="BaseLogin.html#clearLogin">clearLogin</a></li><li data-type='method'><a href="BaseLogin.html#config">config</a></li><li data-type='method'><a href="BaseLogin.html#login">login</a></li><li data-type='method'><a href="BaseLogin.html#logout">logout</a></li><li data-type='method'><a href="BaseLogin.html#makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="BaseLogin.html#reLogin">reLogin</a></li></ul></li><li><a href="Cookie.html">Cookie</a><ul class='methods'><li data-type='method'><a href="Cookie.html#.cookieObjToStr">cookieObjToStr</a></li><li data-type='method'><a href="Cookie.html#.cookieStrToObj">cookieStrToObj</a></li><li data-type='method'><a href="Cookie.html#.mergeCookieStr">mergeCookieStr</a></li><li data-type='method'><a href="Cookie.html#get">get</a></li><li data-type='method'><a href="Cookie.html#getCookie">getCookie</a></li><li data-type='method'><a href="Cookie.html#set">set</a></li><li data-type='method'><a href="Cookie.html#setCookie">setCookie</a></li></ul></li><li><a href="EventHub.html">EventHub</a><ul class='methods'><li data-type='method'><a href="EventHub.html#notify">notify</a></li><li data-type='method'><a href="EventHub.html#subscribe">subscribe</a></li></ul></li><li><a href="History.html">History</a><ul class='methods'><li data-type='method'><a href="History.html#back">back</a></li><li data-type='method'><a href="History.html#doCorrection">doCorrection</a></li><li data-type='method'><a href="History.html#open">open</a></li><li data-type='method'><a href="History.html#replace">replace</a></li><li data-type='method'><a href="History.html#savePage">savePage</a></li></ul></li><li><a href="LoginPlugin.html">LoginPlugin</a><ul class='methods'><li data-type='method'><a href="LoginPlugin.html#requestWithLogin">requestWithLogin</a></li></ul></li><li><a href="Navigator.html">Navigator</a><ul class='members'><li data-type='member'><a href="Navigator.html#.history">history</a></li></ul><ul class='methods'><li data-type='method'><a href="Navigator.html#.config">config</a></li><li data-type='method'><a href="Navigator.html#.navigateBack">navigateBack</a></li><li data-type='method'><a href="Navigator.html#.navigateTo">navigateTo</a></li><li data-type='method'><a href="Navigator.html#.onPageUnload">onPageUnload</a></li><li data-type='method'><a href="Navigator.html#.redirectTo">redirectTo</a></li></ul></li><li><a href="Requester.html">Requester</a><ul class='methods'><li data-type='method'><a href="Requester.html#makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="Requester.html#registerToThis">registerToThis</a></li><li data-type='method'><a href="Requester.html#request">request</a></li></ul></li><li><a href="RewardedVideoPlayer.html">RewardedVideoPlayer</a><ul class='methods'><li data-type='method'><a href="RewardedVideoPlayer.html#handlePageChange">handlePageChange</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#load">load</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#onLoadStateChange">onLoadStateChange</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#play">play</a></li></ul></li><li><a href="RouteParams.html">RouteParams</a><ul class='methods'><li data-type='method'><a href="RouteParams.html#clearBackFrom">clearBackFrom</a></li><li data-type='method'><a href="RouteParams.html#clearOpenFrom">clearOpenFrom</a></li><li data-type='method'><a href="RouteParams.html#getBackFromData">getBackFromData</a></li><li data-type='method'><a href="RouteParams.html#getBackFromRoute">getBackFromRoute</a></li><li data-type='method'><a href="RouteParams.html#getOpenFromData">getOpenFromData</a></li><li data-type='method'><a href="RouteParams.html#getOpenFromRoute">getOpenFromRoute</a></li><li data-type='method'><a href="RouteParams.html#setBackFromData">setBackFromData</a></li><li data-type='method'><a href="RouteParams.html#setOpenFromData">setOpenFromData</a></li></ul></li><li><a href="WechatAuth.html">WechatAuth</a><ul class='methods'><li data-type='method'><a href="WechatAuth.html#wxLogin">wxLogin</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-canvasKit.html">canvasKit</a><ul class='methods'><li data-type='method'><a href="module-canvasKit.html#.aspectFill">aspectFill</a></li><li data-type='method'><a href="module-canvasKit.html#.borderRadius">borderRadius</a></li><li data-type='method'><a href="module-canvasKit.html#.ellipsisStr">ellipsisStr</a></li><li data-type='method'><a href="module-canvasKit.html#.fillText">fillText</a></li><li data-type='method'><a href="module-canvasKit.html#.rounded">rounded</a></li><li data-type='method'><a href="module-canvasKit.html#.strLenGraphic">strLenGraphic</a></li></ul></li><li><a href="module-decorator_compatible.html">decorator/compatible</a><ul class='methods'><li data-type='method'><a href="module-decorator_compatible.html#.supportWXCallback">supportWXCallback</a></li></ul></li><li><a href="module-decorator_errSafe.html">decorator/errSafe</a><ul class='methods'><li data-type='method'><a href="module-decorator_errSafe.html#.errSafe">errSafe</a></li><li data-type='method'><a href="module-decorator_errSafe.html#.withErrToast">withErrToast</a></li></ul></li><li><a href="module-decorator_noConcurrent.html">decorator/noConcurrent</a><ul class='methods'><li data-type='method'><a href="module-decorator_noConcurrent.html#.makeMutex">makeMutex</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.makeNoConcurrent">makeNoConcurrent</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.mergingStep">mergingStep</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.noConcurrent">noConcurrent</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.singleAisle">singleAisle</a></li></ul></li><li><a href="module-decorators.html">decorators</a></li><li><a href="module-operationKit.html">operationKit</a><ul class='methods'><li data-type='method'><a href="module-operationKit.html#.appendUrlParam">appendUrlParam</a></li><li data-type='method'><a href="module-operationKit.html#.compareVersion">compareVersion</a></li><li data-type='method'><a href="module-operationKit.html#.deepAssign">deepAssign</a></li><li data-type='method'><a href="module-operationKit.html#.deepClone">deepClone</a></li><li data-type='method'><a href="module-operationKit.html#.deepEqual">deepEqual</a></li><li data-type='method'><a href="module-operationKit.html#.delay">delay</a></li><li data-type='method'><a href="module-operationKit.html#.isNonEmptyObject">isNonEmptyObject</a></li><li data-type='method'><a href="module-operationKit.html#.isNonNullObject">isNonNullObject</a></li><li data-type='method'><a href="module-operationKit.html#.makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="module-operationKit.html#.padStart">padStart</a></li><li data-type='method'><a href="module-operationKit.html#.parseInlineStyle">parseInlineStyle</a></li><li data-type='method'><a href="module-operationKit.html#.peerAssign">peerAssign</a></li><li data-type='method'><a href="module-operationKit.html#.queryRect">queryRect</a></li><li data-type='method'><a href="module-operationKit.html#.semanticRemainTime">semanticRemainTime</a></li><li data-type='method'><a href="module-operationKit.html#.toAbsolutePath">toAbsolutePath</a></li><li data-type='method'><a href="module-operationKit.html#.toInlineStyle">toInlineStyle</a></li></ul></li><li><a href="module-wepyKit.html">wepyKit</a><ul class='members'><li data-type='member'><a href="module-wepyKit.html#.NavRefine">NavRefine</a></li></ul><ul class='methods'><li data-type='method'><a href="module-wepyKit.html#.pageRestoreHandler">pageRestoreHandler</a></li><li data-type='method'><a href="module-wepyKit.html#.registerPageHook">registerPageHook</a></li><li data-type='method'><a href="module-wepyKit.html#.registerToThis">registerToThis</a></li><li data-type='method'><a href="module-wepyKit.html#~dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li></ul></li><li><a href="module-wxPromise.html">wxPromise</a><ul class='members'><li data-type='member'><a href="module-wxPromise.html#.wxPromise">wxPromise</a></li><li data-type='member'><a href="module-wxPromise.html#.wxResolve">wxResolve</a></li></ul><ul class='methods'><li data-type='method'><a href="module-wxPromise.html#.customWxPromisify">customWxPromisify</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#ReqRes">ReqRes</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">decorator/errSafe.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 修饰器，实现各种错误处理
+ * @module 
+ */
+
+/**
  * 捕获async函数中的异常，并进行错误提示
  * 函数正常结束时应 return 'ok'，return其它文案时将toast指定文案，无返回值或产生异常时将toast默认文案
  * @param {string} defaultMsg  默认文案
@@ -138,170 +103,29 @@ export function errSafe(target, funcName, descriptor) {
     }
   }
 }
-</pre>
-    </article>
-</section>
+</code></pre>
+        </article>
+    </section>
 
 
 
 
-
-		</div>
-	</div>
-
-	<div class="clearfix"></div>
-
-	
-
-</div>
+    
+    
 </div>
 
-
-    <div class="modal fade" id="searchResults">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Search results</h4>
-          </div>
-          <div class="modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div>
-
+<br class="clear">
 
 <footer>
-
-
-<span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
-	
-		on Wed Nov 13th 2019
-	
-	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
-</span>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Nov 15 2019 17:02:51 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
-<script src="scripts/docstrap.lib.js"></script>
-<script src="scripts/toc.js"></script>
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
 
-    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+<script src="scripts/search.js" defer></script>
 
-
-<script>
-$( function () {
-	$( "[id*='$']" ).each( function () {
-		var $this = $( this );
-
-		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
-	} );
-
-	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
-		var $this = $( this );
-
-		var example = $this.find( "code" );
-		exampleText = example.html();
-		var lang = /{@lang (.*?)}/.exec( exampleText );
-		if ( lang && lang[1] ) {
-			exampleText = exampleText.replace( lang[0], "" );
-			example.html( exampleText );
-			lang = lang[1];
-		} else {
-			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
-			lang = langClassMatch ? langClassMatch[1] : "javascript";
-		}
-
-		if ( lang ) {
-
-			$this
-			.addClass( "sunlight-highlight-" + lang )
-			.addClass( "linenums" )
-			.html( example.html() );
-
-		}
-	} );
-
-	Sunlight.highlightAll( {
-		lineNumbers : false,
-		showMenu : true,
-		enableDoclinks : true
-	} );
-
-	$.catchAnchorLinks( {
-        navbarOffset: 10
-	} );
-	$( "#toc" ).toc( {
-		anchorName  : function ( i, heading, prefix ) {
-			return $( heading ).attr( "id" ) || ( prefix + i );
-		},
-		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
-		showAndHide : false,
-		smoothScrolling: true
-	} );
-
-	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
-	$( '.dropdown-toggle' ).dropdown();
-
-    $( "table" ).each( function () {
-      var $this = $( this );
-      $this.addClass('table');
-    } );
-
-} );
-</script>
-
-
-
-<!--Navigation and Symbol Display-->
-
-<script>
-	$( function () {
-		$( '#main' ).localScroll( {
-			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
-		} );
-		$( "dt.name" ).each( function () {
-			var $this = $( this ).find("h4");
-			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
-			var dt = $(this);
-			var children = dt.next( "dd" );
-
-			dt.prepend( icon ).css( {cursor : "pointer"} );
-			dt.addClass( "member-collapsed" ).addClass( "member" );
-
-
-			children.hide();
-
-			dt.children().on( "click", function () {
-				children = dt.next( "dd" );
-				children.slideToggle( "fast", function () {
-
-					if ( children.is( ":visible" ) ) {
-						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
-						dt.addClass( "member-open" ).animate( "member-collapsed" );
-					} else {
-						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
-						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
-					}
-				} );
-			} );
-
-		} );
-	} );
-</script>
-
-
-<!--Google Analytics-->
-
-
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            SearcherDisplay.init();
-        });
-    </script>
 
 
 </body>

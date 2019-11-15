@@ -11,29 +11,13 @@
     "recurse": true,
     "template": "./node_modules/docdash",
     "readme": "./README.md",
-    "tutorials": "./docs-src/"
+    "tutorials": "./docs-src/tutorials/"
   },
   "tags": {
     "allowUnknownTags": true
   },
   "plugins": ["plugins/markdown"],
   "templates": {
-    "logoFile": "",
-    "cleverLinks": false,
-    "monospaceLinks": false,
-    "dateFormat": "ddd MMM Do YYYY",
-    "outputSourceFiles": true,
-    "outputSourcePath": true,
-    "systemName": "fancy-mini",
-    "footer": "",
-    "copyright": "",
-    "navType": "vertical",
-    "theme": "cosmo",
-    "linenums": false,
-    "collapseSymbols": true,
-    "inverseNav": true,
-    "protocol": "html://",
-    "methodHeadingReturns": false
   },
   "markdown": {
     "parser": "gfm",

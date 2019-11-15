@@ -1,6 +1,10 @@
 import BaseAuth from './BaseAuth';
 import {wxPromise, wxResolve} from '../../wxPromise';
 
+/**
+ * 微信登录鉴权模块
+ * 使用微信登录时，负责根据微信加密数据解析对应登录结果
+ */
 class WechatAuth extends BaseAuth{
   async silentLogin({loginOptions, configOptions}){
     let wxLoginRes = await this.wxLogin();

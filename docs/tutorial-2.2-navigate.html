@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Tutorial: [基础能力] 无限层级的路由机制 - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav class="wrap">
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/zhuanzhuanfe/fancy-mini" target="_blank" class="menu-item" id="website_link" >GitHub repo</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-0-getStarted.html">setup</a></li><li><a href="tutorial-1-demoProject.html">demo</a></li><li><a href="tutorial-2.1-login.html">[基础能力] 健壮高效的登录机制</a></li><li><a href="tutorial-2.2-navigate.html">[基础能力] 无限层级的路由机制</a></li><li><a href="tutorial-2.3-request.html">[基础能力] 灵活易扩展的请求管理</a></li><li><a href="tutorial-2.4-cookie.html">[基础能力] cookie机制</a></li><li><a href="tutorial-2.5-canvasKit.html">[基础能力] canvas工具集</a></li><li><a href="tutorial-2.6-wxPromise.html">[基础能力] 微信接口Promise化</a></li><li><a href="tutorial-2.7-routeParams.html">[基础能力] 跨页面传参</a></li><li><a href="tutorial-2.8-eventHub.html">[基础能力] 跨页面事件</a></li><li><a href="tutorial-2.9-customEntry.html">[基础能力] 入口构造工具</a></li><li><a href="tutorial-2.a-qrTest.html">[基础能力] 二维码测试工具</a></li><li><a href="tutorial-2.b-rewardedVideoPlayer.html">[基础能力] 激励视频播放器</a></li><li><a href="tutorial-3.1-adaptiveToast.html">[疑难杂症] toast截断问题</a></li><li><a href="tutorial-3.2-textArea.html">[疑难杂症] textarea遮盖浮层问题</a></li><li><a href="tutorial-4.1-dialogCommon.html">[组件库] 通用弹窗</a></li><li><a href="tutorial-4.2-operationGuide.html">[组件库] 新手引导</a></li><li><a href="tutorial-5.1-noConcurrent.html">[工具库] 免并发修饰器</a></li><li><a href="tutorial-5.2-errSafe.html">[工具库] 异常捕获修饰器</a></li><li><a href="tutorial-5.3-compatible.html">[工具库] 快捷兼容修饰器</a></li><li><a href="tutorial-5.4-wepyKit.html">[工具库] wepy框架工具集</a></li><li><a href="tutorial-5.5-operationKit.html">[工具库] 基础操作工具集</a></li></ul><h3>Classes</h3><ul><li><a href="BaseAuth.html">BaseAuth</a><ul class='methods'><li data-type='method'><a href="BaseAuth.html#authLogin">authLogin</a></li><li data-type='method'><a href="BaseAuth.html#beforeAuthLogin">beforeAuthLogin</a></li><li data-type='method'><a href="BaseAuth.html#silentLogin">silentLogin</a></li></ul></li><li><a href="BaseLogin.html">BaseLogin</a><ul class='methods'><li data-type='method'><a href="BaseLogin.html#_appendConfig">_appendConfig</a></li><li data-type='method'><a href="BaseLogin.html#_handleAddOn">_handleAddOn</a></li><li data-type='method'><a href="BaseLogin.html#_handleUserAuth">_handleUserAuth</a></li><li data-type='method'><a href="BaseLogin.html#_init">_init</a></li><li data-type='method'><a href="BaseLogin.html#checkLogin">checkLogin</a></li><li data-type='method'><a href="BaseLogin.html#clearLogin">clearLogin</a></li><li data-type='method'><a href="BaseLogin.html#config">config</a></li><li data-type='method'><a href="BaseLogin.html#login">login</a></li><li data-type='method'><a href="BaseLogin.html#logout">logout</a></li><li data-type='method'><a href="BaseLogin.html#makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="BaseLogin.html#reLogin">reLogin</a></li></ul></li><li><a href="Cookie.html">Cookie</a><ul class='methods'><li data-type='method'><a href="Cookie.html#.cookieObjToStr">cookieObjToStr</a></li><li data-type='method'><a href="Cookie.html#.cookieStrToObj">cookieStrToObj</a></li><li data-type='method'><a href="Cookie.html#.mergeCookieStr">mergeCookieStr</a></li><li data-type='method'><a href="Cookie.html#get">get</a></li><li data-type='method'><a href="Cookie.html#getCookie">getCookie</a></li><li data-type='method'><a href="Cookie.html#set">set</a></li><li data-type='method'><a href="Cookie.html#setCookie">setCookie</a></li></ul></li><li><a href="EventHub.html">EventHub</a><ul class='methods'><li data-type='method'><a href="EventHub.html#notify">notify</a></li><li data-type='method'><a href="EventHub.html#subscribe">subscribe</a></li></ul></li><li><a href="History.html">History</a><ul class='methods'><li data-type='method'><a href="History.html#back">back</a></li><li data-type='method'><a href="History.html#doCorrection">doCorrection</a></li><li data-type='method'><a href="History.html#open">open</a></li><li data-type='method'><a href="History.html#replace">replace</a></li><li data-type='method'><a href="History.html#savePage">savePage</a></li></ul></li><li><a href="LoginPlugin.html">LoginPlugin</a><ul class='methods'><li data-type='method'><a href="LoginPlugin.html#requestWithLogin">requestWithLogin</a></li></ul></li><li><a href="Navigator.html">Navigator</a><ul class='members'><li data-type='member'><a href="Navigator.html#.history">history</a></li></ul><ul class='methods'><li data-type='method'><a href="Navigator.html#.config">config</a></li><li data-type='method'><a href="Navigator.html#.navigateBack">navigateBack</a></li><li data-type='method'><a href="Navigator.html#.navigateTo">navigateTo</a></li><li data-type='method'><a href="Navigator.html#.onPageUnload">onPageUnload</a></li><li data-type='method'><a href="Navigator.html#.redirectTo">redirectTo</a></li></ul></li><li><a href="Requester.html">Requester</a><ul class='methods'><li data-type='method'><a href="Requester.html#makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="Requester.html#registerToThis">registerToThis</a></li><li data-type='method'><a href="Requester.html#request">request</a></li></ul></li><li><a href="RewardedVideoPlayer.html">RewardedVideoPlayer</a><ul class='methods'><li data-type='method'><a href="RewardedVideoPlayer.html#handlePageChange">handlePageChange</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#load">load</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#onLoadStateChange">onLoadStateChange</a></li><li data-type='method'><a href="RewardedVideoPlayer.html#play">play</a></li></ul></li><li><a href="RouteParams.html">RouteParams</a><ul class='methods'><li data-type='method'><a href="RouteParams.html#clearBackFrom">clearBackFrom</a></li><li data-type='method'><a href="RouteParams.html#clearOpenFrom">clearOpenFrom</a></li><li data-type='method'><a href="RouteParams.html#getBackFromData">getBackFromData</a></li><li data-type='method'><a href="RouteParams.html#getBackFromRoute">getBackFromRoute</a></li><li data-type='method'><a href="RouteParams.html#getOpenFromData">getOpenFromData</a></li><li data-type='method'><a href="RouteParams.html#getOpenFromRoute">getOpenFromRoute</a></li><li data-type='method'><a href="RouteParams.html#setBackFromData">setBackFromData</a></li><li data-type='method'><a href="RouteParams.html#setOpenFromData">setOpenFromData</a></li></ul></li><li><a href="WechatAuth.html">WechatAuth</a><ul class='methods'><li data-type='method'><a href="WechatAuth.html#wxLogin">wxLogin</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-canvasKit.html">canvasKit</a><ul class='methods'><li data-type='method'><a href="module-canvasKit.html#.aspectFill">aspectFill</a></li><li data-type='method'><a href="module-canvasKit.html#.borderRadius">borderRadius</a></li><li data-type='method'><a href="module-canvasKit.html#.ellipsisStr">ellipsisStr</a></li><li data-type='method'><a href="module-canvasKit.html#.fillText">fillText</a></li><li data-type='method'><a href="module-canvasKit.html#.rounded">rounded</a></li><li data-type='method'><a href="module-canvasKit.html#.strLenGraphic">strLenGraphic</a></li></ul></li><li><a href="module-decorator_compatible.html">decorator/compatible</a><ul class='methods'><li data-type='method'><a href="module-decorator_compatible.html#.supportWXCallback">supportWXCallback</a></li></ul></li><li><a href="module-decorator_errSafe.html">decorator/errSafe</a><ul class='methods'><li data-type='method'><a href="module-decorator_errSafe.html#.errSafe">errSafe</a></li><li data-type='method'><a href="module-decorator_errSafe.html#.withErrToast">withErrToast</a></li></ul></li><li><a href="module-decorator_noConcurrent.html">decorator/noConcurrent</a><ul class='methods'><li data-type='method'><a href="module-decorator_noConcurrent.html#.makeMutex">makeMutex</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.makeNoConcurrent">makeNoConcurrent</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.mergingStep">mergingStep</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.noConcurrent">noConcurrent</a></li><li data-type='method'><a href="module-decorator_noConcurrent.html#.singleAisle">singleAisle</a></li></ul></li><li><a href="module-decorators.html">decorators</a></li><li><a href="module-operationKit.html">operationKit</a><ul class='methods'><li data-type='method'><a href="module-operationKit.html#.appendUrlParam">appendUrlParam</a></li><li data-type='method'><a href="module-operationKit.html#.compareVersion">compareVersion</a></li><li data-type='method'><a href="module-operationKit.html#.deepAssign">deepAssign</a></li><li data-type='method'><a href="module-operationKit.html#.deepClone">deepClone</a></li><li data-type='method'><a href="module-operationKit.html#.deepEqual">deepEqual</a></li><li data-type='method'><a href="module-operationKit.html#.delay">delay</a></li><li data-type='method'><a href="module-operationKit.html#.isNonEmptyObject">isNonEmptyObject</a></li><li data-type='method'><a href="module-operationKit.html#.isNonNullObject">isNonNullObject</a></li><li data-type='method'><a href="module-operationKit.html#.makeAssignableMethod">makeAssignableMethod</a></li><li data-type='method'><a href="module-operationKit.html#.padStart">padStart</a></li><li data-type='method'><a href="module-operationKit.html#.parseInlineStyle">parseInlineStyle</a></li><li data-type='method'><a href="module-operationKit.html#.peerAssign">peerAssign</a></li><li data-type='method'><a href="module-operationKit.html#.queryRect">queryRect</a></li><li data-type='method'><a href="module-operationKit.html#.semanticRemainTime">semanticRemainTime</a></li><li data-type='method'><a href="module-operationKit.html#.toAbsolutePath">toAbsolutePath</a></li><li data-type='method'><a href="module-operationKit.html#.toInlineStyle">toInlineStyle</a></li></ul></li><li><a href="module-wepyKit.html">wepyKit</a><ul class='members'><li data-type='member'><a href="module-wepyKit.html#.NavRefine">NavRefine</a></li></ul><ul class='methods'><li data-type='method'><a href="module-wepyKit.html#.pageRestoreHandler">pageRestoreHandler</a></li><li data-type='method'><a href="module-wepyKit.html#.registerPageHook">registerPageHook</a></li><li data-type='method'><a href="module-wepyKit.html#.registerToThis">registerToThis</a></li><li data-type='method'><a href="module-wepyKit.html#~dataRestoreWx2Wepy">dataRestoreWx2Wepy</a></li></ul></li><li><a href="module-wxPromise.html">wxPromise</a><ul class='members'><li data-type='member'><a href="module-wxPromise.html#.wxPromise">wxPromise</a></li><li data-type='member'><a href="module-wxPromise.html#.wxResolve">wxResolve</a></li></ul><ul class='methods'><li data-type='method'><a href="module-wxPromise.html#.customWxPromisify">customWxPromisify</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#ReqRes">ReqRes</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tutorial: [基础能力] 无限层级的路由机制</h1>
+    
+
+    <section>
+
+<header>
+    
+
+    <h2>[基础能力] 无限层级的路由机制</h2>
+</header>
+
+<article>
+    <h3>背景</h3>
+<ul>
+<li>
+<p>小程序原生页面存在层级限制，最多只能同时打开5层，超过5层时便会无法打开新页面（注：后来原生层级限制放宽至了10层，代码中已作更新，文档仍以5层为例）</p>
+</li>
+<li>
+<p>业务流程很容易一不小心就超过5层，如：首页-列表页-商品详情-下单页-订单详情页-私信页-...</p>
+</li>
+<li>
+<p>访问回路很容易导致超过5层，如：首页-列表页-商品详情-查看更多-商品详情-查看更多-商品详情-...</p>
+</li>
+<li>
+<p>为避免层级限制导致的无法打开问题和层级限制带来的交互路径限制，提出此路由方案</p>
+</li>
+</ul>
+<h3>策略</h3>
+<ul>
+<li>修改小程序默认导航行为，自行维护完整历史记录</li>
+<li>页面层级小于等于5时，导航行为与原生导航行为一致</li>
+<li>请求打开第6层及以上时，逻辑层级记录完整历史，实际层级每次都是直接将第5层替换为目标页面</li>
+<li>返回时，逻辑层级相应回退；若回退后逻辑层级大于等于5，则实际层级将第5层替换为回退后目标页面，否则实际层级回退到相应页面</li>
+<li>demo:</li>
+</ul>
+<pre class="prettyprint source lang-txt"><code>  逻辑层级 1 - 2 - 3 - 4 - 5
+  实际层级 1 - 2 - 3 - 4 - 5
+  
+  打开
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5 - 6
+  实际层级 1 - 2 - 3 - 4 - 6
+  
+  打开，打开，打开
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8 - 9 
+  实际层级 1 - 2 - 3 - 4 - 9
+  
+  返回
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
+  实际层级 1 - 2 - 3 - 4 - 8
+  
+  返回，返回，返回
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5
+  实际层级 1 - 2 - 3 - 4 - 5
+  
+  返回
+  
+  逻辑层级 1 - 2 - 3 - 4
+  实际层级 1 - 2 - 3 - 4
+</code></pre>
+<h3>补充策略：空白中转</h3>
+<ul>
+<li>从第6层及以上，如第9层返回时，理论上应直接将实际第5层直接替换为逻辑第8层页面，但由于系统返回行为无法取消，所以实际过程为：返回实际第4层-新开逻辑第8层</li>
+<li>这一中转过程会使返回时实际第4层一闪而过，影响用户体验</li>
+<li>为此，引入空白页中转：打开实际第5层时，将实际第4层替换为空白页；直到返回逻辑第4层时才将空白页替换回原始页面。</li>
+<li>demo:</li>
+</ul>
+<pre class="prettyprint source lang-txt"><code>  逻辑层级 1 - 2 - 3 - 4
+  实际层级 1 - 2 - 3 - 4
+  
+  打开
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5
+  实际层级 1 - 2 - 3 - 空白页 - 5
+  
+  打开，打开，打开
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8 - 9
+  实际层级 1 - 2 - 3 - 空白页 - 9
+  
+  返回
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8
+  实际层级 1 - 2 - 3 - 空白页 - 8
+  
+  返回，返回，返回
+  
+  逻辑层级 1 - 2 - 3 - 4 - 5
+  实际层级 1 - 2 - 3 - 空白页 - 5
+  
+  返回
+  
+  逻辑层级 1 - 2 - 3 - 4
+  实际层级 1 - 2 - 3 - 4
+</code></pre>
+<h3>附加功能：实例覆盖自动恢复</h3>
+<ul>
+<li>问题：wepy框架存在单实例问题，同一路径页面被打开两次时，其数据会相互影响，如：详情页A - 详情页B - 返回A，点击查看大图 - B的图片（而不是A的图片）<br>
+详见issue：<a href="https://github.com/Tencent/wepy/issues/322">两级页面为同一路由时，后者数据覆盖前者</a></li>
+<li>策略：返回时，若判断目标页面数据已被覆盖，则自动予以恢复</li>
+<li>引入：可配，参见“安装”小节</li>
+</ul>
+<h3>附加功能： 免并发</h3>
+<ul>
+<li>问题：用户连续快速点击多个/多次按钮时，会一次性打开多个窗口，一则造成层级膨胀，二则影响浏览体验</li>
+<li>策略：第一次点击造成的跳转完成之前无视后续点击产生的跳转请求</li>
+<li>引入：默认支持</li>
+</ul>
+<h3>附加功能：数据预先加载</h3>
+<ul>
+<li>问题：小程序的page1跳转到page2，到page2的onLoad是存在一个300ms ~ 400ms的延时的，在page2的onLoad中开始获取数据会浪费这个延时</li>
+<li>策略：在 page1 中预先拿取数据，然后在 page2 中直接使用数据；wepy框架对此有良好的实现，参见<a href="https://segmentfault.com/a/1190000008975448?winzoom=1">WePY 在小程序性能调优上做出的探究</a></li>
+<li>引入：可配，参见“安装”小节</li>
+</ul>
+<h3>实现细节</h3>
+<p>详见<a href="https://github.com/zhuanzhuanfe/articles/blob/master/wupenghe/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E6%97%A0%E9%99%90%E5%B1%82%E7%BA%A7%E8%B7%AF%E7%94%B1%E6%96%B9%E6%A1%88.md">无限层级路由方案</a></p>
+<p><a id="demo"></a></p>
+<h3>效果</h3>
+<img src="./static/images/fancyQrCode.jpg" width=400>  
+<h3>案例</h3>
+<p>无限层级路由方案已经在诸多小程序中得到了实践检验，其中不乏用户体量大、交互场景复杂的案例。<br>
+使用案例：转转二手交易网（在微信钱包中有固定入口：微信-我-支付-转转二手）、转转欢乐送、天天步数换、垃圾分类查询全能助手等</p>
+<h3>使用 - setup</h3>
+<ol start="0">
+<li><a href="./tutorial-0-getStarted.html">fancy-mini setup</a></li>
+<li>新建空白页面 pages/curtain/curtain</li>
+<li>app.js</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>import './appPlugin'
+</code></pre>
+<ol start="3">
+<li>appPlugin.js</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>import {registerToThis, registerPageHook, pageRestoreHandler, NavRefine} from 'fancy-mini/lib/wepyKit';
+import Navigator from 'fancy-mini/lib/navigate/Navigator';
+import {customWxPromisify} from 'fancy-mini/lib/wxPromise';
+
+//无限层级路由方案
+Navigator.config({
+  enableCurtain: true, //是否开启空白中转策略
+  curtainPage: '/pages/curtain/curtain',  //空白中转页
+
+  enableTaintedRestore: true, //是否开启实例覆盖自动恢复策略
+
+  /**
+   * 自定义页面数据恢复函数，用于
+   * 1. wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时需予以恢复
+   * 2. 层级过深时，新开页面会替换前一页面，导致前一页面数据丢失，返回时需予以恢复
+   */
+  pageRestoreHandler: pageRestoreHandler,
+
+  MAX_LEVEL: 10, //最多同时打开的页面层数
+
+  oriNavOverrides: NavRefine, //自定义覆盖部分/全部底层跳转api，如：此处底层使用wepy定义的路由模块，便于使用wepy提供的prefetch等功能
+});
+registerPageHook('onUnload', Navigator.onPageUnload);
+
+//wx接口Promise化
+let {wxPromise, wxResolve} = (function () {
+  let overrides = {  //覆盖wx的部分接口
+    navigateTo: Navigator.navigateTo,
+    redirectTo: Navigator.redirectTo,
+    navigateBack: Navigator.navigateBack,
+    reLaunch: Navigator.reLaunch,
+    switchTab: Navigator.switchTab,
+  };
+
+  return {
+    wxPromise: customWxPromisify({overrides, dealFail: false}),
+    wxResolve: customWxPromisify({overrides, dealFail: true}),
+  }
+}());
+registerToThis(&quot;$wxPromise&quot;, wxPromise);
+registerToThis(&quot;$wxResolve&quot;, wxResolve);
+
+export { //导出部分api，方便lib文件使用
+  wxPromise,
+  wxResolve,
+}
+
+</code></pre>
+<h3>使用 - 维护</h3>
+<ul>
+<li>所有页面不直接调用wx.navigateTo、wx.redirectTo、wx.navigateBack、wx.switchTab、wx.reLaunch，统一改用this.$wxPromise.navigateTo等对应接口</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>wx.navigateTo({ url: '/pages/index/index'});//错误，无法确保路由过程全部由自定义模块接管
+this.$wxPromise.navigateTo({ url: '/pages/index/index'}); //正确
+</code></pre>
+<ul>
+<li>所有页面跳转由this.$wxPromise相应接口触发，而不使用&lt;navigator&gt;元素</li>
+<li>所有页面若有自定义onUnload函数，需在函数中执行父类相应钩子： super.onUnload &amp;&amp; super.onUnload() （wepyKit中监听页面钩子功能registerPageHook目前需要页面这样手动配合，若能提供更优雅的实现，则可移除此条约束）</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>export default class extends wepy.page {
+	//正确，页面中无onUnload函数，会直接执行父类上的统一钩子
+}
+
+export default class extends wepy.page {
+	onUnload(){//错误，页面中自定义onUnload函数覆盖了统一钩子，影响路由模块监听返回行为
+	
+	}
+}
+
+export default class extends wepy.page {
+	onUnload(){//正确，页面自定义onUnload函数中调用了统一钩子
+		super.onUnload && super.onUnload()
+	}
+}
+</code></pre>
+<h3>注意事项</h3>
+<ul>
+<li>要求所有页面遵循上一小节中的代码规范
+<ul>
+<li>确保路由过程完全由自定义模块接管</li>
+<li>少量未遵循会影响返回逻辑正确性，但一般不会造成页面功能问题</li>
+<li>可使用eslint插件强制规范： <a href="https://www.npmjs.com/package/eslint-plugin-fancy-mini">eslint-plugin-fancy-mini</a></li>
+</ul>
+</li>
+</ul>
+</article>
+
+</section>
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Nov 15 2019 17:02:52 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+
+</body>
+</html>

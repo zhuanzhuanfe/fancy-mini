@@ -1,6 +1,10 @@
 import BasePlugin from "./BasePlugin";
 import {makeAssignableMethod} from '../../operationKit';
 
+/**
+ * 登录插件
+ * 在请求前后植入登录态逻辑
+ */
 class LoginPlugin extends BasePlugin{
   loginCenter = null;
   apiAuthFailChecker = null;

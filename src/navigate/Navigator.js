@@ -36,7 +36,8 @@ class Navigator {
      * 自定义页面数据恢复函数，用于
      * 1. wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时需予以恢复
      * 2. 层级过深时，新开页面会替换前一页面，导致前一页面数据丢失，返回时需予以恢复
-     *
+     * 
+     * @ignore
      * @param {string} route.url 页面url，绝对路径
      * @param {object} route.wxPage  页面卸载前的原生页面实例拷贝
      * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | unloaded - 层级问题导致的数据丢失
