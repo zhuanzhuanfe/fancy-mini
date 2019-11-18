@@ -30,6 +30,7 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "docdash": "^1.1.1"
+    "docdash": "^1.1.1",
+    "jsdoc-escape-at": "^1.0.1"
   }
 }

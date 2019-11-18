@@ -16,7 +16,10 @@
   "tags": {
     "allowUnknownTags": true
   },
-  "plugins": ["plugins/markdown"],
+  "plugins": [
+    "plugins/markdown",
+    "node_modules/jsdoc-escape-at"
+  ],
   "templates": {
   },
   "markdown": {

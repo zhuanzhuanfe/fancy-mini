@@ -11,6 +11,30 @@
  * @param target
  * @param funcName
  * @param descriptor
+ * 
+ * @example
+ * class Demo {
+ *   \@supportWXCallback //自动支持success、fail、complete回调
+ *   async getSystemInfo(){
+ *     let sysInfo = {};//自定义getSystemInfo实现，比如加入一些缓存策略，添加一些额外字段等
+ *     return {
+ *       succeeded: true, //标示应该触发success回调还是fail回调
+ *       ...sysInfo, //返回成功/失败对应数据
+ *     }
+ *   }
+ *   
+ *   test(){
+ *     this.getSystemInfo().then(sysInfo=>{
+ *       //正常以Promise形式使用
+ *     });
+ *     
+ *     this.getSystemInfo({
+ *       success(sysInfo){
+ *         //同时，自动兼容回调形式使用
+ *       }
+ *     })
+ *   }
+ * }
  */
 export function supportWXCallback(target, funcName, descriptor) {
   let oriFunc = descriptor.value;
