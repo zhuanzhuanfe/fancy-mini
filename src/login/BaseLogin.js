@@ -25,7 +25,7 @@ class BaseLogin {
 
   /**
    * 构造函数
-   * @param {object} [configOptions] 配置项，格式参见config函数
+   * @param {object} [configOptions] 配置项，参见{@link BaseLogin#config}
    */
   constructor(configOptions){
     configOptions && this.config(configOptions);
@@ -35,42 +35,20 @@ class BaseLogin {
    * 模块配置
    * @param {Object} configOptions 
    * @param {String} [configOptions.loginInfoStorage] 登录相关信息存储到storage时使用的key
-   * @param {Requester} configOptions.requester 请求管理器，为Requester对象（参见/src/request/Requester）
+   * @param {Requester} configOptions.requester 请求管理器
    * @param {Function} [configOptions.onUserAuthFailed] 钩子函数，获取用户授权信息失败时触发
    * @param {Function} [configOptions.onUserAuthSucceeded] 钩子函数，获取用户授权信息成功时触发
    * @param {Function} [configOptions.onNewlyLogin] 钩子函数，刚刚登录成功时触发（未登录=>已登录）
-   * @param {Function} [configOptions.onLoginFailed] 钩子函数，登录失败时触发
-        入参：
-        参数0：登录结果，格式形如：{
-            code: 0,   //状态码，0为成功，其它为失败
-            errMsg:'login api failed...',  //详细错误日志，debug用
-            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
-         }
-        参数1：选项，格式形如：{
-            failAction: 'auto', //调用方希望的失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它约定值
-        }
-   * @param {Object} configOptions.authEngineMap 鉴权器映射表
-        key为登录方式，value为对应的鉴权器（BaseAuth对象，参见/src/login/auth/BaseAuth）
+   * @param {BaseLogin~OnLoginFailed} [configOptions.onLoginFailed] 钩子函数，登录失败时触发
+   * @param {Object.<string, BaseAuth>} configOptions.authEngineMap 鉴权器映射表
+        key为登录方式，value为对应的鉴权器
         e.g. {
           'wechat' : new WechatAuth(), //微信登录，WechatAuth应继承于BaseAuth
           'phone' : new PhoneAuth(), //手机号登录，PhoneAuth应继承于BaseAuth
         }
    * @param {String} configOptions.defaultAuthType 默认登录方式
-   * @param {Function} configOptions.userAuthHandler 授权交互处理函数（async），负责跟用户交互，收集鉴权所需信息
-        入参：无
-        返回值：形如 {
-          succeeded: true, //是否成功
-          errMsg: '', //错误信息，调试用
-          authType: '', //用户选择的登录方式
-          authData: {}, //交互数据，格式由该登录方式对应的鉴权器指定
-        }
-   * @param {Function} [configOptions.loginStepAddOn] 登录流程自定义附加步骤，为一个async函数，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
-        入参：无
-        处理结果，格式形如：{
-            succeeded: true,   //是否成功
-            errMsg:'login api failed...',  //详细失败原因，debug用
-            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
-         }
+   * @param {BaseLogin~UserAuthHandler} configOptions.userAuthHandler 授权交互处理函数，负责跟用户交互，收集鉴权所需信息
+   * @param {BaseLogin~LoginStepAddOn} [configOptions.loginStepAddOn] 登录流程自定义附加步骤，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
    */
   config(configOptions){
     //参数校验
@@ -159,29 +137,21 @@ class BaseLogin {
   
   /**
    * 登录
+   *   | 登录模式 | common | silent | force | forceSilent | forceAuth |
+   *   | --- | --- | --- | --- | --- | --- |
+   *   | 定位 | 要有登录态 | 有登录态最好，没有就算了 | 要有严格登录态（保证前后端登录态一致且均未过期） | 有严格登录态最好，没有就算了 | 要展示登录界面 |
+   *   | 是否复用已有登录信息 | √ | √ | × | × | × |
+   *   | 是否尝试静默登录 | √ | √ | √ | √ | × |
+   *   | 是否尝试授权登录 | √ | × | √ | × | √ |
+   *   | 适用场景 | 适合大部分页面场景，如收藏、留言等 | 适合悄悄个性化，如首页个性化定制，搜索页个性化推荐等 | 适合重要且不能失败重试的场景，如重要的微信数据解密 | 适合不能失败重试但可以不要的场景，如不重要的微信数据解密 | 适合与登录界面强耦合的场景，如开发登录弹窗、演示登录界面 |
    * @param {Object} [options] 登录选项
    * @param {Function} [options.callback], 兼容起见支持回调，但更建议以Promise方式使用
-   * @param {string} [options.mode] 登录模式
-   *    common - 通用模式，适合大部分页面场景
-   *    silent - 静默模式，适合免打扰场景：只尝试静默登录，不触发授权弹窗；不管成功失败都不影响页面功能和后续接口调用
-   *    force - 强制模式，刷新登录态
-   *    forceSilent - 强制静默登录，对老用户，刷新登录态；对新用户，不触发授权
-   *    forceAuth - 强制授权登录，强制展示授权界面
-   * @param {Function} [options.userAuthHandler] 自定义用户授权交互
+   * @param {string} [options.mode] 登录模式，详见上文函数描述部分
+   * @param {BaseLogin~UserAuthHandler} [options.userAuthHandler] 自定义用户授权交互
    * @param {String} [options.failAction] 失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它-和onLoginFailed钩子函数约定的其它处理方式
    * @param {Object} [options.thisIssuer] 触发登录的组件的this对象，供钩子函数使用
    *
-   * @return {Promise<Object>} res 登录结果，格式形如：{
-            code: 0,   //状态码，0为成功，其它为失败
-            errMsg:'login api failed...',  //详细错误日志，debug用
-            toastMsg: '您的账号存在安全风险，请联系客服进行处理'  //（若有）用户话术，提示失败原因
-         }
-   *   code:
-   *   -100 用户交互失败 e.g.用户拒绝授权等
-   *   -200 静默模式登录失败
-   *   -300 授权登录失败
-   *   -400  附加步骤返回失败结果
-   *   -500 模块内部异常
+   * @return {BaseLogin~LoginRes} 登录结果
    */
   async login(options={}){
     //填充默认值
@@ -257,11 +227,11 @@ class BaseLogin {
   /**
    * 静默登录
    * 在用户无感知的情况下悄悄完成登录过程
-   * @param options
+   * @param options 登录选项
    * @return {Promise<*>}
    * @private
    */
-  @mergingStep
+  @mergingStep //步骤并合，避免页面中多处同时触发登录时重复发起登录请求
   async _silentLogin(options){
     //判断使用的验证方式
     let authType = this._loginInfo.authType;
@@ -302,8 +272,15 @@ class BaseLogin {
       authType,
     });
   }
-  
-  @mergingStep
+
+  /**
+   * 授权登录
+   * 需要用户配合才能完成的登录过程
+   * @param options 登录选项
+   * @return {Promise<*>}
+   * @private
+   */
+  @mergingStep //步骤并合，避免页面中多处同时触发登录时重复发起登录请求
   async _authLogin(options){
     //执行各鉴权器的beforeAuthLogin钩子
     let beforeResMap = {};
@@ -360,15 +337,9 @@ class BaseLogin {
   }
   
   /**
-   * 
-   * @param options
-   * @return {Promise<{succeeded: boolean, errMsg: string, authType: string, authData: {}}>} 
-   * 交互结果，格式形如： {
-      succeeded: true, //是否成功
-      errMsg: '', //错误信息，调试用
-      authType: '', //用户选择的验证方式
-      authData: {}, //交互数据，格式由该验证方式对应的鉴权器指定
-    }
+   * 授权交互处理
+   * @param options 登录选项，参见{@link BaseLogin#login}
+   * @return {BaseLogin~UserAuthRes}
    * @protected
    */
   async _handleUserAuth(options){
@@ -378,6 +349,7 @@ class BaseLogin {
   /**
    * 登录信息获取完毕后续步骤集合
    * @private
+   * @param {BaseLogin~LoginInfo} loginInfo 登录信息
    */
   async _afterFetchInfoPack(loginInfo){
     this._saveInfo(loginInfo);
@@ -390,7 +362,12 @@ class BaseLogin {
     
     return {code: 0, errMsg: 'ok'};
   }
-  
+
+  /**
+   * 保存/更新登录信息
+   * @param {BaseLogin~LoginInfo} loginInfo 登录信息
+   * @protected
+   */
   _saveInfo(loginInfo){
     Object.assign(this._loginInfo, loginInfo);
 
@@ -400,6 +377,11 @@ class BaseLogin {
     });
   }
 
+  /**
+   * 保存/更新匿名信息
+   * @param {object} anonymousInfo 匿名信息
+   * @protected
+   */
   _saveAnonymousInfo(anonymousInfo){
     Object.assign(this._loginInfo.anonymousInfo, anonymousInfo);
     
@@ -411,7 +393,8 @@ class BaseLogin {
   
   /**
    * 支持使用方配置自定义附加步骤，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
-   * @return {Promise<*>}
+   * @return {BaseLogin~LoginStepAddOnRes}
+   * @protected
    */
   async _handleAddOn(){
     if (!this._configOptions.loginStepAddOn)
@@ -434,12 +417,12 @@ class BaseLogin {
    */
   logout({needClearAuth = false}={}){
     this.clearLogin({needClearAuth});
-    return {code: 0};
+    return {code: 0, errMsg:'ok'};
   }
 
   /**
    * 重新登录
-   * @return {Object} 登录结果，格式同login
+   * @return {BaseLogin~LoginRes} 登录结果
    */
   async reLogin(...args){
     await this.logout();
@@ -496,7 +479,7 @@ class BaseLogin {
 }
 
 /**
- * 类修饰器，确保调用API时已完成项目信息配置
+ * 类修饰器，确保调用API时已完成模块配置
  * @ignore
  * @param target
  */
@@ -522,5 +505,84 @@ function requireConfig(target) {
     Object.defineProperty(target.prototype, prop, descriptor);
   }
 }
+
+/**
+ * @typedef {Function} BaseLogin~OnLoginFailed 登录失败钩子函数
+ * @param {BaseLogin~LoginRes} loginRes 登录结果
+ * @param {object} options  选项
+ * @param {string} options.failAction 调用方希望的失败处理方式：auto-自动处理 | none-调用方自行处理 | 其它约定值
+ * @example
+    onLoginFailed(res, {failAction}){
+      switch (failAction) { //调用方希望的失败处理方式
+        case 'auto': //自动处理
+          wx.showToast({
+            title: res.toastMsg || '登录失败',
+            image: '/images/tipfail.png',
+            duration: 3000
+          });
+          break;
+        case 'none': //调用方自行处理
+          break;
+        default:
+          console.error('[onLoginFailed] unknown failAction:', failAction);
+      }
+    }
+ */
+ /**
+ * @typedef {object} BaseLogin~LoginRes 登录结果
+ * @property {number} code 状态码
+  * | code | 语义 |
+  * | --- | --- |
+  * | 0 | 成功 |
+  * | -100 | 用户交互失败 e.g.用户拒绝授权等 |
+  * | -200 | 静默失败，静默登录失败且调用方要求不要尝试授权登录 |
+  * | -300 | 授权登录失败 |
+  * | -400 | 附加步骤返回失败结果 |
+  * | -500 | 模块内部异常 |
+ * @property {string} errMsg 详细错误日志，debug用
+ * @property {string} [toastMsg] （若有）用户话术，提示失败原因
+ * @example
+    {
+      code: -300, //状态码，0为成功
+      errMsg:'login api failed...', //详细错误日志，debug用
+      toastMsg: '您的账号存在安全风险，请联系客服进行处理' //（若有）用户话术，提示失败原因
+    }
+ */
+
+/**
+ * @typedef {Function} BaseLogin~UserAuthHandler 授权交互处理函数，负责跟用户交互，收集鉴权所需信息
+ * @async
+ * @return {BaseLogin~UserAuthRes} 交互结果
+ */
+
+/**
+ * @typedef {object} BaseLogin~UserAuthRes userAuthHandler交互结果
+ * @property {boolean} succeeded 是否成功
+ * @property {string} errMsg 错误信息，调试用
+ * @property {string} authType 用户选择的登录方式
+ * @property {object} authData 交互数据，格式由该登录方式对应的鉴权器指定
+ */
+
+/**
+ * @typedef {Function} BaseLogin~LoginStepAddOn 登录流程自定义附加步骤
+ * @async
+ * @return {BaseLogin~LoginStepAddOnRes}
+ */
+
+/**
+ * @typedef {object} BaseLogin~LoginStepAddOnRes 登录流程自定义附加步骤处理结果
+ * @property {boolean} succeeded 是否成功
+ * @property {string} [errMsg] 详细失败原因，debug用
+ * @property {string} [toastMsg] （若有）用户话术，提示失败原因
+ */
+
+/**
+ * @typedef {object} BaseLogin~LoginInfo 登录信息
+ * @property {boolean} isLogin 是否登录
+ * @property {object} userInfo 用户信息
+ * @property {number} expireTime 过期时间，绝对毫秒数，-1表示长期有效
+ * @property {string} authType 使用的验证方式
+ * @property {object} [anonymousInfo] 匿名信息（登录成功前使用的临时标识，成功后继续关联）
+ */
 
 export default BaseLogin;
