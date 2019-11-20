@@ -21,6 +21,7 @@
     "node_modules/jsdoc-escape-at"
   ],
   "templates": {
+    "cleverLinks": false
   },
   "markdown": {
     "parser": "gfm",

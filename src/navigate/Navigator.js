@@ -23,7 +23,7 @@ wx.getSystemInfo({
 /**
  * 导航器
  * 由于小程序只支持最多5级页面（后放宽至10级），但需求上希望维护更长的历史栈，故自行维护完整历史栈并改写默认导航操作
- * 使用：详见 docs/无限层级路由方案.md
+ * 使用：详见 {@tutorial 2.2-navigate}
  */
 class Navigator {
   static _config = {
@@ -31,21 +31,8 @@ class Navigator {
     curtainPage: '/pages/curtain/curtain',  //空白中转页，避免自定义返回行为时出现原生上一层级内容一闪而过的现象
 
     enableTaintedRestore: true, //是否开启实例覆盖自动恢复策略
-
-    /**
-     * 自定义页面数据恢复函数，用于
-     * 1. wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时需予以恢复
-     * 2. 层级过深时，新开页面会替换前一页面，导致前一页面数据丢失，返回时需予以恢复
-     * 
-     * @ignore
-     * @param {string} route.url 页面url，绝对路径
-     * @param {object} route.wxPage  页面卸载前的原生页面实例拷贝
-     * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | unloaded - 层级问题导致的数据丢失
-     * @return {boolean} res.succeeded  数据恢复是否成功，若成功，则恢复结束；若失败，则模块将继而尝试使用默认恢复策略
-     *
-     * e.g. function({route, context}){return {succeeded: true}}
-     */
-    pageRestoreHandler: null,
+    
+    pageRestoreHandler: null, //页面数据恢复函数
 
     MAX_LEVEL: 10, //小程序支持打开的页面层数
 
@@ -56,7 +43,15 @@ class Navigator {
 
   /**
    * 安装
-   * @param {Object} options 自定义配置，可配置项参见 _config 相关字段及注释
+   * @param {Object} [options] 配置
+   * @param {boolean} [options.enableCurtain] 是否开启空白中转策略
+   * @param {string} [options.curtainPage] （开启空白中转策略时）空白中转页
+   * @param {boolean} [options.enableTaintedRestore] 是否开启实例覆盖自动恢复策略
+   * @param {Navigator~PageRestoreHandler} [options.pageRestoreHandler] 页面数据恢复函数，用于
+   * 1. wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时需予以恢复
+   * 2. 层级过深时，新开页面会替换前一页面，导致前一页面数据丢失，返回时需予以恢复
+   * @param {number} [options.MAX_LEVEL] 小程序支持打开的页面层数
+   * @param {Object.<string, function>} [options.oriNavOverrides] 自定义覆盖部分/全部底层跳转api，默认为： {navigateTo: wx.navigateTo, redirectTo: wx.redirectTo, navigateBack: wx.navigateBack, reLaunch: wx.reLaunch, switchTab: wx.switchTab}
    */
   static config(options={}){
     //自定义配置
@@ -69,7 +64,12 @@ class Navigator {
 
   /**
    * 打开新页面
-   * @param {Object} route 页面配置，格式同wx.navigateTo
+   * @param {Object} route
+   * @param {string} route.url 新页面url
+   * @param {function} [route.success] 兼容起见支持回调，成功时触发
+   * @param {function} [route.fail] 兼容起见支持回调，失败时触发
+   * @param {function} [route.complete] 兼容起见支持回调，成功失败均触发
+   * @return {{succeeded:boolean, errMsg:string}} 跳转结果，格式形如：{succeeded: true, errMsg: 'ok'}
    */
   @supportWXCallback //兼容success、fail、complete回调
   @makeMutex({ //避免跳转相关函数并发执行
@@ -104,7 +104,12 @@ class Navigator {
 
   /**
    * 替换当前页面
-   * @param {Object} route 页面配置，格式同wx.redirectTo
+   * @param {Object} route
+   * @param {string} route.url 新页面url
+   * @param {function} [route.success] 兼容起见支持回调，成功时触发
+   * @param {function} [route.fail] 兼容起见支持回调，失败时触发
+   * @param {function} [route.complete] 兼容起见支持回调，成功失败均触发
+   * @return {{succeeded:boolean, errMsg:string}} 跳转结果，格式形如：{succeeded: true, errMsg: 'ok'}
    */
   @supportWXCallback //兼容success、fail、complete回调
   static async redirectTo(route){
@@ -120,7 +125,12 @@ class Navigator {
 
   /**
    * 返回
-   * @param {Object} opts 返回配置，格式同wx.navigateBack
+   * @param {Object} [opts]
+   * @param {number} [opts.delta] 返回层数
+   * @param {function} [opts.success] 兼容起见支持回调，成功时触发
+   * @param {function} [opts.fail] 兼容起见支持回调，失败时触发
+   * @param {function} [opts.complete] 兼容起见支持回调，成功失败均触发
+   * @return {{succeeded:boolean, errMsg:string}} 返回结果，格式形如：{succeeded: true, errMsg: 'ok'}
    */
   @supportWXCallback //兼容success、fail、complete回调
   static async navigateBack(opts={delta:1}){
@@ -129,6 +139,15 @@ class Navigator {
     return {succeeded: true, errMsg: 'ok'};
   }
 
+  /**
+   * 关闭所有页面，打开到应用内的某个页面
+   * @param {Object} [route]
+   * @param {number} [route.url] 新页面url
+   * @param {function} [route.success] 兼容起见支持回调，成功时触发
+   * @param {function} [route.fail] 兼容起见支持回调，失败时触发
+   * @param {function} [route.complete] 兼容起见支持回调，成功失败均触发
+   * @return {{succeeded:boolean, errMsg:string}} 跳转结果，格式形如：{succeeded: true, errMsg: 'ok'}
+   */
   @supportWXCallback //兼容success、fail、complete回调 
   @makeMutex({ //避免跳转相关函数并发执行
     namespace:globalStore, 
@@ -146,6 +165,15 @@ class Navigator {
     return {succeeded: true, errMsg: 'ok'};
   }
 
+  /**
+   * 跳转到 tabBar 页面，并关闭其他所有非 tabBar 页面
+   * @param {Object} [route]
+   * @param {number} [route.url] 需要跳转的 tabBar 页面的路径
+   * @param {function} [route.success] 兼容起见支持回调，成功时触发
+   * @param {function} [route.fail] 兼容起见支持回调，失败时触发
+   * @param {function} [route.complete] 兼容起见支持回调，成功失败均触发
+   * @return {{succeeded:boolean, errMsg:string}} 跳转结果，格式形如：{succeeded: true, errMsg: 'ok'}
+   */
   @supportWXCallback //兼容success、fail、complete回调
   @makeMutex({ //避免跳转相关函数并发执行
     namespace:globalStore,
@@ -194,7 +222,7 @@ class Navigator {
 
   /**
    * 完整历史记录
-   * @return {Array}
+   * @return {Array<History~Route>}
    */
   static get history(){
     return Navigator._history.routes;
@@ -202,7 +230,8 @@ class Navigator {
 
   /**
    * 返回
-   * @param {Object} opts 返回配置，格式同wx.navigateBack
+   * @param {Object} opts 返回配置
+   * @param {number} opts.delta 返回层数
    * @param {boolean} sysBack， 是否为系统返回： true-点击了物理返回键/左上角返回按钮，触发了系统返回行为；false-接口调用，返回逻辑完全由代码控制
    * @private
    */
@@ -242,10 +271,10 @@ class Navigator {
 
   /**
    * 不考虑历史记录问题，实际进行打开页面操作
-   * @param route 页面参数
-   * @param extraParams 向页面url额外拼接参数
-   * @param retryAfter 若因webview层级错乱原因导致打开失败，则在指定毫秒后重试
-   * @param retryTimeout 重试间隔大于指定毫秒时，判定打开失败，不再重试
+   * @param {History~Route} route 页面参数
+   * @param {object} [extraParams] 向页面url额外拼接参数
+   * @param {number} [retryAfter] 若因webview层级错乱原因导致打开失败，则在指定毫秒后重试
+   * @param {number} [retryTimeout] 重试间隔大于指定毫秒时，判定打开失败，不再重试
    * @private
    */
   static async _secretOpen(route, {retryAfter=NAV_BUSY_REMAIN, retryTimeout=2000, extraParams=null}={}){
@@ -285,8 +314,8 @@ class Navigator {
 
   /**
    * 不考虑历史记录问题，实际进行页面替换操作
-   * @param route
-   * @param extraParams 向页面url额外拼接参数
+   * @param {History~Route} route
+   * @param {object} [extraParams] 向页面url额外拼接参数
    * @private
    */
   static async _secretReplace(route, {extraParams=null}={}){
@@ -299,7 +328,8 @@ class Navigator {
 
   /**
    * 不考虑历史记录问题，实际进行页面返回操作
-   * @param opts
+   * @param {object} [opts]
+   * @param {number} [opts.delta] 返回层数
    * @private
    */
   static async _secretBack(opts={delta:1}){
@@ -313,7 +343,7 @@ class Navigator {
   /**
    * 数据恢复：wepy实例覆盖问题，存在两级同路由页面时，前者数据会被后者覆盖，返回时予以恢复
    * 此时滚动位置等界面状态均正常，恢复数据即可
-   * @param route
+   * @param {History~Route} route
    * @return {Promise<void>}
    * @private
    */
@@ -337,7 +367,7 @@ class Navigator {
   /**
    * 数据恢复：层级过深，新开页面时会替换前一页面，导致前一页面数据丢失，返回时予以恢复
    * 此时页面处于刷新结束状态，表单数据和交互状态均需自行恢复
-   * @param route
+   * @param {History~Route} route
    * @return {Promise<void>}
    * @private
    */
@@ -351,5 +381,30 @@ class Navigator {
     //否则，页面保持刷新状态，暂不提供默认恢复机制
   }
 }
+
+/**
+ * @typedef {Function} Navigator~PageRestoreHandler 页面数据恢复处理函数
+ * @param {History~Route} route 路由对象
+ * @param {string} context  数据丢失场景： tainted - 实例覆盖问题导致的数据丢失 | unloaded - 层级问题导致的数据丢失
+ * @return {{succeeded:boolean}} 数据恢复是否成功，格式形如：{succeeded: true}
+ *@example
+ * function pageRestoreHandler({route, context}){
+ *   //根据route.url或其它信息获取当前页面实例
+ *   //....
+ *   
+ *   //根据route.wxPage从微信原生页面实例拷贝中恢复当前页面实例数据
+ *   switch (context){
+ *     case 'tainted': //实例覆盖问题导致的数据丢失
+ *       //此时滚动位置等界面状态均正常，恢复数据即可
+ *       break;
+ *     case 'unloaded': //层级问题导致的数据丢失
+ *       //此时页面处于刷新结束状态，除了数据，滚动位置等界面状态最好也能一并恢复
+ *       break;
+ *     default:
+ *       console.error('[pageRestoreHandler] unknown context:', context);
+ *   }
+ *   return {succeeded: true}
+ * }
+ */
 
 export default Navigator;
