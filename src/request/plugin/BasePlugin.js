@@ -1,7 +1,23 @@
+/**
+ * 请求管理-插件基类
+ * 用于在网络请求前后添加自定义扩展逻辑，详见{@tutorial 2.3-request}
+ */
 class BasePlugin {
-  pluginName = ''; //插件名称，主要用于打印日志和调试，便于追溯操作源
+  /**
+   * 插件名称，主要用于打印日志和调试，便于追溯操作源
+   * @type {string}
+   */
+  pluginName = '';
+  /**
+   * 请求管理器
+   * @type {Requester}
+   */
   requester = null;
 
+  /**
+   * 构造函数
+   * @param {string} pluginName 插件名称，主要用于打印日志和调试，便于追溯操作源
+   */
   constructor({pluginName}){
     this.pluginName = pluginName || this.pluginName;
     
@@ -11,8 +27,8 @@ class BasePlugin {
   }
   
   /**
-   * 钩子函数，插件被挂载到requester对象上时被调用
-   * @param {Requester} requester 请求管理器
+   * 钩子函数，插件被挂载到requester对象上时触发
+   * @param {Requester} requester 被挂载到的requester对象
    */
   mount({requester}){
     this.requester = requester;
@@ -20,95 +36,41 @@ class BasePlugin {
   
   /**
    * 钩子函数，发请求之前调用，同步
-   * 不会等待异步操作返回，如需等待异步逻辑，请改用beforeRequestAsync
-   * @param {Object} reqOptions  请求参数
-   * @param {*} thisIssuer 发起请求的this对象
-   * @return {undefined | {action: string, errMsg: string}} 期望的后续处理：
-   *    undefined - 默认
-   *    {
-   *      action: '', //后续处理：'cancel'-终止该请求 | 'continue'-继续发送
-   *      errMsg: '', //错误信息，解释拦截原因
-   *    }
-   * 
-   @example
-   beforeRequest({reqOptions, thisIssuer}){
-     return {
-       action: 'continue',
-       errMsg: 'ok',
-     }
-   }
+   * 不会等待异步操作返回，如需等待异步逻辑，请改用{@link BasePlugin#beforeRequestAsync}
+   * @param {Requester~ReqOptions} reqOptions  请求参数
+   * @param {object} thisIssuer 发起接口请求的this对象
+   * @return {undefined | Requester~BeforeRequestRes} 期望的后续处理，undefined表示继续执行默认流程
    */
   beforeRequest({reqOptions, thisIssuer}){};
 
   /**
    * 钩子函数，发请求之前调用，异步
-   * 会等待async函数resolve，若无异步逻辑，建议使用beforeRequest
-   * @param {Object} reqOptions  请求参数
-   * @param {*} thisIssuer 发起请求的this对象
-   * @return {Promise<undefined | {action: 'cancel'|'continue', errMsg: string}>} 期望的后续处理：
-   *    undefined - 默认
-   *    {
-   *      action: '', //后续处理：'cancel'-终止该请求 | 'continue'-继续发送
-   *      errMsg: '', //错误信息，解释拦截原因
-   *    }
-   *
-   @example
-   async beforeRequestAsync({reqOptions, thisIssuer}){
-     return {
-       action: 'continue',
-       errMsg: 'ok',
-     }
-   }
+   * 会等待async函数resolve，若无异步逻辑，建议使用{@link BasePlugin#beforeRequest}
+   * @async
+   * @param {Requester~ReqOptions} reqOptions  请求参数
+   * @param {object} thisIssuer 发起接口请求的this对象
+   * @return {undefined | Requester~BeforeRequestRes} 期望的后续处理，undefined表示继续执行默认流程
    */
   beforeRequestAsync({reqOptions, thisIssuer}){};
 
   /**
    * 钩子函数，请求返回之后调用，同步
-   * 不会等待异步操作返回，如需等待异步逻辑，请改用afterRequestAsync
-   * @param {Object} reqOptions  请求参数
-   * @param {*} thisIssuer 发起请求的this对象
-   * @param {RequestRes} reqRes 请求返回结果，除单独说明字段外，格式同wx.request回调结果
-   * @param {boolean} reqRes.succeeded 请求成功/失败
-   * @return {undefined | {action: string, errMsg: string, overrideRes: RequestRes}} 期望的后续处理：
-   *    undefined - 默认
-   *    {
-   *      action: '', //后续处理：'continue'-继续 | 'override'-覆盖请求结果 | 'retry'-重新发送请求
-   *      overrideRes: {}, //action==='override'时，以该结果覆盖原来的请求结果
-   *      errMsg: '', //错误信息，解释操作原因，便于定位追溯
-   *    }
-   *
-   @example
-   afterRequest({reqOptions, thisIssuer}){
-     return {
-       action: 'continue',
-       errMsg: 'ok',
-     }
-   }
+   * 不会等待异步操作返回，如需等待异步逻辑，请改用{@link BasePlugin#afterRequestAsync}
+   * @param {Requester~ReqOptions} reqOptions  请求参数
+   * @param {object} thisIssuer 发起接口请求的this对象
+   * @param {Requester~ReqRes} reqRes 请求结果
+   * @return {undefined | Requester~AfterRequestRes} 期望的后续处理，undefined表示继续执行默认流程
    */
   afterRequest({reqOptions, thisIssuer, reqRes}){};
   
   /**
    * 钩子函数，请求返回之后调用，异步
-   * 会等待async函数resolve，若无异步逻辑，建议使用afterRequest
-   * @param {Object} reqOptions  请求参数
-   * @param {*} thisIssuer 发起请求的this对象
-   * @param {RequestRes} reqRes 请求返回结果，除单独说明字段外，格式同wx.request回调结果
-   * @param {boolean} reqRes.succeeded 请求成功/失败
-   * @return {Promise<undefined | {action: string, errMsg: string, overrideRes: RequestRes}>} 期望的后续处理：
-   *    undefined - 默认
-   *    {
-   *      action: '', //后续处理：'continue'-继续 | 'override'-覆盖请求结果 | 'retry'-重新发送请求
-   *      overrideRes: {}, //action==='override'时，以该结果覆盖原来的请求结果
-   *      errMsg: '', //错误信息，解释操作原因，便于定位追溯
-   *    }
-   *
-   @example
-   async afterRequestAsync({reqOptions, thisIssuer}){
-     return {
-       action: 'continue',
-       errMsg: 'ok',
-     }
-   }
+   * 会等待async函数resolve，若无异步逻辑，建议使用{@link BasePlugin#afterRequest}
+   * @async
+   * @param {Requester~ReqOptions} reqOptions  请求参数
+   * @param {object} thisIssuer 发起接口请求的this对象
+   * @param {Requester~ReqRes} reqRes 请求结果
+   * @return {undefined | Requester~AfterRequestRes} 期望的后续处理，undefined表示继续执行默认流程
    */
   afterRequestAsync({reqOptions, thisIssuer, reqRes}){};
 }

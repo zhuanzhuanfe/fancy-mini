@@ -2,7 +2,7 @@ import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
 import {mergingStep, errSafe} from '../decorators';
 
 /**
- * 登录模块
+ * 登录模块，详见{@tutorial 2.1-login}
  */
 @requireConfig //确保调用API时已完成模块配置
 class BaseLogin {

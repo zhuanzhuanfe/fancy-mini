@@ -1,9 +1,3 @@
-/**
- * @typedef {Object} WechatAuth~WxLoginRes wx.login执行结果
- * @property {boolean} succeeded 是否成功
- * @property {string} code wx.login接口返回的code
- */
-
 import BaseAuth from './BaseAuth';
 import {wxPromise, wxResolve} from '../../wxPromise';
 
@@ -83,5 +77,11 @@ class WechatAuth extends BaseAuth{
     }
   }
 }
+
+/**
+ * @typedef {Object} WechatAuth~WxLoginRes wx.login执行结果
+ * @property {boolean} succeeded 是否成功
+ * @property {string} code wx.login接口返回的code
+ */
 
 export default WechatAuth;

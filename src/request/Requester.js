@@ -1,16 +1,7 @@
 import {makeAssignableMethod} from '../operationKit';
 
 /**
- * @typedef {Object} ReqRes 接口请求结果
- * @property {boolean} succeeded 请求是否成功（服务器返回即算成功，包括404/500等，网络异常等导致请求未正常返回才算失败）
- * @property {string|Object|Arraybuffer} [data]	开发者服务器返回的数据
- * @property {number} [statusCode] 开发者服务器返回的 HTTP 状态码
- * @property {Object} [header]		开发者服务器返回的 HTTP Response Header
- * @property {string} [errMsg] 错误信息
- */
-
-/**
- * 请求管理器，负责对接口请求进行各种封装处理
+ * 请求管理器，负责对接口请求进行各种封装处理，详见{@tutorial 2.3-request}
  */
 class Requester{
   _underlayRequest = null; //底层网络api，功能格式同wx.request
@@ -18,12 +9,18 @@ class Requester{
 
   /**
    * 构造函数
-   * @param {Object} [configOptions]
+   * @param {Object} [configOptions] 配置参数，参见{@link Requester#config}
    */
   constructor(configOptions){
     configOptions && this.config(configOptions);
   }
-  
+
+  /**
+   * 配置
+   * @param {object} configOptions
+   * @param {function} [configOptions.underlayRequest] 底层网络api，功能格式同[wx.request]{@link https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html}
+   * @param {Array<BasePlugin>} [configOptions.plugins] 插件列表
+   */
   config(configOptions){
     const defaultOpts = {
       underlayRequest: wx.request,
@@ -43,14 +40,26 @@ class Requester{
   }
 
   /**
-   * 发送请求，供外部调用
-   * @public
-   * @param {Object} reqOptions
-   * @param {Object} [manageOptions]
-   * @return {Promise<ReqRes|ReqRes.data>} 成功时返回接口数据，失败时返回完整请求结果
+   * 发送请求
+   * @param {Requester~ReqOptions} reqOptions
+   * @param {Requester~ManageOptions} [manageOptions]
+   * @return {*|Requester~ReqRes} 成功时resolve接口数据，失败时reject完整请求结果
+   * 
+   * @example
+   * let fetchData = requester.request({
+   *   url: ''
+   * });
+   * 
+   * fetchData.then(resp=>{ //成功时，返回结果直接是服务端返回的数据(wx.request success回调中的res.data）
+   *   //resp数据格式，取决于服务端返回内容，和请求header中dataType等字段的设置
+   *   console.log('server data:', resp);
+   * });
+   * fetchData.catch(res=>{ //失败时，返回结果是完整请求结果（wx.request fail回调中的整个res）
+   *   console.log('errMsg:', res.errMsg); 
+   * });
    */
   async request(reqOptions, manageOptions={}){
-    //保存回调（兼容起见支持回调，但更建议直接使用Promise）
+    //保存回调（兼容起见支持回调，但更建议以Promise形式使用）
     let {success, fail, complete} = reqOptions;
     delete reqOptions.success;
     delete reqOptions.fail;
@@ -80,6 +89,7 @@ class Requester{
   /**
    * 在requester对象上注册方法，用于提供便捷调用 
    * e.g.注册requestWithLogin方法便于直接进行需要登录态的接口调用
+   * 要求新注册方法名不得与已有方法名冲突
    * @param {string} methodName 方法名
    * @param {Function} methodFunc 方法函数
    */
@@ -93,11 +103,10 @@ class Requester{
   }
   
   /**
-   * @param reqOptions
-   * @param {Object} manageOptions
-   * @param {boolean} manageOptions.disableRetry
-   * @param {Object} manageOptions.thisIssuer
-   * @return {Promise<ReqRes>}
+   * 发出请求
+   * @param {Requester~ReqOptions} reqOptions 请求参数
+   * @param {Requester~ManageOptions} manageOptions 管理参数
+   * @return {Requester~ReqRes} 请求结果
    * @private
    */
   async _request({reqOptions, manageOptions={}}){
@@ -147,7 +156,14 @@ class Requester{
         return reqRes;
     }
   }
-  
+
+  /**
+   * 处理 请求发起前 的各种扩展逻辑
+   * @param {Requester~ReqOptions} reqOptions 请求参数
+   * @param {Requester~ManageOptions} manageOptions 管理参数
+   * @return {Requester~BeforeRequestRes} 处理结果
+   * @private
+   */
   async _beforeRequest({reqOptions, manageOptions}){
     let finalRes = {action: 'continue'};
 
@@ -178,9 +194,9 @@ class Requester{
 
   /**
    * 调用接口
-   * @param reqOptions
-   * @param manageOptions
-   * @return {Promise<ReqRes>}
+   * @param {Requester~ReqOptions} reqOptions 请求参数
+   * @param {Requester~ManageOptions} manageOptions 管理参数
+   * @return {Requester~ReqRes} 请求结果
    * @private
    */
   async _doRequest({reqOptions, manageOptions}){
@@ -197,7 +213,15 @@ class Requester{
       });
     });
   }
-  
+
+  /**
+   * 处理 请求返回后 的各种扩展逻辑
+   * @param {Requester~ReqOptions} reqOptions 请求参数
+   * @param {Requester~ReqRes} 请求结果
+   * @param {Requester~ManageOptions} manageOptions 管理参数
+   * @return {Requester~AfterRequestRes} 处理结果
+   * @private
+   */
   async _afterRequest({reqOptions, reqRes, manageOptions}){
     let finalRes = {action: 'continue'};
     
@@ -232,7 +256,17 @@ class Requester{
     
     return finalRes;
   }
-  
+
+  /**
+   * 执行插件的钩子函数
+   * @param {BasePlugin} plugin 插件
+   * @param {string} hook 钩子
+   * @param {object} args 传给钩子函数的参数
+   * @param {object} defaultRes 钩子函数默认返回值
+   * @param {Requester~ManageOptions} manageOptions 管理选项
+   * @return {object} 钩子函数最终返回值
+   * @private
+   */
   async _execPluginHook({plugin, hook, args, defaultRes, manageOptions}){
     //补充公共参数
     args = {
@@ -257,8 +291,8 @@ class Requester{
 
   /**
    * 将方法封装为通用函数，使之可以在任意this对象上执行
-   * @param {String} methodName 方法名
-   * @return {Function} 封装后的函数
+   * @param {string} methodName 方法名
+   * @return {function} 封装后的函数
    */
   makeAssignableMethod(methodName){
     return makeAssignableMethod({
@@ -272,4 +306,44 @@ class Requester{
   }
 }
 
+/**
+ * @typedef {object} Requester~ReqOptions 接口请求参数，格式同[wx.request]{@link https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html}
+ * @property {string} url 开发者服务器接口地址
+ * @property {string|object|ArrayBuffer} [data] 请求的参数
+ * @property {object} [header] 设置请求的 header，header 中不能设置 Referer
+ * @property {string} [method='GET'] HTTP 请求方法
+ * @property {string} [dataType='json'] 返回的数据格式
+ * @property {string} [responseType='text'] 响应的数据类型
+ * @property {function} [success] 兼容起见支持回调，但更建议以Promise形式使用
+ * @property {function} [fail] 兼容起见支持回调，但更建议以Promise形式使用
+ * @property {function} [complete] 兼容起见支持回调，但更建议以Promise形式使用
+ */
+
+/**
+ * @typedef {object} Requester~ManageOptions 接口请求管理选项
+ * @property {object} thisIssuer 发起接口请求的this对象
+ * @property {boolean} disableRetry 是否禁止重试（避免无限次重试接口调用导致死循环）
+ */
+
+/**
+ * @typedef {object} Requester~ReqRes 接口请求结果，除标注了“模块补充”的字段外，格式同[wx.request]{@link https://developers.weixin.qq.com/miniprogram/dev/api/network/request/wx.request.html}
+ * @property {boolean} succeeded 模块补充字段，请求是否成功（服务器返回即算成功，包括404/500等，网络异常等导致请求未正常返回才算失败）
+ * @property {string|Object|ArrayBuffer} [data]	（成功时）开发者服务器返回的数据
+ * @property {number} [statusCode] （成功时）开发者服务器返回的 HTTP 状态码
+ * @property {Object} [header]	（成功时）开发者服务器返回的 HTTP Response Header
+ * @property {string} [errMsg] （失败时）错误信息
+ */
+
+/**
+ * @typedef {object} Requester~BeforeRequestRes 请求发起前的各种扩展逻辑处理结果
+ * @property {string} action 期望的后续处理：'cancel'-终止该请求 | 'continue'-继续发送
+ * @property {string} errMsg 错误信息
+ * @property {BasePlugin} plugin 决定该处理方式的插件（该字段会自动添加，插件钩子函数中无需返回）
+ */
+
+/**
+ * @typedef {object} Requester~AfterRequestRes 请求返回后的各种扩展逻辑处理结果
+ * @property {string} action 期望的后续处理：'continue'-继续 | 'override'-以指定内容作为请求结果返回 | 'retry'-重新发送请求，并以重试结果作为本次请求结果返回
+ * @property {Requester~ReqRes} [overrideRes] action==='override'时，作为请求结果的指定内容
+ */
 export default Requester;
