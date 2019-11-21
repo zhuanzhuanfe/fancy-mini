@@ -1,5 +1,5 @@
 /**
- * 事件中心，用于跨组件/跨页面事件通信
+ * 事件中心，用于跨组件/跨页面事件通信，详见 {@tutorial 2.8-eventHub}
  */
 class EventHub {
   _validEvents = []; //事件列表

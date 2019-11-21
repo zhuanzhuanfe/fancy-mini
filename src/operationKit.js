@@ -5,7 +5,7 @@
 
 /**
  * 深度拷贝
- * @param source 源参数
+ * @param {*} source 源参数
  * @return {*}   源参数的深度拷贝
  */
 export function deepClone(source){
@@ -22,8 +22,8 @@ export function deepClone(source){
 /**
  * 深度判等
  * 两个对象结构和数据完全一致，即认为相等，而不要求是同一引用
- * @param o1  参数1
- * @param o2  参数2
+ * @param {*} o1  参数1
+ * @param {*} o2  参数2
  * @return {boolean}  参数1、参数2 是否相等
  */
 export function deepEqual(o1, o2) {
@@ -46,8 +46,8 @@ export function deepEqual(o1, o2) {
 /**
  * 深度覆盖
  * 将源对象的值覆盖目标对象，相同结构相同参数部分直接覆盖，其它部分保持不变
- * @param target 目标对象
- * @param sources  若干个源对象
+ * @param {object} target 目标对象
+ * @param {...object} sources  若干个源对象
  *
  * @example
  * 修改前：
@@ -86,7 +86,7 @@ export function deepAssign(target, ...sources) {
  * 覆盖目标字段，剔除多余字段
  * 将源对象的值覆盖目标对象，相同结构相同参数部分直接覆盖，其它部分予以剔除
  * @param {object} target 目标对象
- * @param {object} sources 若干个源对象
+ * @param {...object} sources 若干个源对象
  * 
  * @example
     //模块中指定的可配项列表及其默认值
@@ -147,7 +147,7 @@ export function peerAssign(target, ...sources) {
 
 /**
  * 判断一个变量是否为非null对象
- * @param item
+ * @param {*} item
  * @return {boolean}
  */
 export function isNonNullObject(item) {
@@ -156,7 +156,7 @@ export function isNonNullObject(item) {
 
 /**
  * 判断一个变量是否为非空对象
- * @param item
+ * @param {*} item
  * @return {boolean}
  */
 export function isNonEmptyObject(item) {
@@ -167,6 +167,12 @@ export function isNonEmptyObject(item) {
  * 设置延时
  * @param {number} ms  延迟时长，单位：ms
  * @return {Promise}
+ * @example
+ * async function demo(){
+ *   console.log('enter demo, timestamp:', Date.now());
+ *   await delay(2000); //延迟2s再执行后续代码
+ *   console.log('continue demo, timestamp:', Date.now());
+ * }
  */
 export function delay(ms) {
   return new Promise((resolve, reject)=>{
@@ -196,7 +202,7 @@ export function compareVersion(v1, v2) {
 /**
  * 拼接参数，注：当前只针对小程序标准url，暂未考虑含#号/多?号等特殊url情形
  * @param {string} url 原url
- * @param {Object} extraParams 新增参数
+ * @param {Object.<string, string>} extraParams 新增参数/覆盖已有参数，key为参数名，value为参数值
  * @return {string} 新url
  */
 export function appendUrlParam(url, extraParams) {
@@ -253,7 +259,7 @@ export function toAbsolutePath(relativePath, curPath) {
  * @param {number} remainMs 剩余时间，单位：毫秒
  * @param {number} remainderInterval 最小时间间隔，不足1秒的部分以此计数
  * @param {string} topLevel 顶层间隔：day|hour|minute|second， 如顶层间隔为'hour'，则返回结果为形如 27小时3分钟 而不是 1天3小时3分钟
- * @return {{days: number, hours: number, minutes: number, seconds: number, remainderIntervals: number}} 剩余days天hours小时minutes分钟seconds秒remainderIntervals间隔
+ * @return {{days: number, hours: number, minutes: number, seconds: number, remainderIntervals: number}} 格式形如：{days: number, hours: number, minutes: number, seconds: number, remainderIntervals: number}，表示 剩余days天hours小时minutes分钟seconds秒remainderIntervals间隔
  */
 export function semanticRemainTime({remainMs, topLevel='day', remainderInterval=1000}) {
   const SCALES = {
@@ -279,10 +285,13 @@ export function semanticRemainTime({remainMs, topLevel='day', remainderInterval=
 /**
  * 若字符串长度小于指定长度，则在前方拼接指定字符
  * es6中string的padStart函数目前存在兼容性问题，暂以此替代
- * @param str 字符串
- * @param minLen 指定长度
- * @param leadChar 指定字符
+ * @param {string|number} str 字符串
+ * @param {number} minLen 指定长度
+ * @param {string|number} leadChar 指定字符
  * @return {string} 新字符串
+ * @example
+ * let num = 1;
+ * padStart(num, 2, '0'); //'01'
  */
 export function padStart(str, minLen, leadChar) {
   str = String(str);
@@ -293,8 +302,9 @@ export function padStart(str, minLen, leadChar) {
 
 /**
  * 查询元素在页面中的坐标，单位：px
+ * @async
  * @param {string} selector 元素选择器
- * @return {Promise<Object>} 元素坐标
+ * @return {object} 元素坐标，格式同[boundingClientRect返回值]{@link https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.boundingClientRect.html}
  */
 export async function queryRect(selector){
   return new Promise((resolve, reject)=>{
@@ -335,11 +345,46 @@ export function toInlineStyle(styleObj) {
 
 /**
  * 将实例方法封装为通用函数，使之可以在任何this对象上执行
- * @param {Object} instance 实例对象
- * @param {String} method 方法名
- * @param {Object|Boolean} [rcvThis] 保存触发源的this对象
- * @param {Number} [rcvThis.argIdx] 将this对象保存到下标为argIdx的参数的argProp属性上
- * @param {String} [rcvThis.argProp] 将this对象保存到下标为argIdx的参数的argProp属性上
+ * 类似于原生语法中的bind函数，会保证方法被执行时this始终为指定的this对象，
+ * 会额外记录实际触发源的this对象，并以参数的形式传给方法
+ * @param {object} instance 实例对象
+ * @param {string} method 方法名
+ * @param {object|boolean} [rcvThis] 触发源this保存配置
+ * @param {number} [rcvThis.argIdx=0] 将触发源this保存到下标为argIdx的参数的argProp属性上
+ * @param {string} [rcvThis.argProp='thisIssuer'] 将触发源this保存到下标为argIdx的参数的argProp属性上
+ * @example
+ * //日志管理器
+ * class Logger {
+ *   commonInfo = { //所有日志都会携带的公共信息，如机型、版本号等
+ *     loggerVersion: '1.0.0'
+ *   };
+ *   //上报日志
+ *   log(options){
+ *     //函数执行时，this对象要始终保持为Logger对象，会需要访问this.commonInfo等内容
+ *     console.log('[log]', 'customInfo:', options, 'commonInfo:', this.commonInfo);
+ *     
+ *     //通过options.thisIssuer参数传入触发日志上报的组件的this对象
+ *     let trigger = options.thisIssuer;
+ *     let triggerInfo = ...; //获取触发源信息，如组件级公共参数等
+ *   }
+ * }
+ * 
+ * let logger = new Logger();
+ * let log = makeAssignableMethod({ //将logger.log封装为通用的log函数
+ *   instance: logger,
+ *   method: 'log',
+ *   rcvThis: {
+ *     argIdx: 0,
+ *      argProp: 'thisIssuer'
+ *   }
+ * });
+ * 
+ * class Component {
+ *   log, //该通用log函数可以在任何地方使用，也可以注册到其它类上
+ *   test(){
+ *     this.log({action: 'test'}); //相当于：logger.log({action:'test', 'thisIssuer': this})
+ *   }
+ * }
  */
 export function makeAssignableMethod({instance, method, rcvThis}) {
   //无需记录触发源this对象，直接绑定this，返回

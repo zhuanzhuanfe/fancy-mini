@@ -1,13 +1,6 @@
 import {deepEqual} from './operationKit';
 /**
- * 用于页面间传递参数
- * 场景一：
- *    后一页面返回数据给前一页面，如：A页面-点击“选择地址”-地址页-选择完毕返回A页面，此时需将选择结果传给A页面
- * 场景二：
- *    前一页面传递参数给后一页面，一般直接在url中加参数即可，但若数据复杂，亦可考虑使用此数据对象进行传递
- * 利用ES6导出的是符号连接特性，不同页面引入的是同一实例，A页面对数据进行操作，B页面即时生效，因而可当作全局数据对象使用
- * 相比于使用storage传参，此方式为内存操作，即时性更强，效率更高
- * 相比于直接调用前一页面的指定成员方法，此方式更通用，页面间耦合性更低
+ * 用于页面间传递参数，详见{@tutorial 2.7-routeParams}
  */
 class RouteParams
 {
@@ -48,7 +41,7 @@ class RouteParams
   }
   /**
    * 返回前一页面时，获取后一页面传递过来的数据
-   * @return {string} 后一页面传递过来的数据
+   * @return {*} 后一页面传递过来的数据
    */
   getBackFromData(){
     let curStack = RouteParams._getHistorySnapShot();
@@ -91,7 +84,7 @@ class RouteParams
   }
   /**
    * 进到后一页面时，获取前一页面传递过来的数据
-   * @return {string} 前一页面传递过来的数据
+   * @return {*} 前一页面传递过来的数据
    */
   getOpenFromData(){
     let curStack = RouteParams._getHistorySnapShot();

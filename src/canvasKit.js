@@ -6,17 +6,18 @@
 export default {
   /**
    * 绘制图片，保持宽高比居中裁剪，短边完全展示，长边居中截取
-   * @param ctx  wx.createCanvasContext返回的canvas绘图上下文
-   * @param picFile 图片临时文件路径
-   * @param picInfo wx.getImageInfo返回的图片原始信息
-   * @param x   左上角横坐标
-   * @param y   左上角纵坐标
-   * @param w   宽度
-   * @param h   高度
-   * @param bgColor 背景色，裁剪后多余部分用背景色擦除
    * 说明：
-   *    1.应先绘制图片，后填充图片周边内容，否则图片周边长边方向内容可能会被部分擦除
+   *    1.应先绘制图片，后填充图片周边内容，否则图片周边长边方向的现有内容会被擦除
    *    2.在开发者工具上图片多余部分无法被清除，但在真机上正常
+   *    3.早期小程序canvas不支持clip，所以采用先绘制再擦除的方式实现，导致绘制顺序比较受限，后续考虑改用clip方式实现，待优化
+   * @param ctx  wx.createCanvasContext返回的canvas绘图上下文
+   * @param {string} picFile 图片临时文件路径
+   * @param {object} picInfo wx.getImageInfo返回的图片原始信息
+   * @param {number} x   左上角横坐标
+   * @param {number} y   左上角纵坐标
+   * @param {number} w   宽度
+   * @param {number} h   高度
+   * @param {string} [bgColor="#ffffff"] 背景色，裁剪后多余部分用背景色擦除
    *
    */
   aspectFill({ctx, picFile, picInfo,  x, y, w, h, bgColor="#ffffff"}){
@@ -57,11 +58,14 @@ export default {
   },
   /**
    * 将方形区域切成圆形，场景示例：将头像切成圆形展示
+   * 说明：
+   *    1.方形区域四角会被填充成指定的背景色，只保留中央圆形区域不变
+   *    2.早期小程序canvas不支持clip，所以采用先绘制再擦除的方式实现圆形头像，只能在纯色背景上使用，后续考虑改用clip方式实现，待优化
    * @param ctx wx.createCanvasContext返回的canvas绘图上下文
-   * @param x   左上角横坐标
-   * @param y   左上角纵坐标
-   * @param w   宽度/高度/圆的直径
-   * @param bgColor 背景色，擦除部分以背景色填充
+   * @param {number} x   左上角横坐标
+   * @param {number} y   左上角纵坐标
+   * @param {number} w   宽度/高度/圆的直径
+   * @param {string} [bgColor="#ffffff"] 背景色，擦除部分以背景色填充
    */
   rounded({ctx, x, y, w, bgColor="#ffffff"}){
     ctx.save();
@@ -80,13 +84,16 @@ export default {
   },
   /**
    * 将矩形切成圆角矩形
+   * 说明：
+   *    1.方形区域四角会被填充成指定的背景色，只保留中央圆角矩形区域不变
+   *    2.早期小程序canvas不支持clip，所以采用先绘制再擦除的方式实现圆角矩形，只能在纯色背景上使用，后续考虑改用clip方式实现，待优化
    * @param ctx wx.createCanvasContext返回的canvas绘图上下文
-   * @param x   矩形左上角横坐标
-   * @param y   矩形左上角纵坐标
-   * @param w   矩形宽度
-   * @param h   矩形高度
-   * @param radius  圆角半径
-   * @param bgColor 背景色，擦除部分以背景色填充
+   * @param {number} x   矩形左上角横坐标
+   * @param {number} y   矩形左上角纵坐标
+   * @param {number} w   矩形宽度
+   * @param {number} h   矩形高度
+   * @param {number} radius  圆角半径
+   * @param {string} [bgColor="#ffffff"] 背景色，擦除部分以背景色填充
    */
   borderRadius({ctx, x, y, w, h, radius, bgColor="#ffffff"}){
     ctx.save();
@@ -131,13 +138,13 @@ export default {
   /**
    * 绘制文本，支持\n换行
    * @param ctx   wx.createCanvasContext返回的canvas绘图上下文
-   * @param text  文本内容，支持\n换行
-   * @param x     文本区域（含行高）左上角横坐标；居中对齐时，改取中点横坐标
-   * @param y     文本区域（含行高）左上角纵坐标
-   * @param fontSize  字号，单位：px
-   * @param color     颜色
-   * @param lineHeight  行高
-   * @param textAlign   水平对齐方式，支持'left'、'center'，其它值没试过
+   * @param {string} text  文本内容，支持\n换行
+   * @param {number} x     文本区域（含行高）左上角横坐标；居中对齐时，改取中点横坐标
+   * @param {number} y     文本区域（含行高）左上角纵坐标
+   * @param {number} fontSize  字号，单位：px
+   * @param {string} color     颜色
+   * @param {number} lineHeight  行高
+   * @param {string} textAlign   水平对齐方式，支持'left'、'center'，其它值没试过
    */
   fillText(ctx, {text, x, y, fontSize, color, lineHeight, textAlign}){
     ctx.save();
@@ -158,6 +165,9 @@ export default {
 
   /**
    * 字符串过长截断，1个字母长度计为1,1个汉字长度计为2
+   * 更新：
+   * 1. 早期小程序canvas不支持测量文本实际尺寸，所以采用手动粗略计算的方式实现过长处理
+   * 2. 后来小程序canvas提供了measureText接口，支持测量文本实际尺寸信息，本方法待优化
    * @param {string} str 原字符串
    * @param {number} len 最大长度
    * @param {boolean} ellipsis 过长时截断后是否加'...'
@@ -189,6 +199,10 @@ export default {
   /**
    * 字符串长度，1个字母长度计为1,1个汉字长度计为2
    * canvas目前似乎不支持获取文本绘制后所占宽度，只能根据字数粗略计算了
+   * 更新：
+   * 1. 后来小程序canvas提供了measureText接口，支持测量文本实际尺寸信息，本方法待优化
+   * @param {string} str 字符串
+   * @return {number} 总长度
    */
   strLenGraphic(str) {
     var str_length = 0;

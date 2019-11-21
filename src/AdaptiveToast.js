@@ -1,10 +1,14 @@
 import {delay, deepAssign} from './operationKit';
 
+/**
+ * 自适应的toast
+ * 处理原生toast截断问题，详见{@tutorial 3.1-adaptiveToast}
+ */
 class AdaptiveToast {
   _options = {
     icons: {
-      success: '/images/tipsucc.png',
-      fail: '/images/tipfail.png'
+      success: '/images/toast/success.png',
+      fail: '/images/toast/fail.png'
     },
     defaultOpts: {
       title: '',
@@ -16,21 +20,28 @@ class AdaptiveToast {
     }
   };
 
+  /**
+   * 构造函数
+   * @param {object} [options] 配置参数
+   * @param {Object.<string, string>} [options.icons={success: '/images/toast/success.png',fail: '/images/toast/fail.png'}] 图标映射表，key为调用方指定的toast场景类型，value为对应的图标路径
+   * @param {AdaptiveToast~ToastOptions} [options.defaultOpts={title: '',type: 'fail',duration: 2000}] toast的默认选项
+   */
   constructor(options){
     deepAssign(this._options, options);
   }
 
+  /**
+   * @ignore
+   */
   get installProps(){
     return this._options.installProps;
   }
 
   /**
-   * toast
-   * @param {Object} options {
-   *  title: '',  //提示文案
-   *  type: '',   //图标类型：'success' | 'fail'
-   *  duration: 2000, //持续时长， 单位：ms
-   * }
+   * 自适应的toast，会自动根据文案长度选择合适的提示方式
+   * @function
+   * @async
+   * @param {AdaptiveToast~ToastOptions} options toast参数
    */
   toast = async (options)=>{
     options = Object.assign({}, this._options.defaultOpts, options);
@@ -43,10 +54,12 @@ class AdaptiveToast {
     else //文案巨长，改用弹窗
       return this.sysToastModal(options);
   }
-
+  
   /**
-   * 使用微信系统toast，带图标，最多只能展示7个汉字
-   * @param options 同toast函数
+   * 文案较少时使用的toast，带图标，最多只能展示7个汉字
+   * @function
+   * @async
+   * @param {AdaptiveToast~ToastOptions} options toast参数
    */
   sysToastIcon = async (options)=>{
     wx.showToast({
@@ -59,10 +72,12 @@ class AdaptiveToast {
     });
     await delay(options.duration);
   }
-
+  
   /**
-   * 使用微信系统toast，不带图标，最多展示两行
-   * @param options 同toast函数
+   * 文案中等长度时使用的toast，不带图标，最多展示两行
+   * @function
+   * @async
+   * @param {AdaptiveToast~ToastOptions} options toast参数
    */
   sysToastText = async (options)=>{
     if (!wx.setTabBarItem) //不带图标的toast从基础库1.9.0开始支持；wx.canIUse('showToast.object.icon.none')不好使，暂借用其它API来判断版本
@@ -84,10 +99,12 @@ class AdaptiveToast {
     });
     await delay(options.duration);
   }
-
+  
   /**
-   * 使用微信系统弹窗，可以展示大片文案
-   * @param options 同toast函数
+   * 文案巨长时使用的toast，自动改用系统弹窗
+   * @function
+   * @async
+   * @param {AdaptiveToast~ToastOptions} options toast参数
    */
   sysToastModal = async (options)=>{
     return new Promise((resolve, reject)=>{
@@ -106,5 +123,12 @@ class AdaptiveToast {
     })
   }
 }
+
+/**
+ * @typedef {object} AdaptiveToast~ToastOptions toast参数
+ * @property {string} title toast文案
+ * @property {string} [type] toast场景类型
+ * @property {number} [duration] toast时长，单位：ms
+ */
 
 export default AdaptiveToast;

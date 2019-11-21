@@ -1,9 +1,6 @@
 /**
  * cookie管理器
- * 利用前端存储，模拟实现web中的cookie逻辑
- * 很多时候，后端现有接口是先前对接M页/APP开发的，可能会使用cookie进行参数获取/传递；但小程序不支持cookie，导致后端接口复用/多端兼容成本增高。
- * 利用本cookie管理器，结合./request/plugin/CookiePlugin中的cookie插件，可以在接口调用前后，自动植入cookie逻辑，便于小程序端复用cookie相关逻辑。
- * 
+ * 利用前端存储，模拟实现web中的cookie逻辑，详见{@tutorial 2.4-cookie}
  * 注：目前仅支持基础的取值赋值操作，domain、path、expires等各种配置选项暂未支持，会予以忽略
  */
 class Cookie {
@@ -12,7 +9,7 @@ class Cookie {
 
   /**
    * 构造函数
-   * @param {string} cookieStorageName cookie相关信息存储到storage时使用的key
+   * @param {string} [cookieStorageName='__cookie'] cookie相关信息存储到storage时使用的key
    */
   constructor({cookieStorageName='__cookie'}={}){
     this._cookieStorage = cookieStorageName;
@@ -24,6 +21,11 @@ class Cookie {
    * @param {string} [key] 要读取的key
    * @param {object} [options] 配置选项（暂未支持）
    * @return {string | object} cookie中key对应的value | 未传key时，返回全部key-value组成的对象
+   * @example
+   * //假设当前环境所有cookie为：a=1;b=2;c=3
+   * cookie.get('a'); //返回值：'1', cookie中存在指定key时，会返回其对应值
+   * cookie.get('nonExist'); //返回值：'',  cookie中不存在指定key时，会返回空串
+   * cookie.get(); //返回值：{a:'1', b:'2', c:'3'}，未传key时，会返回全部key-value组成的对象
    */
   get(key, options){
     let cookieStr = this.getCookie();
@@ -131,7 +133,8 @@ class Cookie {
 
   /**
    * 将'key1=value1;key2=value2'形式的cookie字符串合并，key相同时后面的覆盖前面的
-   * @param {string} cookieStrs
+   * @param {...string} cookieStrs 待合并的cookie字符串
+   * @return {string} 合并后的cookie字符串
    */
   static mergeCookieStr(...cookieStrs) {
     let cookieObjs = cookieStrs.filter(cookieStr=>!!cookieStr).map(Cookie.cookieStrToObj);
