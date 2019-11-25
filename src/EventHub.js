@@ -22,7 +22,7 @@ class EventHub {
    * 监听指定事件
    * @param {string} eventType 事件类型
    * @param {function} handler 监听函数
-   * @param {string} persistType 持续策略：once-触发一次后自动移除 | always-每次都触发
+   * @param {string} [persistType='once'] 持续策略：once-触发一次后自动移除监听 | always-每次都触发
    */
   subscribe({eventType, handler, persistType='once'}){
     if (!(this._validEvents.includes(eventType))) {
