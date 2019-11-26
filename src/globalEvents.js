@@ -11,6 +11,7 @@ import EventHub from './EventHub';
  * | eventType | 语义 | 参数 | 
  * | --- | --- | --- | 
  * | userAuthFinish | 登录授权交互结束 | 交互结果，类型：{@link BaseLogin~UserAuthRes} |
+ * @type {EventHub}
  */
 const authEvents = new EventHub({
   validEvents: [
