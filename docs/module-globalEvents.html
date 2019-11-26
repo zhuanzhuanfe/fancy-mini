@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>EventHub.js - Documentation</title>
+    <title>globalEvents - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,83 +34,230 @@
 
 <div id="main">
     
-    <h1 class="page-title">EventHub.js</h1>
+    <h1 class="page-title">globalEvents</h1>
     
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * 事件中心，用于跨组件/跨页面事件通信，详见 {@tutorial 2.8-eventHub}
- */
-class EventHub {
-  _validEvents = []; //事件列表
-  _listeners = []; //监听列表
+        
+            
+        
+    
+</header>
 
-  /**
-   * 构造函数
-   * @param {Array&lt;string>} validEvents 配置的事件列表
-   */
-  constructor({validEvents}){
-    if (!Array.isArray(validEvents)) {
-      console.error('[EventHub] bad param, validEvents shall be Array&lt;string>');
-      return;
-    }
+<article>
+    
+        <div class="container-overview">
+        
+            
+                <div class="description"><p>全局事件<br>
+对小程序全局事件进行集中定义和管理</p></div>
+            
 
-    this._validEvents = validEvents;
-  }
+            
+                
 
-  /**
-   * 监听指定事件
-   * @param {string} eventType 事件类型
-   * @param {function} handler 监听函数
-   * @param {string} [persistType='once'] 持续策略：once-触发一次后自动移除监听 | always-每次都触发
-   */
-  subscribe({eventType, handler, persistType='once'}){
-    if (!(this._validEvents.includes(eventType))) {
-      console.error('[EventHub] subscribe，试图监听无效事件：', eventType, '有效事件列表：', this._validEvents);
-      return;
-    }
 
-    this._listeners.push({
-      eventType,
-      handler,
-      triggerCount: 0, //触发了几次
-      limitCount: persistType==='once' ? 1 : 0, //最多触发几次，0表示不限
-    });
-  }
 
-  /**
-   * 触发指定事件
-   * @param {string} eventType 事件类型
-   * @param {*} data 传递给监听函数的数据
-   */
-  notify({eventType, data}){
-    if (!(this._validEvents.includes(eventType))) {
-      console.error('[EventHub] notify，试图触发无效事件：', eventType, '有效事件列表：', this._validEvents);
-      return;
-    }
 
-    //监听回调
-    this._listeners.forEach(listener=>{
-      if (listener.eventType === eventType) {
-        listener.handler(data);
-        ++ listener.triggerCount;
-      }
-    });
+<dl class="details">
 
-    //移除达到回调上限的监听函数
-    this._listeners = this._listeners.filter(listener=>!(listener.limitCount>0 &amp;&amp; listener.limitCount&lt;=listener.triggerCount));
-  }
-}
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="globalEvents.js.html">globalEvents.js</a>, <a href="globalEvents.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
 
-export default EventHub;</code></pre>
-        </article>
-    </section>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="~authEvents"><span class="type-signature">(inner, constant) </span>authEvents<span class="type-signature"> :<a href="EventHub.html">EventHub</a></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="globalEvents.js.html">globalEvents.js</a>, <a href="globalEvents.js.html#line16">line 16</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>登录授权相关事件</p>
+<table>
+<thead>
+<tr>
+<th>eventType</th>
+<th>语义</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>userAuthFinish</td>
+<td>登录授权交互结束</td>
+<td>交互结果，类型：<a href="BaseLogin.html#~UserAuthRes">BaseLogin~UserAuthRes</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="EventHub.html">EventHub</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
