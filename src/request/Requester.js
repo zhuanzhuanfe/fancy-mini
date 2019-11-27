@@ -119,7 +119,7 @@ class Requester{
     //执行各插件的beforeRequest/beforeRequestAsync钩子函数
     let beforeRes = await this._beforeRequest({reqOptions, manageOptions});
     switch (beforeRes.action) {
-      case 'cancel':
+      case 'cancel': //取消接口请求
         let errMsg = `cancelled by plugin "${beforeRes.plugin.pluginName}" before request issued，reason: ${beforeRes.errMsg}`;
         console.warn('[Requester] 接口请求被取消，errMsg:', errMsg, 'url:', reqOptions.url);
         
@@ -127,14 +127,16 @@ class Requester{
           succeeded: false, 
           errMsg,
         };
-      case 'continue':
+      case 'continue': //继续默认流程
+        break;
+      case 'feed': //返回指定内容
         break;
       default:
         console.error('[Requester] dealing with beforeRes, unknown action:', beforeRes.action);
     } 
     
     //调用接口
-    let reqRes = await this._doRequest({reqOptions, manageOptions});
+    let reqRes = beforeRes.action==='feed' ? beforeRes.feedRes : await this._doRequest({reqOptions, manageOptions});
     
     //执行各插件的afterRequest/afterRequestAsync钩子函数
     let afterRes = await this._afterRequest({reqOptions, reqRes, manageOptions});
@@ -177,12 +179,32 @@ class Requester{
         manageOptions,
       });
 
+      //格式检查&规整
+      switch (pluginRes.action) {
+        case 'feed': //返回指定内容
+          let checkRes = formatCheckReqRes(pluginRes.feedRes); //检查内容格式是否正确
+          if (!checkRes.pass) { //若格式不正确，则无视该处理指令
+            console.error(
+              `[Requester] feedRes格式不正确：${checkRes.errMsg}，该处理已被忽略。`,
+              'pluginName:', plugin.pluginName,
+              'pluginRes:', pluginRes,
+              'reqOptions:', reqOptions
+            );
+            pluginRes.action = 'continue';
+          }
+          break;
+        default:
+      }
+      
       //处理返回结果
       switch (pluginRes.action) {
-        case 'continue':
+        case 'continue': //继续默认流程
           break;
-        case 'cancel':
+        case 'cancel': //取消接口调用
           finalRes = {action: 'cancel', plugin, errMsg: pluginRes.errMsg};
+          return finalRes;
+        case 'feed': //返回指定内容
+          finalRes = {action: 'feed', plugin, errMsg: pluginRes.errMsg, feedRes: pluginRes.feedRes};
           return finalRes;
         default:
           console.error('[Requester] beforeRequest/beforeRequestAsync, unknown action:', pluginRes.action, 'pluginName:', plugin.pluginName);
@@ -234,6 +256,23 @@ class Requester{
         defaultRes: {action: 'continue'},
         manageOptions,
       });
+
+      //格式检查&规整
+      switch (pluginRes.action) {
+        case 'override': 
+          let checkRes = formatCheckReqRes(pluginRes.overrideRes); //检查内容格式是否正确
+          if (!checkRes.pass) { //若格式不正确，则无视该处理指令
+            console.error(
+              `[Requester] overrideRes格式不正确：${checkRes.errMsg}，该处理已被忽略。`,
+              'pluginName:', plugin.pluginName,
+              'pluginRes:', pluginRes,
+              'reqOptions:', reqOptions
+            );
+            pluginRes.action = 'continue';
+          }
+          break;
+        default:
+      }
       
       //处理返回结果
       switch (pluginRes.action) {
@@ -333,11 +372,45 @@ class Requester{
  * @property {Object} [header]	（成功时）开发者服务器返回的 HTTP Response Header
  * @property {string} [errMsg] （失败时）错误信息
  */
+/**
+ * 格式检查，判断传入的数据是否符合Requester~ReqRes格式要求
+ * @param {*} res 待判断的数据
+ * @return {{pass: boolean, errMsg: string}}
+ * @ignore
+ */
+function formatCheckReqRes(res) {
+  if (!res) {
+    return {
+      pass: false,
+      errMsg: '应为对象格式'
+    }
+  }
+  
+  if (typeof res.succeeded !== 'boolean') {
+    return {
+      pass: false,
+      errMsg: '“succeeded”字段应为boolean类型'
+    }
+  }
+  
+  if (res.succeeded && !("data" in res)) {
+    return {
+      pass: false,
+      errMsg: '“data”字段缺失'
+    }
+  }
+  
+  return {
+    pass: true,
+    errMsg: 'ok'
+  }
+}
 
 /**
  * @typedef {object} Requester~BeforeRequestRes 请求发起前的各种扩展逻辑处理结果
- * @property {string} action 期望的后续处理：'cancel'-终止该请求 | 'continue'-继续发送
+ * @property {string} action 期望的后续处理：'continue'-继续 | 'cancel'-终止该请求 | 'feed'-返回指定内容（如接口缓存、mock数据等）
  * @property {string} errMsg 错误信息
+ * @property {Requester~ReqRes} feedRes (action==='feed'时)指定的返回内容
  * @property {BasePlugin} plugin 决定该处理方式的插件（该字段会自动添加，插件钩子函数中无需返回）
  */
 
