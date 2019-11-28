@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>BaseAuth - Documentation</title>
+    <title>CloudFuncPlugin - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,7 +34,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">BaseAuth</h1>
+    <h1 class="page-title">CloudFuncPlugin</h1>
     
 
     
@@ -47,11 +47,16 @@
 <header>
     
         <h2>
-        BaseAuth
+        CloudFuncPlugin
         </h2>
         
-            <div class="class-description"><p>鉴权模块基类<br>
-负责根据用户提供的信息，完成校验过程，并返回对应的登录数据</p></div>
+            <div class="class-description"><p>请求管理-云函数插件<br>
+将云函数封装成http接口形式使用，便于：</p>
+<ol>
+<li>使用requester提供的各种逻辑扩展能力</li>
+<li>后续在云函数和后端服务器之间进行各种业务的相互迁移</li>
+</ol>
+<p>详见<a href="tutorial-2.3-request.html">[基础能力] 灵活易扩展的请求管理</a></p></div>
         
     
 </header>
@@ -66,7 +71,7 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="BaseAuth"><span class="type-signature"></span>new BaseAuth<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="CloudFuncPlugin"><span class="type-signature"></span>new CloudFuncPlugin<span class="signature">(pluginName<span class="signature-attributes">opt</span>, fakeDomain<span class="signature-attributes">opt</span>, fakeRootPath<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
 
     
 
@@ -78,7 +83,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="login_auth_BaseAuth.js.html">login/auth/BaseAuth.js</a>, <a href="login_auth_BaseAuth.js.html#line5">line 5</a>
+        <a href="request_plugin_CloudFuncPlugin.js.html">request/plugin/CloudFuncPlugin.js</a>, <a href="request_plugin_CloudFuncPlugin.js.html#line92">line 92</a>
     </li></ul></dd>
     
 
@@ -117,6 +122,9 @@
 
 
 
+<div class="description">
+    <p>构造函数</p>
+</div>
 
 
 
@@ -125,6 +133,186 @@
 
 
 
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>使用默认配置let requester = new Requester({  plugins: [    new CloudFuncPlugin() //使用默认配置  ]});//则调用接口 let res = await requester.request({  url: 'https://cloud.function/xxx?a=1&amp;b=2'});//等价于调用云函数 let res = await wx.cloud.callFunction({  name: 'xxx',  data: {    a: "1",    b: "2",  }})</code></pre>
+
+    <pre class="prettyprint"><code>自定义虚拟域名和虚拟路径let requester = new Requester({  plugins: [    new CloudFuncPlugin({ //自定义虚拟域名和虚拟路径      fakeDomain: 'fancy.com'      fakeRootPath: '/demos/cloud/'    })  ]});//则调用接口let res = await requester.request({  url: 'https://fancy.com/demos/cloud/xxx?a=1&amp;b=2'});//等价于调用云函数let res = await wx.cloud.callFunction({  name: 'xxx',  data: {    a: "1",    b: "2",  }})</code></pre>
+
+    <pre class="prettyprint"><code>云函数实现 exports.main = async (event, context) => {
+        //云函数格式约定：
+        
+        let {a, b} = event; //调用方传入的参数可以通过event获取
+        a = Number(a); //参数类型统一为string
+        b = Number(b);
+      
+        //此外，还会额外拼入一些http相关参数
+        let {reqHeader} = event; //http请求header信息
+        console.log(reqHeader.cookie); //header中的cookie字段会解析成对象格式，形如：{uid: 'xxx'}
+      
+        //处理结果正常返回
+        let result = { sum: a+b };
+        
+        //此外，有一些保留字段可以用于设置http相关参数
+        result.resStatusCode = 200; //设置http状态码
+        result.resHeader = {}; //设置http返回结果中的header信息
+        result.resHeader['Set-Cookie'] = [ //同一header有多条记录时，以数组形式设置
+          'uid=xxx;expires=111',
+          'sessionKey=yyy;expires=222'
+        ] 
+        
+        return result;
+      }</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>pluginName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'CloudFuncPlugin'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>插件名称</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fakeDomain</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'cloud.function'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>虚拟域名</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fakeRootPath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>'/'</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>虚拟根路径</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -149,6 +337,17 @@
     
 
     
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="BasePlugin.html">BasePlugin</a></li>
+    </ul>
+
+
+    
 
     
 
@@ -161,6 +360,166 @@
     
 
     
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="pluginName"><span class="type-signature"></span>pluginName<span class="type-signature"> :string</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#pluginName">BasePlugin#pluginName</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>插件名称，主要用于打印日志和调试，便于追溯操作源</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="requester"><span class="type-signature"></span>requester<span class="type-signature"> :<a href="Requester.html">Requester</a></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#requester">BasePlugin#requester</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>请求管理器</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="Requester.html">Requester</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -170,7 +529,7 @@
 
     
 
-    <h4 class="name" id="authLogin"><span class="type-signature">(async) </span>authLogin<span class="signature">(loginOptions, configOptions, beforeRes<span class="signature-attributes">opt</span>, authData)</span><span class="type-signature"> &rarr; {<a href="BaseAuth.html#~LoginRes">BaseAuth~LoginRes</a>}</span></h4>
+    <h4 class="name" id="_execCloudFunc"><span class="type-signature">(async, protected) </span>_execCloudFunc<span class="signature">(funcName, funcParams)</span><span class="type-signature"> &rarr; {Object}</span></h4>
 
     
 
@@ -182,7 +541,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="login_auth_BaseAuth.js.html">login/auth/BaseAuth.js</a>, <a href="login_auth_BaseAuth.js.html#line45">line 45</a>
+        <a href="request_plugin_CloudFuncPlugin.js.html">request/plugin/CloudFuncPlugin.js</a>, <a href="request_plugin_CloudFuncPlugin.js.html#line187">line 187</a>
     </li></ul></dd>
     
 
@@ -222,268 +581,7 @@
 
 
 <div class="description">
-    <p>授权登录<br>
-需要用户配合点击授权按钮/输入表单等才能完成的登录过程</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Attributes</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>loginOptions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>登录函数调用参数，参见<a href="BaseLogin.html#login">BaseLogin#login</a></p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>configOptions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>登录模块配置参数，参见<a href="BaseLogin.html#config">BaseLogin#config</a></p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>beforeRes</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>beforeAuthLogin钩子执行结果</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>authData</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>登录界面交互结果</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type"><a href="BaseAuth.html#~LoginRes">BaseAuth~LoginRes</a></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="beforeAuthLogin"><span class="type-signature">(async) </span>beforeAuthLogin<span class="signature">(loginOptions, configOptions)</span><span class="type-signature"> &rarr; {*}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="login_auth_BaseAuth.js.html">login/auth/BaseAuth.js</a>, <a href="login_auth_BaseAuth.js.html#line33">line 33</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>进行授权登录之前的准备工作<br>
-时序：beforeAuthLogin -&gt; 用户交互，同意授权 -&gt; authLogin</p>
+    <p>执行云函数</p>
 </div>
 
 
@@ -521,13 +619,13 @@
 
         <tr>
             
-                <td class="name"><code>loginOptions</code></td>
+                <td class="name"><code>funcName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -537,20 +635,20 @@
 
             
 
-            <td class="description last"><p>登录函数调用参数，参见<a href="BaseLogin.html#login">BaseLogin#login</a></p></td>
+            <td class="description last"><p>函数名</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>configOptions</code></td>
+                <td class="name"><code>funcParams</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">object</span>
 
 
             
@@ -560,7 +658,7 @@
 
             
 
-            <td class="description last"><p>登录模块配置参数，参见<a href="BaseLogin.html#config">BaseLogin#config</a></p></td>
+            <td class="description last"><p>函数入参</p></td>
         </tr>
 
     
@@ -586,7 +684,7 @@
 
         
 <div class="param-desc">
-    <p>需要传递给authLogin的数据</p>
+    <p>云函数执行结果</p>
 </div>
 
 
@@ -597,7 +695,7 @@
     </dt>
     <dd>
         
-<span class="param-type">*</span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -612,7 +710,7 @@
 
     
 
-    <h4 class="name" id="silentLogin"><span class="type-signature">(async) </span>silentLogin<span class="signature">(loginOptions, configOptions)</span><span class="type-signature"> &rarr; {<a href="BaseAuth.html#~LoginRes">BaseAuth~LoginRes</a>}</span></h4>
+    <h4 class="name" id="_parseReq"><span class="type-signature">(protected) </span>_parseReq<span class="signature">(reqOptions)</span><span class="type-signature"> &rarr; {Object}</span></h4>
 
     
 
@@ -624,7 +722,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="login_auth_BaseAuth.js.html">login/auth/BaseAuth.js</a>, <a href="login_auth_BaseAuth.js.html#line14">line 14</a>
+        <a href="request_plugin_CloudFuncPlugin.js.html">request/plugin/CloudFuncPlugin.js</a>, <a href="request_plugin_CloudFuncPlugin.js.html#line140">line 140</a>
     </li></ul></dd>
     
 
@@ -664,8 +762,7 @@
 
 
 <div class="description">
-    <p>静默登录<br>
-可以在用户无感知的情况下后台悄悄完成的登录过程</p>
+    <p>解析请求，将http请求解析成云函数调用</p>
 </div>
 
 
@@ -703,13 +800,13 @@
 
         <tr>
             
-                <td class="name"><code>loginOptions</code></td>
+                <td class="name"><code>reqOptions</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type"><a href="Requester.html#~ReqOptions">Requester~ReqOptions</a></span>
 
 
             
@@ -719,30 +816,7 @@
 
             
 
-            <td class="description last"><p>登录函数调用参数，参见<a href="BaseLogin.html#login">BaseLogin#login</a></p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>configOptions</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>登录模块配置参数，参见<a href="BaseLogin.html#config">BaseLogin#config</a></p></td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -767,6 +841,18 @@
 <h5>Returns:</h5>
 
         
+<div class="param-desc">
+    <p>解析结果，格式形如：{<br>
+hit: true,  //是否为云函数调用<br>
+funcName: 'xxx', //云函数函数名<br>
+funcParams: { //云函数入参<br>
+a: &quot;1&quot;,<br>
+b: &quot;2&quot;,<br>
+reqHeader: {}<br>
+}<br>
+}</p>
+</div>
+
 
 
 <dl class="param-type">
@@ -775,7 +861,7 @@
     </dt>
     <dd>
         
-<span class="param-type"><a href="BaseAuth.html#~LoginRes">BaseAuth~LoginRes</a></span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -786,15 +872,13 @@
 
 
         
-    
+            
 
     
-        <h3 class="subsection-title">Type Definitions</h3>
 
-        
-                
-<h4 class="name" id="~LoginRes">LoginRes</h4>
+    <h4 class="name" id="_parseRes"><span class="type-signature">(protected) </span>_parseRes<span class="signature">(cloudRes)</span><span class="type-signature"> &rarr; {<a href="Requester.html#~ReqRes">Requester~ReqRes</a>}</span></h4>
 
+    
 
 
 
@@ -804,7 +888,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="login_auth_BaseAuth.js.html">login/auth/BaseAuth.js</a>, <a href="login_auth_BaseAuth.js.html#line57">line 57</a>
+        <a href="request_plugin_CloudFuncPlugin.js.html">request/plugin/CloudFuncPlugin.js</a>, <a href="request_plugin_CloudFuncPlugin.js.html#line213">line 213</a>
     </li></ul></dd>
     
 
@@ -841,11 +925,26 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
 
+
+<div class="description">
+    <p>解析返回结果，将云函数返回结果解析成http请求结果</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -854,8 +953,6 @@
 
         <th>Type</th>
 
-        
-        <th>Attributes</th>
         
 
         
@@ -869,96 +966,7 @@
 
         <tr>
             
-                <td class="name"><code>succeeded</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>是否成功</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>errMsg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>详细错误信息，调试用</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>toastMsg</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>错误信息话术，向用户提示用</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>userInfo</code></td>
+                <td class="name"><code>cloudRes</code></td>
             
 
             <td class="type">
@@ -971,76 +979,10 @@
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>（成功时）用户信息</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>expireTime</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>（成功时）过期时间，绝对毫秒数，-1表示长期有效</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>anonymousInfo</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>（不管成功失败）匿名信息，登录成功前使用的临时标识，成功后继续关联</p></td>
+            <td class="description last"><p>云函数执行结果</p></td>
         </tr>
 
     
@@ -1052,28 +994,991 @@
 
 
 
-<div class="description">
-    <p>鉴权模块登录结果</p>
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>对应的http请求结果</p>
 </div>
 
 
 
-    <h5>Type:</h5>
-    <ul>
-        <li>
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Requester.html#~ReqRes">Requester~ReqRes</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
             
-<span class="param-type">Object</span>
+
+    
+
+    <h4 class="name" id="afterRequest"><span class="type-signature"></span>afterRequest<span class="signature">(reqOptions, thisIssuer, reqRes)</span><span class="type-signature"> &rarr; {undefined|<a href="Requester.html#~AfterRequestRes">Requester~AfterRequestRes</a>}</span></h4>
+
+    
 
 
-        </li>
-    </ul>
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line64">line 64</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#afterRequest">BasePlugin#afterRequest</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
 
 
 
 
+
+<div class="description">
+    <p>钩子函数，请求返回之后调用，同步<br>
+不会等待异步操作返回，如需等待异步逻辑，请改用<a href="BasePlugin.html#afterRequestAsync">BasePlugin#afterRequestAsync</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>reqOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqOptions">Requester~ReqOptions</a></span>
 
 
             
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求参数</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>thisIssuer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>发起接口请求的this对象</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reqRes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqRes">Requester~ReqRes</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求结果</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>期望的后续处理，undefined表示继续执行默认流程</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Requester.html#~AfterRequestRes">Requester~AfterRequestRes</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="afterRequestAsync"><span class="type-signature">(async) </span>afterRequestAsync<span class="signature">(reqOptions, thisIssuer, reqRes)</span><span class="type-signature"> &rarr; {undefined|<a href="Requester.html#~AfterRequestRes">Requester~AfterRequestRes</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line75">line 75</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#afterRequestAsync">BasePlugin#afterRequestAsync</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>钩子函数，请求返回之后调用，异步<br>
+会等待async函数resolve，若无异步逻辑，建议使用<a href="BasePlugin.html#afterRequest">BasePlugin#afterRequest</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>reqOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqOptions">Requester~ReqOptions</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求参数</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>thisIssuer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>发起接口请求的this对象</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>reqRes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqRes">Requester~ReqRes</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求结果</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>期望的后续处理，undefined表示继续执行默认流程</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Requester.html#~AfterRequestRes">Requester~AfterRequestRes</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="beforeRequest"><span class="type-signature"></span>beforeRequest<span class="signature">(reqOptions, thisIssuer)</span><span class="type-signature"> &rarr; {undefined|<a href="Requester.html#~BeforeRequestRes">Requester~BeforeRequestRes</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line44">line 44</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#beforeRequest">BasePlugin#beforeRequest</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>钩子函数，发请求之前调用，同步<br>
+不会等待异步操作返回，如需等待异步逻辑，请改用<a href="BasePlugin.html#beforeRequestAsync">BasePlugin#beforeRequestAsync</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>reqOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqOptions">Requester~ReqOptions</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求参数</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>thisIssuer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>发起接口请求的this对象</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>期望的后续处理，undefined表示继续执行默认流程</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Requester.html#~BeforeRequestRes">Requester~BeforeRequestRes</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="beforeRequestAsync"><span class="type-signature">(async) </span>beforeRequestAsync<span class="signature">(reqOptions, thisIssuer)</span><span class="type-signature"> &rarr; {undefined|<a href="Requester.html#~BeforeRequestRes">Requester~BeforeRequestRes</a>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line54">line 54</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#beforeRequestAsync">BasePlugin#beforeRequestAsync</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>钩子函数，发请求之前调用，异步<br>
+会等待async函数resolve，若无异步逻辑，建议使用<a href="BasePlugin.html#beforeRequest">BasePlugin#beforeRequest</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>reqOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html#~ReqOptions">Requester~ReqOptions</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>请求参数</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>thisIssuer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>发起接口请求的this对象</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>期望的后续处理，undefined表示继续执行默认流程</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+|
+
+<span class="param-type"><a href="Requester.html#~BeforeRequestRes">Requester~BeforeRequestRes</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="mount"><span class="type-signature"></span>mount<span class="signature">(requester)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="request_plugin_BasePlugin.js.html">request/plugin/BasePlugin.js</a>, <a href="request_plugin_BasePlugin.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="BasePlugin.html#mount">BasePlugin#mount</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>钩子函数，插件被挂载到requester对象上时触发</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>requester</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Requester.html">Requester</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>被挂载到的requester对象</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
     
 
     
