@@ -1,4 +1,4 @@
-import {deepClone, makeAssignableMethod, peerAssign} from '../operationKit';
+import {deepClone, makeAssignableMethod, peerAssign, combineFuncs} from '../operationKit';
 import {mergingStep, errSafe} from '../decorators';
 
 /**
@@ -49,6 +49,16 @@ class BaseLogin {
    * @param {String} configOptions.defaultAuthType 默认登录方式
    * @param {BaseLogin~UserAuthHandler} configOptions.userAuthHandler 授权交互处理函数，负责跟用户交互，收集鉴权所需信息
    * @param {BaseLogin~LoginStepAddOn} [configOptions.loginStepAddOn] 登录流程自定义附加步骤，会在正常登录流程执行成功时调用，并根据其处理结果生成最终登录结果
+   * @param {Function} [configOptions.pageConfigHandler] 页面配置处理函数，负责获取当前页面的页面级登录配置，默认实现：
+   * ```js
+   *   function pageConfigHandler(){ 
+   *     //获取当前页面实例
+   *     let curPages = getCurrentPages(); 
+   *     let curPage = curPages[curPages.length-1] || {};
+   *     //获取当前页面的页面级登录配置
+   *     return curPage.$loginOpts;
+   *   }
+   * ``` 
    */
   config(configOptions){
     //参数校验
@@ -90,6 +100,12 @@ class BaseLogin {
       userAuthHandler: null,
       
       loginStepAddOn: null,
+
+      pageConfigHandler(){
+        let curPages = getCurrentPages();
+        let curPage = curPages[curPages.length-1] || {};
+        return curPage.$loginOpts;
+      }
     };
 
     Object.assign(this._configOptions, peerAssign({}, defaultOpts, configOptions));
@@ -154,11 +170,17 @@ class BaseLogin {
    * @return {BaseLogin~LoginRes} 登录结果
    */
   async login(options={}){
-    //填充默认值
+    //获取配置参数
+    const configOptions = this._mergeConfigOptions({
+      globalConfig: this._configOptions, //全局配置
+      pageConfig: this._configOptions.pageConfigHandler.call(options.thisIssuer), //页面级配置
+    });
+    
+    //填充调用参数默认值
     const defaultOpts = {
       callback: null,
       mode: 'common',
-      userAuthHandler: this._configOptions.userAuthHandler,
+      userAuthHandler: configOptions.userAuthHandler,
       failAction: 'auto',
       thisIssuer: null, //触发登录的组件的this对象，供钩子函数使用
     };
@@ -171,7 +193,7 @@ class BaseLogin {
     //登录
     let loginRes = {};
     try {
-      loginRes = await this._login(options);
+      loginRes = await this._login(options, configOptions);
     } catch (e){
       loginRes = {code: -500, errMsg:'internal error'};
       //真机下不支持打印错误栈，导致e打印出来是个空对象；故先单独打印一次e.message
@@ -180,10 +202,10 @@ class BaseLogin {
     
     //触发钩子
     if (loginRes.code!==0 && loginRes.code!==-200) { //钩子：登录失败
-      this._configOptions.onLoginFailed && await this._configOptions.onLoginFailed.call(options.thisIssuer, loginRes, {failAction: options.failAction})
+      configOptions.onLoginFailed && await configOptions.onLoginFailed.call(options.thisIssuer, loginRes, {failAction: options.failAction})
     }
     if (loginRes.code===0 && isNewlyLogin) { //钩子：刚刚登录
-      this._configOptions.onNewlyLogin && await this._configOptions.onNewlyLogin.call(options.thisIssuer);
+      configOptions.onNewlyLogin && await configOptions.onNewlyLogin.call(options.thisIssuer);
     }
     
     //返回结果
@@ -192,9 +214,77 @@ class BaseLogin {
   }
 
   /**
+   * 合并配置项
+   * @param globalConfig 全局配置，格式参见{@link BaseLogin#config}
+   * @param pageConfig 页面级配置，格式同全局配置，但只接受以下字段：
+   * | 字段 | 和全局配置的关系 |
+   * | --- | --- |
+   * | onUserAuthFailed | 并存 |
+   * | onUserAuthSucceeded | 并存 |
+   * | onNewlyLogin | 并存 | 
+   * | onLoginFailed | 并存 |
+   * | userAuthHandler | 覆盖 |
+   * @return {object} 合并后的配置项，格式参见{@link BaseLogin#config}
+   * @protected
+   */
+  _mergeConfigOptions({globalConfig, pageConfig}) {
+    let configOptions = Object.assign({}, globalConfig); //结果
+    
+    //未指定页面级配置，直接返回
+    if (!pageConfig)
+      return configOptions;
+    
+    //合并配置项
+    const fieldMetas = [ //字段信息列表
+      {
+        field: 'onUserAuthFailed', //字段
+        action: 'combineFunc' //处理方式
+      },
+      {
+        field: 'onUserAuthSucceeded',
+        action: 'combineFunc'
+      },
+      {
+        field: 'onNewlyLogin',
+        action: 'combineFunc'
+      },
+      {
+        field: 'onLoginFailed',
+        action: 'combineFunc'
+      },
+      {
+        field: 'userAuthHandler',
+        action: 'override'
+      },
+    ];
+    
+    for (let {field, action} of fieldMetas) {
+      if (!(field in pageConfig))
+        continue;
+      
+      switch (action) {
+        case 'override':
+          configOptions[field] = pageConfig[field];
+          break;
+        case 'combineFunc':
+          configOptions[field] = combineFuncs({
+            funcs: [pageConfig[field], globalConfig[field]]
+          });
+          break;
+        default:
+          console.error('[_mergeConfigOptions] unknown action:', action, 'for field:', field);
+      } 
+    }
+    
+    //返回合并结果
+    return configOptions;
+  }
+  
+  
+  /**
    * @private
    */
-  async _login(options){
+  async _login(options, configOptions){
     //初始状态：未开始
     let loginRes = {code: -1, errMsg: 'idle'};
     
@@ -206,13 +296,13 @@ class BaseLogin {
     
     //尝试静默登录
     let canUseSilent = !['forceAuth'].includes(options.mode); //是否可尝试静默登录
-    loginRes = canUseSilent ? await this._silentLogin(options) : loginRes;
+    loginRes = canUseSilent ? await this._silentLogin(options, configOptions) : loginRes;
     if (loginRes.code === 0) //静默登录成功，结束
       return {code: 0, errMsg: 'ok'};
     
     //尝试授权登录
     let canUseAuth = !['silent', 'forceSilent'].includes(options.mode); //是否可尝试授权登录
-    loginRes = canUseAuth ?  await this._authLogin(options) : loginRes;
+    loginRes = canUseAuth ?  await this._authLogin(options, configOptions) : loginRes;
     if (loginRes.code === 0) //授权登录成功，结束
       return {code: 0, errMsg: 'ok'};
 
@@ -227,19 +317,20 @@ class BaseLogin {
   /**
    * 静默登录
    * 在用户无感知的情况下悄悄完成登录过程
-   * @param options 登录选项
+   * @param options 登录调用参数，格式参见{@link BaseLogin#login}
+   * @param configOptions 登录配置参数，格式参见{@link BaseLogin#config}
    * @return {Promise<*>}
    * @private
    */
   @mergingStep //步骤并合，避免页面中多处同时触发登录时重复发起登录请求
-  async _silentLogin(options){
+  async _silentLogin(options, configOptions){
     //判断使用的验证方式
     let authType = this._loginInfo.authType;
     if (authType === 'none')
       return {code: -200, errMsg: 'login failed silently: disabled'};
 
     //获取验证方式对应的鉴权器
-    let authEngine = this._configOptions.authEngineMap[authType];
+    let authEngine = configOptions.authEngineMap[authType];
     if (!authEngine) {
       console.error('[login] _silentLogin, cannot find authEngine for authType:', authType);
       return {code: -500, errMsg: 'login failed silently: internal error'};
@@ -250,7 +341,7 @@ class BaseLogin {
     try {
       silentRes = await authEngine.silentLogin({
         loginOptions: options,
-        configOptions: this._configOptions,
+        configOptions,
       });
     } catch (e) {
       console.error('[login] caught error when try silentLogin of authType:', authType, 'err:', e);
@@ -276,19 +367,20 @@ class BaseLogin {
   /**
    * 授权登录
    * 需要用户配合才能完成的登录过程
-   * @param options 登录选项
+   * @param options 登录调用参数，格式参见{@link BaseLogin#login}
+   * @param configOptions 登录配置参数，格式参见{@link BaseLogin#config}
    * @return {Promise<*>}
    * @private
    */
   @mergingStep //步骤并合，避免页面中多处同时触发登录时重复发起登录请求
-  async _authLogin(options){
+  async _authLogin(options, configOptions){
     //执行各鉴权器的beforeAuthLogin钩子
     let beforeResMap = {};
-    for (let authType of Object.keys(this._configOptions.authEngineMap)) {
-      let authEngine = this._configOptions.authEngineMap[authType];
+    for (let authType of Object.keys(configOptions.authEngineMap)) {
+      let authEngine = configOptions.authEngineMap[authType];
       beforeResMap[authType] = authEngine.beforeAuthLogin ? await authEngine.beforeAuthLogin({
         loginOptions: options,
-        configOptions: this._configOptions,
+        configOptions,
       }) : null;
     }
     
@@ -297,25 +389,25 @@ class BaseLogin {
     
     //交互失败（e.g.用户取消登录）
     if (!userAuthRes.succeeded) {
-      this._configOptions.onUserAuthFailed && this._configOptions.onUserAuthFailed.call(options.thisIssuer,{});
+      configOptions.onUserAuthFailed && configOptions.onUserAuthFailed.call(options.thisIssuer,{});
       return {code: -100, errMsg: 'user auth failed:' + userAuthRes.errMsg}
     }
     
     //交互成功
     
     //触发钩子：onUserAuthSucceeded
-    this._configOptions.onUserAuthSucceeded && this._configOptions.onUserAuthSucceeded.call(options.thisIssuer);
+    configOptions.onUserAuthSucceeded && configOptions.onUserAuthSucceeded.call(options.thisIssuer);
     
     //根据用户提供的信息进行登录
     let authType = userAuthRes.authType;
-    let authEngine = this._configOptions.authEngineMap[authType];
+    let authEngine = configOptions.authEngineMap[authType];
     if (!authEngine) {
       console.error(`[login] 当前指定的登录方式：${authType}，不存在对应的鉴权器`);
       return {code: -500, errMsg: 'internal error'};
     }
     let authRes = await authEngine.authLogin({
       loginOptions: options,
-      configOptions: this._configOptions,
+      configOptions,
       authData: userAuthRes.authData,
       beforeRes: beforeResMap[authType],
     });

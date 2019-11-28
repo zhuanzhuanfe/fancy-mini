@@ -410,3 +410,23 @@ export function makeAssignableMethod({instance, method, rcvThis}) {
     return instance[method].apply(instance, args);
   }
 }
+
+/**
+ * 将多个函数组合成一个新函数
+ * 调用新函数 等价于 依次调用各个源函数
+ * @param {Array<Function>} funcs 函数列表
+ * @return {Function} 新函数
+ */
+export function combineFuncs({funcs}) {
+  funcs = funcs.filter(func=>typeof func === "function");
+  
+  return function (...args) {
+    for (let func of funcs) {
+      try {
+        func.apply(this, args);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+}
