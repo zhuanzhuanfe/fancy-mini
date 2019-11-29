@@ -94,10 +94,10 @@
 <ol start="0">
 <li><a href="./tutorial-0-getStarted.html">fancy-mini setup</a></li>
 <li>编写鉴权逻辑<br>
-编写鉴权模块，根据用户提供的信息，完成校验过程，并返回对应的登录数据。e.g.:<br>
-FancyWechatAuth.js</li>
+编写鉴权模块，根据用户提供的信息，完成校验过程，并返回对应的登录数据。e.g.:</li>
 </ol>
-<pre class="prettyprint source lang-js"><code>  import WechatAuth from &quot;fancy-mini/lib/login/auth/WechatAuth&quot;;
+<pre class="prettyprint source lang-js"><code>  //FancyWechatAuth.js
+  import WechatAuth from &quot;fancy-mini/lib/login/auth/WechatAuth&quot;;
 
   /**
    * 微信登录鉴权模块-自定义实现示例
@@ -218,12 +218,13 @@ FancyWechatAuth.js</li>
 
   export default FancyWechatAuth;
 </code></pre>
+<p><a id="extendLogin"></a></p>
 <ol start="2">
 <li>编写登录逻辑<br>
-编写登录模块，添加自定义参数、自定义流程等。e.g.：<br>
-FancyLogin.js</li>
+编写登录模块，添加自定义参数、自定义流程等。e.g.：</li>
 </ol>
-<pre class="prettyprint source lang-js"><code>  import BaseLogin from 'fancy-mini/lib/login/BaseLogin';
+<pre class="prettyprint source lang-js"><code>  //FancyLogin.js
+  import BaseLogin from 'fancy-mini/lib/login/BaseLogin';
   import {peerAssign} from 'fancy-mini/lib/operationKit';
 
   /**
@@ -284,12 +285,13 @@ FancyLogin.js</li>
   export default FancyLogin;
 
 </code></pre>
+<p><a id="appConfig"></a></p>
 <ol start="3">
 <li>进行整体配置<br>
-小程序引入登录模块，提供相关信息并进行整体配置。e.g.：<br>
-appPlugin.js</li>
+小程序引入登录模块，提供相关信息并进行整体配置。e.g.：</li>
 </ol>
-<pre class="prettyprint source lang-js"><code>  import FancyLogin from &quot;../demoExtend/login/FancyLogin&quot;;
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js
+  import FancyLogin from &quot;../demoExtend/login/FancyLogin&quot;;
   import FancyWechatAuth from &quot;../demoExtend/login/auth/FancyWechatAuth&quot;;
   import LoginPlugin from &quot;fancy-mini/lib/request/plugin/LoginPlugin&quot;;
   import Requester from &quot;fancy-mini/lib/request/Requester&quot;;
@@ -362,8 +364,7 @@ appPlugin.js</li>
 </code></pre>
 <ol start="4">
 <li>编写登录界面<br>
-小程序提供一个默认的登录界面，负责完成登录交互收集所需信息。e.g.：（示例采用wepy1.x框架语法，其它框架类似）<br>
-pages/login/index.wpy:</li>
+小程序提供一个默认的登录界面，负责完成登录交互收集所需信息。e.g.：（示例采用wepy1.x框架语法，其它框架类似）</li>
 </ol>
 <pre class="prettyprint source lang-html"><code>  &lt;template>
     &lt;view>
@@ -372,6 +373,7 @@ pages/login/index.wpy:</li>
   &lt;/template>
 
   &lt;script>
+    //pages/login/index.wpy
     import wepy from 'wepy';
     import {authEvents} from 'fancy-mini/lib/globalEvents';
 
@@ -466,17 +468,155 @@ pages/login/index.wpy:</li>
   }
 </code></pre>
 <h3>注册到this上使用</h3>
-<h3>实现其他登录方式</h3>
+<p>可以将相关方法注册到组件/页面的this对象上，便于组件/页面直接使用。</p>
+<ol>
+<li>将相关功能注册到this上</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js
+  import {registerToThis} from 'fancy-mini/lib/wepyKit';
+  
+  //接上例，登录相关模块引入&配置...
+  
+  //将登录模块相关功能注册到this上，方便组件/页面直接使用
+  const propMapThis2Login = { //命名映射，key为this属性名，value为loginCenter属性名, '*this'表示loginCenter自身
+    '$loginCenter': '*this', // this.$loginCenter 对应 loginCenter
+    '$login': 'login', // this.$login() 对应 loginCenter.login()
+    '$logout': 'logout',
+    '$reLogin': 'reLogin',
+    '$checkLogin': 'checkLogin',
+  };
+
+  for (let [thisProp, loginProp] of Object.entries(propMapThis2Login)) {
+    let loginTarget = loginProp === '*this' ? loginCenter : loginCenter.makeAssignableMethod(loginProp);
+    registerToThis(thisProp, loginTarget);
+  }
+
+  //将请求模块相关功能注册到this上，方便组件/页面直接使用
+  const propMapThis2Requester = { //命名映射，key为this属性名，value为requester属性名, '*this'表示requester自身
+    '$requester': '*this', // this.$requester 对应 requester
+    '$http': 'request', // this.$http() 对应 requester.request()
+    '$httpWithLogin':'requestWithLogin', //this.$httpWithLogin() 对应 requester.requestWithLogin()
+  };
+
+  for (let [thisProp, requesterProp] of Object.entries(propMapThis2Requester)) {
+    let requesterTarget = requesterProp === '*this' ? requester : requester.makeAssignableMethod(requesterProp);
+    registerToThis(thisProp, requesterTarget);
+  }
+  
+  //...
+</code></pre>
+<ol start="2">
+<li>页面/组件直接使用相关功能</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  import wepy from 'wepy';
+
+  export default class extends wepy.page {
+    async onLoad(){
+      let loginRes = await this.$login(); //可以直接通过this调用相关方法，而不用每次引入相关模块
+      console.log('login finished, res:', loginRes);
+      
+      let commentRes = await this.$httpWithLogin({ //可以直接通过this调用相关方法，而不用每次引入相关模块
+        url: 'https://xxx/comment',
+        data: {
+          //...
+        }
+      });
+      console.log('comment finished, res:', commentRes); 
+    }
+  }
+</code></pre>
 <h3>模块级功能定制</h3>
+<p>对登录模块有特殊需求时，支持进行各种自定义逻辑扩展。<br>
+如上文中<a href="#extendLogin">编写登录逻辑</a>小节所示，可以通过继承&amp;重写的方式编写自己的登录模块，从而实现各种模块级功能定制。<br>
+可重写节点详见：<a href="./BaseLogin.html">API文档-登录模块</a>、<a href="https://github.com/zhuanzhuanfe/fancy-mini/blob/master/src/login/BaseLogin.js">源码-登录模块</a>。</p>
 <h3>小程序级功能定制</h3>
+<p>同时维护多个小程序时，支持所有小程序共用一个登录模块的同时，各自指定不同的功能逻辑。<br>
+如上文中<a href="#appConfig">进行整体配置</a>小节所示，小程序可以通过传入各种配置项改写登录模块的默认行为，从而实现各种小程序级功能定制。<br>
+可配项详见：<a href="BaseLogin.html#config">BaseLogin#config</a></p>
 <h3>页面级功能定制</h3>
+<p>同一小程序中，支持不同页面指定不同的登录逻辑。</p>
+<ol>
+<li>小程序中配置页面级参数获取方式</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js
+  import {getCurWepyPage} from 'fancy-mini/lib/wepyKit';
+  
+  //...
+  
+  //登录模块配置
+  loginCenter.config({
+    //...
+    pageConfigHandler(){ //获取页面级登录配置
+      let curPage = getCurWepyPage() || {}; //获取当前页面实例
+      return curPage.$loginOpts; //返回当前页面的自定义配置参数
+    },
+  });
+  
+  //...
+</code></pre>
+<ol start="2">
+<li>页面中进行功能定制</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  import wepy from 'wepy';
+
+  export default class extends wepy.page {
+    //对登录行为进行页面级定制
+    $loginOpts = {
+      userAuthHandler: async()=>{ //默认登录界面
+        //展示更符合本页面风格和本页面价值点的登录弹窗，而不使用小程序默认登录交互，提高用户登录意愿
+        //...
+      },
+      onNewlyLogin: ()=>{ //钩子函数，未登录=>已登录 时触发
+        //当页面中任何位置成功发生登录行为时
+        //更新页面中所有的用户相关数据...
+      }
+    }
+  }
+</code></pre>
+<p>可配项详见：<a href="BaseLogin.html#_mergeConfigOptions">BaseLogin#_mergeConfigOptions</a></p>
 <h3>调用级功能定制</h3>
+<p>同一页面中，支持不同函数指定不同的登录逻辑。</p>
+<pre class="prettyprint source lang-js"><code>  let loginRes = await this.$login({
+    userAuthHandler: async()=>{ //指定登录界面
+      //展示更符合本次操作价值点的登录弹窗，而不使用小程序级/页面级默认登录交互，提高用户登录意愿
+      //...
+    },
+  });
+  
+  let commentRes = await this.$httpWithLogin({
+    url: 'https://xxx/comment',
+    data: {
+      //...
+    },
+    loginOpts: { 
+      userAuthHandler: async()=>{ //指定登录界面
+        //展示更符合本次操作价值点的登录弹窗，而不使用小程序级/页面级默认登录交互，提高用户登录意愿
+        //...
+      }
+    }
+  });
+</code></pre>
+<p>可配项详见：<a href="BaseLogin.html#login">BaseLogin#login</a>、<a href="LoginPlugin.html#requestWithLogin">LoginPlugin#requestWithLogin</a></p>
+<h3>实现其它登录方式</h3>
+<p>除了微信登录，也支持实现其它登录方式，如：账号密码登录、手机号验证码登录等。</p>
+<ol>
+<li>编写登录方式对应的鉴权模块<br>
+继承<a href="BaseAuth.html">BaseAuth</a>类，编写对应的鉴权逻辑。</li>
+<li>小程序中配置对应鉴权映射<br>
+在appPlugin.js中loginCenter.config时，authEngineMap选项中添加相应的键值对。</li>
+<li>登录界面中收集相应信息<br>
+登录界面中返回相应的authType和authData。</li>
+</ol>
+<p>登录界面可以同时展示多种登录方式，然后根据用户交互返回用户实际所选登录方式对应的authType和authData。</p>
 <h3>api查询</h3>
 <ul>
 <li><a href="./BaseLogin.html">登录模块-基类 BaseLogin</a></li>
 <li><a href="./BaseAuth.html">鉴权模块-基类 BaseAuth</a></li>
 <li><a href="./WechatAuth.html">鉴权模块-微信登录 WechatAuth</a></li>
+<li><a href="./Requester.html">请求管理 Requester</a></li>
 <li><a href="./LoginPlugin.html">请求管理-登录插件 LoginPlugin</a></li>
+<li><a href="./CookiePlugin.html">请求管理-Cookie插件 CookiePlugin</a></li>
+<li><a href="./Cookie.html">cookie管理 Cookie</a></li>
 </ul>
 </article>
 
@@ -489,7 +629,7 @@ pages/login/index.wpy:</li>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Nov 28 2019 20:13:36 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Nov 29 2019 19:36:37 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
