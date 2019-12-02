@@ -43,17 +43,17 @@ class CloudFuncPlugin extends BasePlugin{
    * let requester = new Requester({
    *   plugins: [
    *     new CloudFuncPlugin({ //自定义虚拟域名和虚拟路径
-   *       fakeDomain: 'fancy.com'
+   *       fakeDomain: 'fancy.com',
    *       fakeRootPath: '/demos/cloud/'
    *     })
    *   ]
    * });
    *
-   * //则调用接口
+   * //则调用指定虚拟域名虚拟路径下的接口
    * let res = await requester.request({
    *   url: 'https://fancy.com/demos/cloud/xxx?a=1&b=2'
    * });
-   * //等价于调用云函数
+   * //等价于调用对应云函数
    * let res = await wx.cloud.callFunction({
    *   name: 'xxx',
    *   data: {

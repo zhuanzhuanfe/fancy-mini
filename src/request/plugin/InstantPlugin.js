@@ -10,6 +10,8 @@ class InstantPlugin extends BasePlugin{
 
   /**
    * 构造函数
+   * 直接传入钩子函数，快速实现定制逻辑，而不用每次单独写一个子类
+   * 适用场景：逻辑特别轻巧、逻辑为第三方传入等
    * @param {object} options
    * @param {string} options.pluginName 插件名称，主要用于打印日志和调试，便于追溯操作源
    * @param {function} [options.beforeRequest] 钩子函数，详见{@link BasePlugin#beforeRequest}

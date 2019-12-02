@@ -46,15 +46,352 @@
 </header>
 
 <article>
-    <h3>使用</h3>
+    <h3>功能</h3>
+<ul>
+<li>发起网络请求
+<ul>
+<li>基础功能、参数、用法同小程序原生网络api</li>
+</ul>
+</li>
+<li>Promise化
+<ul>
+<li>调用结果改以Promise形式返回，便于时序管理</li>
+<li>兼容success、fail、complete回调</li>
+</ul>
+</li>
+<li>灵活组装
+<ul>
+<li>可以方便地在请求前后添加/移除各种扩展逻辑</li>
+<li>设置默认表单类型</li>
+<li>登录态自动检查&amp;更新</li>
+<li>cookie自动读取&amp;写入</li>
+<li>网络异常自动监测&amp;恢复</li>
+<li>云函数http化</li>
+<li>……</li>
+</ul>
+</li>
+</ul>
+<h3>使用</h3>
 <ol start="0">
 <li><a href="./tutorial-0-getStarted.html">fancy-mini setup</a></li>
-<li>待补充</li>
+<li>引入&amp;配置</li>
 </ol>
+<pre class="prettyprint source lang-js"><code>  //项目入口文件（app.js/app.wpy/app.vue/main.js/……，因框架而异）
+  import './lib/appPlugin';  //负责各种小程序级公共模块的引入和配置
+</code></pre>
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js, 负责各种小程序级公共模块的引入和配置
+  import Requester from &quot;fancy-mini/lib/request/Requester&quot;;
+  import {registerToThis} from 'fancy-mini/lib/wepyKit';
+
+  //实例创建
+  const requester = new Requester(); //请求管理器
+
+  //请求管理器配置
+  requester.config({
+    //使用的底层网络api
+    underlayRequest: wx.request,
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //各种插件，详见下文
+    ]
+  });
+  
+  //将请求模块相关功能注册到this上，方便页面/组件直接使用
+  const propMapThis2Requester = { //命名映射，key为this属性名，value为requester属性名, '*this'表示requester自身
+    '$requester': '*this', // this.$requester 对应 requester
+    '$http': 'request', // this.$http() 对应 requester.request()
+    //...
+  };
+
+  for (let [thisProp, requesterProp] of Object.entries(propMapThis2Requester)) {
+    let requesterTarget = requesterProp === '*this' ? requester : requester.makeAssignableMethod(requesterProp);
+    registerToThis(thisProp, requesterTarget);
+  }
+  
+  //导出部分模块，便于独立js文件使用
+  export {
+    requester,
+  }
+
+</code></pre>
+<ol start="2">
+<li>小程序各处使用</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //独立js文件，手动引入appPlugin模块并使用相关功能
+  import {requester} from '../../lib/appPlugin';
+
+  async test(){
+    let dataRes = await requester.request({
+      url: 'https://xxx',
+      data: {
+      }
+    });
+    
+    console.log('dataRes:', dataRes); //请求结果，即为后端接口返回内容 e.g.后端返回&quot;{respCode:0}&quot;，则dataRes={respCode: 0}
+  }
+</code></pre>
+<pre class="prettyprint source lang-js"><code>  //页面/组件，可以直接通过this使用相关功能
+  async test(){
+    let dataRes = await this.$http({
+      url: 'https://xxx',
+      data: {
+        
+      }
+    });
+    
+    console.log('dataRes:', dataRes); //请求结果，即为后端接口返回内容 e.g.后端返回&quot;{respCode:0}&quot;，则dataRes={respCode: 0}
+  }
+</code></pre>
+<h3>扩展逻辑-概述</h3>
+<ul>
+<li>说明
+<ul>
+<li>各种扩展逻辑以插件的形式在requester上配置，可以根据需要添加/移除</li>
+<li>插件对象应为<a href="BasePlugin.html">BasePlugin</a>子类实例</li>
+<li>注意插件顺序，配置顺序即为执行顺序</li>
+</ul>
+</li>
+<li>配置示例</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>  import FormPlugin from 'fancy-mini/lib/request/plugin/FormPlugin';
+  import LoginPlugin from 'fancy-mini/lib/request/plugin/LoginPlugin';
+  import CookiePlugin from 'fancy-mini/lib/request/plugin/CookiePlugin';
+  import FailRecoverPlugin from 'fancy-mini/lib/request/plugin/FailRecoverPlugin';
+  import CloudFuncPlugin from 'fancy-mini/lib/request/plugin/CloudFuncPlugin';
+
+  requester.config({
+    //...
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //表单插件，修改表单默认处理方式
+      new FormPlugin({
+        defaultContentType: 'application/x-www-form-urlencoded' //指定默认表单类型
+      }),
+      //登录插件，自动检查、获取、更新登录态
+      new LoginPlugin({
+        loginCenter,
+        apiAuthFailChecker
+      }),
+      //cookie插件，自动读取&写入cookie
+      new CookiePlugin({
+        cookie
+      }),
+      //网络异常处理插件，监听&处理网络异常
+      new FailRecoverPlugin({
+        requestFailRecoverer
+      }),
+      //云函数插件，以http接口的形式使用云函数
+      new CloudFuncPlugin({
+        fakeDomain: 'cloud.function'
+        fakeRootPath: '/'
+      }),
+    ]
+  })
+</code></pre>
+<h3>扩展逻辑-表单插件</h3>
+<ul>
+<li>
+<p>功能<br>
+修改表单默认处理行为</p>
+<ol>
+<li>将请求头部中的content-type默认值改为构造函数中指定的defaultContentType</li>
+</ol>
+</li>
+<li>
+<p>使用</p>
+</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>  import FormPlugin from 'fancy-mini/lib/request/plugin/FormPlugin';
+  
+  requester.config({
+    //...
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //表单插件，修改表单默认处理方式
+      new FormPlugin({
+        defaultContentType: 'application/x-www-form-urlencoded' //指定默认表单类型
+      })
+    ]
+  })
+</code></pre>
+<h3>扩展逻辑-登录插件</h3>
+<ul>
+<li>功能<br>
+在请求前后植入登录态检查和处理逻辑
+<ol>
+<li>在requester上注册一个<code>requestWithLogin</code>方法，用于调用需要登录态的接口</li>
+<li>请求发出前，若未登录，则先触发登录，然后再发送接口请求</li>
+<li>请求返回后，若判断后端登录态已失效，则自动重新登录重新发送接口请求，并以重新请求的结果作为本次调用结果返回</li>
+</ol>
+</li>
+<li>使用<br>
+参见<a href="tutorial-2.1-login.html">[基础能力] 健壮高效的登录机制</a></li>
+</ul>
+<h3>扩展逻辑-cookie插件</h3>
+<ul>
+<li>功能<br>
+在请求前后植入cookie相关逻辑
+<ol>
+<li>请求发出前，在请求头部中注入当前环境cookie信息</li>
+<li>请求返回后，接收返回结果头部中的cookie信息，并写入当前环境cookie中</li>
+</ol>
+</li>
+<li>使用<br>
+参见<a href="tutorial-2.4-cookie.html">[基础能力] cookie机制</a></li>
+</ul>
+<h3>扩展逻辑-网络异常处理插件</h3>
+<ul>
+<li>功能<br>
+监听网络异常情况，并进行恢复处理</li>
+<li>使用</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>  import FailRecoverPlugin from 'fancy-mini/lib/request/plugin/FailRecoverPlugin';
+  
+  requester.config({
+    //...
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //网络异常处理插件，监听&处理网络异常
+      new FailRecoverPlugin({
+        requestFailRecoverer({res, options, resolve, reject}){
+          //展示网络异常界面，提示用户“点击屏幕任意位置重试”
+          //点击重试
+          //重试成功，resolve(重试后的请求结果)
+          //发生异常，reject(异常详情)
+        }
+      }),
+    ]
+  })
+</code></pre>
+<h3>扩展逻辑-云函数插件</h3>
+<ul>
+<li>功能<br>
+将云函数封装成http接口形式使用，便于：
+<ol>
+<li>使用requester提供的各种逻辑扩展能力</li>
+<li>后续在云函数和后端服务器之间进行各种业务的相互迁移</li>
+</ol>
+</li>
+<li>使用</li>
+</ul>
+<ol>
+<li>配置</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js
+  import CloudFuncPlugin from 'fancy-mini/lib/request/plugin/CloudFuncPlugin';
+  
+  requester.config({
+    //...
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //云函数插件，以http接口的形式使用云函数
+      new CloudFuncPlugin({
+        fakeDomain: 'fancy.com', //虚拟域名
+        fakeRootPath: '/demos/cloud/' //虚拟路径
+      }),
+    ]
+  })
+</code></pre>
+<ol start="2">
+<li>调用</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //则调用指定虚拟域名虚拟路径下的接口
+  let res = await requester.request({
+    url: 'https://fancy.com/demos/cloud/xxx?a=1&b=2'
+  });
+  //等价于调用对应云函数
+  let res = await wx.cloud.callFunction({
+    name: 'xxx',
+    data: {
+      a: &quot;1&quot;,
+      b: &quot;2&quot;,
+    }
+  })
+</code></pre>
+<ol start="3">
+<li>云函数约定</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  exports.main = async (event, context) => {
+    //云函数格式约定：
+
+    let {a, b} = event; //调用方传入的参数可以通过event获取
+    a = Number(a); //参数类型统一为string
+    b = Number(b);
+
+    //此外，还会额外拼入一些http相关参数
+    let {reqHeader} = event; //http请求header信息
+    console.log(reqHeader.cookie); //header中的cookie字段会解析成对象格式，形如：{uid: 'xxx'}
+
+    //处理结果正常返回
+    let result = { sum: a+b };
+
+    //此外，有一些保留字段可以用于设置http相关参数
+    result.resStatusCode = 200; //设置http状态码
+    result.resHeader = {}; //设置http返回结果中的header信息
+    result.resHeader['Set-Cookie'] = [ //同一header有多条记录时，以数组形式设置
+      'uid=xxx;expires=111',
+      'sessionKey=yyy;expires=222'
+    ]
+
+    return result;
+  }
+</code></pre>
+<h3>自定义扩展逻辑</h3>
+<ul>
+<li>
+<p>功能<br>
+在请求前后添加各种自定义逻辑。</p>
+</li>
+<li>
+<p>使用</p>
+</li>
+</ul>
+<ol>
+<li>编写插件</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  import BasePlugin from 'fancy-mini/lib/request/plugin/BasePlugin';
+  
+  //插件需继承插件基类BasePlugin
+  class DIYPlugin extends BasePlugin {
+    //各种自定义逻辑实现
+    //可重写节点参见<a href="BasePlugin.html">BasePlugin</a>文档
+  }
+  
+  export default DIYPlugin;
+</code></pre>
+<ol start="2">
+<li>使用插件</li>
+</ol>
+<pre class="prettyprint source lang-js"><code>  //appPlugin.js
+  import DIYPlugin from './request/plugin/DIYPlugin';
+  
+  requester.config({
+    //...
+    
+    //以插件的形式添加/移除各种扩展逻辑
+    plugins: [
+      //自定义插件
+      new DIYPlugin({
+        //自定义配置...
+      }),
+    ]
+  })
+</code></pre>
 <h3>api查询</h3>
 <ul>
 <li><a href="./Requester.html">请求管理器 Requester</a></li>
-<li>各插件 待补充</li>
+<li><a href="./BasePlugin.html">插件基类 BasePlugin</a></li>
+<li><a href="./FormPlugin.html">表单插件 FormPlugin</a></li>
+<li><a href="./LoginPlugin.html">登录插件 LoginPlugin</a></li>
+<li><a href="./CookiePlugin.html">cookie插件 CookiePlugin</a></li>
+<li><a href="./FailRecoverPlugin.html">网络异常处理插件 FailRecoverPlugin</a></li>
+<li><a href="./CloudFuncPlugin.html">云函数插件 CloudFuncPlugin</a></li>
+<li><a href="./InstantPlugin.html">快捷插件 InstantPlugin</a></li>
 </ul>
 </article>
 
@@ -67,7 +404,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Nov 29 2019 19:36:37 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Mon Dec 02 2019 20:31:40 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
