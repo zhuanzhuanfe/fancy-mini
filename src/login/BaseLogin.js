@@ -109,12 +109,12 @@ class BaseLogin {
     };
 
     Object.assign(this._configOptions, peerAssign({}, defaultOpts, configOptions));
+
+    //标记状态
+    this._stateInfo.isConfigReady = true;
     
     //初始化
     this._init();
-    
-    //标记状态
-    this._stateInfo.isConfigReady = true;
   }
 
   /**
