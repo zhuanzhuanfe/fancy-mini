@@ -8,6 +8,5 @@
     'transform-decorators-legacy',
     'transform-object-rest-spread',
     'transform-export-extensions',
-    'transform-runtime'
   ]
 }
