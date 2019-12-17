@@ -11,10 +11,10 @@
   ],
   "scripts": {
     "compile": "node scripts/compile",
-    "dev:1.x": "npm run compile:1.x -- ",
-    "build:1.x": "npm run compile:1.x -- ",
-    "doc": "jsdoc -c jsdoc.conf.json && node ./scripts/docPatch.js",
-    "clean": "node ./scripts/clean.js",
+    "dev": "cross-env NODE_ENV=develop node scripts/compile",
+    "build": "cross-env NODE_ENV=production node scripts/compile",
+    "doc": "jsdoc -c jsdoc.conf.json && node scripts/docPatch",
+    "clean": "node scripts/clean",
     "prepublishOnly": "npm run clean && npm run build && npm run doc",
     "previewDev": "npm run compile && npm link"
   },
@@ -33,6 +33,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "commander": "^4.0.1",
+    "cross-env": "^6.0.3",
     "docdash": "^1.1.1",
     "jsdoc-escape-at": "^1.0.1",
     "rimraf": "^3.0.0"
