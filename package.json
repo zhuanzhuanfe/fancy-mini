@@ -1,6 +1,7 @@
 {
   "name": "fancy-mini",
-  "version": "1.0.15",
+  "version-1.x": "1.0.15",
+  "version-2.x": "2.0.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -9,10 +10,9 @@
     "/components/*"
   ],
   "scripts": {
-    "compile": "babel -d lib/ src/ --copy-files",
-    "dev": "npm run compile -- --watch --compact false --no-minified",
-    "build": "npm run compile -- --compact true --minified --no-comments",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "node scripts/compile",
+    "dev:1.x": "npm run compile:1.x -- ",
+    "build:1.x": "npm run compile:1.x -- ",
     "doc": "jsdoc -c jsdoc.conf.json && node ./scripts/docPatch.js",
     "clean": "node ./scripts/clean.js",
     "prepublishOnly": "npm run clean && npm run build && npm run doc",
@@ -32,6 +32,7 @@
     "babel-plugin-transform-export-extensions": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "commander": "^4.0.1",
     "docdash": "^1.1.1",
     "jsdoc-escape-at": "^1.0.1",
     "rimraf": "^3.0.0"
