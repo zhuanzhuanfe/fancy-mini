@@ -12,9 +12,9 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=develop node scripts/compile",
     "build": "cross-env NODE_ENV=production node scripts/compile",
-    "doc": "jsdoc -c jsdoc.conf.json && node scripts/docPatch",
+    "doc": "node scripts/doc",
     "clean": "node scripts/clean",
-    "prepublishOnly": "npm run clean && npm run build && npm run doc",
+    "publish": "node scripts/publish",
     "previewDev": "npm run compile && npm link"
   },
   "repository": {

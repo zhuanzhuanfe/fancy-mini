@@ -1,5 +1,5 @@
 const program = require('commander');
-const fs = require('fs');
+const fsPromises = require('fs').promises;
 const path = require('path');
 const { execCmd, copyFiles } = require('./util');
 
@@ -15,10 +15,8 @@ const { execCmd, copyFiles } = require('./util');
   };
   
   //编译
-  let targets = options.target.split(',');
-  for (let target of targets) {
-    compilers[target]();
-  }
+  let versions = options.target.split(',');
+  await Promise.all(versions.map(ver=>compilers[ver]()));
 }());
 
 
@@ -44,26 +42,58 @@ async function compileV1() {
   let modeParam = mode === 'production' ? 
     '--compact true --minified --no-comments' :
     '--watch --compact false --no-minified';
-  execCmd(`npx --package babel-cli babel -d dist/1.x/lib src/lib/ --copy-files ${modeParam}`);
+  let libJob = execCmd(`npx --package babel-cli babel -d dist/1.x/lib src/lib/ --copy-files ${modeParam}`);
   
   //编译lib-style目录
-  copyFiles({src: 'src/lib-style', dist: 'dist/1.x/lib-style', watch: mode==='develop'});
+  let styleJob = copyFiles({src: 'src/lib-style', dist: 'dist/1.x/lib-style', watch: mode==='develop'});
   
   //编译components目录
-  copyFiles({src: 'src/components-wepy', dist: 'dist/1.x/components', watch: mode==='develop'});
+  let compJob = copyFiles({src: 'src/components-wepy', dist: 'dist/1.x/components', watch: mode==='develop'});
+  
+  //生成package.json
+  let packageJob = createPackageJson({ver: '1.x'});
+  
+  await Promise.all([libJob, styleJob, compJob, packageJob]);
 }
 
 //2.x版本编译
-function compileV2() {
+async function compileV2() {
   let mode = process.env.NODE_ENV; //'production' | 'develop'
 
   //编译lib目录
-  copyFiles({src: 'src/lib', dist: 'dist/2.x/lib', watch: mode==='develop'});
+  let libJob = copyFiles({src: 'src/lib', dist: 'dist/2.x/lib', watch: mode==='develop'});
 
   //编译lib-style目录
-  copyFiles({src: 'src/lib-style', dist: 'dist/2.x/lib-style', watch: mode==='develop'});
+  let styleJob = copyFiles({src: 'src/lib-style', dist: 'dist/2.x/lib-style', watch: mode==='develop'});
 
   //编译components目录
-  copyFiles({src: 'src/components-uniApp', dist: 'dist/2.x/components', watch: mode==='develop'});
+  let compJob = copyFiles({src: 'src/components-uniApp', dist: 'dist/2.x/components', watch: mode==='develop'});
+
+  //生成package.json
+  let packageJob = createPackageJson({ver: '2.x'});
+  
+  await Promise.all([libJob, styleJob, compJob, packageJob]);
 }
 
+/**
+ * 创建package.json文件
+ * @param {string} ver 版本：1.x | 2.x
+ * @param {string} [dist="dist/${ver}/package.json"] 输出目录
+ */
+async function createPackageJson({ver, dist=`dist/${ver}/package.json`}) {
+  console.log('[创建] package.json');
+  
+  //读取根目录下的package.json作为模板
+  let baseJson = await fsPromises.readFile('package.json', {encoding: 'utf8'});
+  let packageObj = JSON.parse(baseJson);
+  
+  //修改其中的version相关字段
+  packageObj.version = packageObj[`version-${ver}`]; //取目标版本作为version
+  for (let prop in packageObj) { //删除多余版本配置
+    if (prop.indexOf('version-') === 0)
+      delete packageObj[prop];
+  }
+  
+  //生成目标版本对应的package.json
+  await fsPromises.writeFile(dist, JSON.stringify(packageObj, null, 2), {encoding: 'utf8'});
+}

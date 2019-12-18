@@ -20,3 +20,20 @@
 ```
 
 ### 发布
+1. 修改package.json中版本号
+```js
+  //package.json
+  {
+    //...
+    "version-1.x": "1.0.17", //要发布1.x版本，修改此处
+    "version-2.x": "2.0.0",  //要发布2.x版本，修改此处
+    //...
+  }
+```
+2. 发布
+```bash
+  # 发布
+  npm run publish # 发布1.x版本和2.x版本
+  npm run publish -- -t 1.x # 发布1.x版本
+  npm run publish -- -t 2.x # 发布2.x版本
+```

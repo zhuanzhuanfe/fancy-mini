@@ -6,12 +6,13 @@ const path = require('path');
 /**
  * 执行命令行
  * @param {string} cmd 命令
+ * @param {object} [options] 选项，同https://nodejs.org/api/child_process.html#child_process_child_process_exec_command_options_callback
  */
-async function execCmd(cmd) {
+async function execCmd(cmd, options={}) {
   //使得命令行以utf8格式输出内容（windows环境需单独设置，mac环境默认就是utf8）
   const setExecEncoding = process.platform === "win32" ? '@chcp 65001 >nul & cmd /d/s/c' : '';
   
-  const child = exec(`${setExecEncoding} ${cmd}`, {encoding: 'utf8'});
+  const child = exec(`${setExecEncoding} ${cmd}`, {encoding: 'utf8', ...options});
 
   child.stdout.on('data', (chunk) => {
     process.stdout.write(chunk);
@@ -30,13 +31,14 @@ async function execCmd(cmd) {
  * 复制文件/目录
  * @param {string} src 源位置
  * @param {string} dist 目标位置
- * @param {boolean} watch 是否监听后续修改
+ * @param {boolean} [watch=false] 是否监听后续修改
+ * @param {boolean} [printLog=true] 是否打印日志
  */
-async function copyFiles({src, dist, watch}){
+async function copyFiles({src, dist, watch=false, printLog=true}){
   src = path.normalize(src);
   dist = path.normalize(dist);
 
-  await _copyFiles({src, dist});
+  await _copyFiles({src, dist, printLog});
   
   let watcher = null;
   if (watch) {
@@ -59,12 +61,13 @@ async function copyFiles({src, dist, watch}){
  * @ignore
  * @param {string} src 源位置
  * @param {string} dist 目标位置
+ * @param {boolean} printLog 是否打印日志
  */
-async function _copyFiles({src, dist}){
+async function _copyFiles({src, dist, printLog}){
   let srcStat = await fsPromises.stat(src);
 
   if (srcStat.isFile()) {
-    console.log(`[拷贝] ${src} => ${dist}`);
+    printLog && console.log(`[拷贝] ${src} => ${dist}`);
     await fsPromises.copyFile(src, dist);
     return;
   }
@@ -82,6 +85,7 @@ async function _copyFiles({src, dist}){
     await _copyFiles({
       src: path.join(src, child),
       dist: path.join(dist, child),
+      printLog,
     });
   }
 }
