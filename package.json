@@ -10,7 +10,6 @@
     "/components/*"
   ],
   "scripts": {
-    "compile": "node scripts/compile",
     "dev": "cross-env NODE_ENV=develop node scripts/compile",
     "build": "cross-env NODE_ENV=production node scripts/compile",
     "doc": "jsdoc -c jsdoc.conf.json && node scripts/docPatch",
@@ -37,5 +36,6 @@
     "docdash": "^1.1.1",
     "jsdoc-escape-at": "^1.0.1",
     "rimraf": "^3.0.0"
-  }
+  },
+  "dependencies": {}
 }

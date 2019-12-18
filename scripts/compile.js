@@ -44,7 +44,7 @@ async function compileV1() {
   let modeParam = mode === 'production' ? 
     '--compact true --minified --no-comments' :
     '--watch --compact false --no-minified';
-  execCmd(`babel -d dist/1.x/lib src/lib/ --copy-files ${modeParam}`);
+  execCmd(`npx --package babel-cli babel -d dist/1.x/lib src/lib/ --copy-files ${modeParam}`);
   
   //编译lib-style目录
   copyFiles({src: 'src/lib-style', dist: 'dist/1.x/lib-style', watch: mode==='develop'});
