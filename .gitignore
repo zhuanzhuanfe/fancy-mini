@@ -4,17 +4,13 @@
 */*/*/.DS_Store
 
 node_modules/
-__package_previews__/
-lib/
 dist/
-db.json
 npm-debug.log
 selenium-debug.log
 test/unit/coverage
 test/e2e/reports
 ### Node template
 # Logs
-logs
 *.log
 npm-debug.log*
 
