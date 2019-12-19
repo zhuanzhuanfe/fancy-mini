@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>Tutorial: [组件库] 新手引导 - Documentation</title>
+    <title>lib/decorator/compatible - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -34,35 +34,318 @@
 
 <div id="main">
     
-    <h1 class="page-title">Tutorial: [组件库] 新手引导</h1>
+    <h1 class="page-title">lib/decorator/compatible</h1>
     
 
-    <section>
+    
+
+
+
+
+<section>
 
 <header>
     
-
-    <h2>[组件库] 新手引导</h2>
+        
+            
+        
+    
 </header>
 
 <article>
-    <h3>使用</h3>
-<ol start="0">
-<li><a href="./tutorial-0-getStarted.html">fancy-mini setup</a></li>
-<li>待补充</li>
-</ol>
-<h3>demo</h3>
-<ul>
-<li>示例二维码 待补充</li>
-<li><a href="https://github.com/zhuanzhuanfe/fancy-mini-demos/blob/master/src/pages/operationGuide/operationGuide.wpy">示例源码</a></li>
-</ul>
-<h3>api查询</h3>
-<ul>
-<li><a href="https://github.com/zhuanzhuanfe/fancy-mini/blob/master/components/operationGuide/OperationGuideModal.wpy">组件源码</a></li>
-</ul>
+    
+        <div class="container-overview">
+        
+            
+                <div class="description"><p>修饰器，实现各种兼容用法</p></div>
+            
+
+            
+                
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="decorator_compatible.js.html">decorator/compatible.js</a>, <a href="decorator_compatible.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+        
+        </div>
+    
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".supportWXCallback"><span class="type-signature">(static) </span>supportWXCallback<span class="signature">(target, funcName, descriptor)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="decorator_compatible.js.html">decorator/compatible.js</a>, <a href="decorator_compatible.js.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>提供微信api形式的回调<br>
+主要适用场景：将微信api改写为promise形式后，兼容旧代码<br>
+被修饰函数应该返回一个promise，成功时resolve，失败时reject，或返回{succeeded: true/false, ...}格式，通过succeeded字段标识成功失败<br>
+修饰后的函数会支持arguments[0]中传入success、fail、complete属性，并根据promise结果进行回调</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>class Demo {  @supportWXCallback //自动支持success、fail、complete回调  async getSystemInfo(){    let sysInfo = {};//自定义getSystemInfo实现，比如加入一些缓存策略，添加一些额外字段等    return {      succeeded: true, //标示应该触发success回调还是fail回调      ...sysInfo, //返回成功/失败对应数据    }  }    test(){    this.getSystemInfo().then(sysInfo=>{      //正常以Promise形式使用    });        this.getSystemInfo({      success(sysInfo){        //同时，自动兼容回调形式使用      }    })  }}</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>target</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>funcName</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>descriptor</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
 </article>
 
 </section>
+
+
+
 
     
     
