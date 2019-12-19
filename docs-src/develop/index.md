@@ -4,7 +4,7 @@
 详见[目录结构](目录结构.md)
 
 ### 环境
-1. node 要求大于v10.0.0，建议版本：v12.13.1
+1. node 大于v10.0.0
 
 ### 编译运行
 ```bash
@@ -33,7 +33,7 @@
 2. 发布
 ```bash
   # 发布
-  npm run publish # 发布1.x版本和2.x版本
-  npm run publish -- -t 1.x # 发布1.x版本
-  npm run publish -- -t 2.x # 发布2.x版本
+  npm run pub # 发布1.x版本和2.x版本
+  npm run pub -- -t 1.x # 发布1.x版本
+  npm run pub -- -t 2.x # 发布2.x版本
 ```

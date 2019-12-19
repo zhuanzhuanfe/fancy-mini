@@ -1,7 +1,7 @@
 {
   "name": "fancy-mini",
   "version-1.x": "1.0.15",
-  "version-2.x": "2.0.0",
+  "version-2.x": "2.0.0-alpha.2",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -14,7 +14,7 @@
     "build": "cross-env NODE_ENV=production node scripts/compile",
     "doc": "node scripts/doc",
     "clean": "node scripts/clean",
-    "publish": "node scripts/publish",
+    "pub": "node scripts/publish",
     "previewDev": "npm run compile && npm link"
   },
   "repository": {
@@ -37,5 +37,8 @@
     "jsdoc-escape-at": "^1.0.1",
     "rimraf": "^3.0.0"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "uni-app": {
+    "scripts": {}
+  }
 }

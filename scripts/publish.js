@@ -23,7 +23,7 @@ const { execCmd, copyFiles } = require('./util');
 
 //配置选项
 function configOptions(){
-  program.option('-t, --target <target>', '目标版本，多个以逗号分隔，e.g.：-t 1.x | -t 2.x | -t 1.x,2.x', '1.x,2.x');
+  program.option('-t, --target <target>', '目标版本，多个以逗号分隔，e.g.：-t 1.x | -t 2.x | -t 2.x,1.x', '2.x,1.x');
 }
 
 //解析选项
