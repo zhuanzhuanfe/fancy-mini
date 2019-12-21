@@ -90,6 +90,10 @@ class LoginPlugin extends BasePlugin{
     if (!reqOptions.needLogin)
       return;
     
+    //网络异常，不作处理
+    if (!reqRes.succeeded)
+      return;
+    
     //判断后端登录态是否失效
     let isAuthFail = this.apiAuthFailChecker(reqRes.data, reqOptions);
     
