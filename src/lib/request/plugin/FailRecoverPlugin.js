@@ -37,7 +37,7 @@ class FailRecoverPlugin extends BasePlugin{
       return;
     
     //网络异常处理机制
-    let overrideRes = new Promise((resolve, reject)=>{
+    let overrideRes = await new Promise((resolve, reject)=>{
       this.requestFailRecoverer.call(thisIssuer, {
         res: reqRes,
         options: reqOptions,
