@@ -1,6 +1,6 @@
 /**
  * canvas工具集
- * @module
+ * @module canvasKit
  */
 
 export default {

@@ -1,6 +1,6 @@
 /**
  * 修饰器，实现各种兼容用法
- * @module
+ * @module compatible
  */
 
 /**

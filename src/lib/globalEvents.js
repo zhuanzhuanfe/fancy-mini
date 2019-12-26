@@ -1,7 +1,7 @@
 /**
  * 全局事件
  * 对小程序全局事件进行集中定义和管理
- * @module
+ * @module globalEvents
  */
 
 import EventHub from './EventHub';

@@ -1,6 +1,6 @@
 /**
  * 封装常用的通用功能函数
- * @module 
+ * @module operationKit
  */
 
 /**

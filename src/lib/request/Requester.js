@@ -319,7 +319,7 @@ class Requester{
       syncRes = plugin[hook] ? plugin[hook](args) : null;
       asyncRes = plugin[`${hook}Async`] ? await plugin[`${hook}Async`](args) : null;
     } catch (e) {
-      console.error(`[Requester] ${hook}/${hook}Async, caught error:`, e, 'pluginName:', plugin.pluginName);
+      console.error(`[Requester] ${hook}/${hook}Async, caught error:`, e, 'pluginName:', plugin.pluginName, 'args:', args);
       syncRes = null;
       asyncRes = null;
     }

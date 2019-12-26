@@ -1,6 +1,6 @@
 /**
  * 修饰器，实现各种免并发处理
- * @module
+ * @module noConcurrent
  */
 
 /**

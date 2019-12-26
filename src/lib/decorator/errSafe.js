@@ -1,6 +1,6 @@
 /**
  * 修饰器，实现各种错误处理
- * @module 
+ * @module errSafe
  */
 
 /**

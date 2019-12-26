@@ -1,6 +1,6 @@
 /**
  * wepy框架工具集，与框架耦合的内容在此处实现
- * @module
+ * @module wepyKit
  */
 
 import wepy from 'wepy';

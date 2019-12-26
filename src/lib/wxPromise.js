@@ -1,6 +1,6 @@
 /**
  * 将微信原生api封装为Promise形式使用
- * @module
+ * @module wxPromise
  */
 
 /**
