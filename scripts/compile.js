@@ -53,7 +53,10 @@ async function compileV1() {
   //生成package.json
   let packageJob = createPackageJson({ver: '1.x'});
   
-  await Promise.all([libJob, styleJob, compJob, packageJob]);
+  //生成readme
+  let readmeJob = copyFiles({src: 'README.md', dist: 'dist/1.x/README.md', watch: mode==='develop'});
+  
+  await Promise.all([libJob, styleJob, compJob, packageJob, readmeJob]);
 }
 
 //2.x版本编译
@@ -71,8 +74,11 @@ async function compileV2() {
 
   //生成package.json
   let packageJob = createPackageJson({ver: '2.x'});
+
+  //生成readme
+  let readmeJob = copyFiles({src: 'README.md', dist: 'dist/2.x/README.md', watch: mode==='develop'});
   
-  await Promise.all([libJob, styleJob, compJob, packageJob]);
+  await Promise.all([libJob, styleJob, compJob, packageJob, readmeJob]);
 }
 
 /**
