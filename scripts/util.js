@@ -90,7 +90,17 @@ async function _copyFiles({src, dist, printLog}){
   }
 }
 
+/**
+ * 创建目录
+ * @param {string} dist 目标路径
+ */
+async function mkdir({dist}){
+  dist = path.normalize(dist);
+  return await fsPromises.mkdir(dist, {recursive:true});
+}
+
 module.exports = {
   execCmd,
   copyFiles,
+  mkdir,
 }
