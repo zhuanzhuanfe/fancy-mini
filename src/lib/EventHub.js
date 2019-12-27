@@ -50,15 +50,36 @@ class EventHub {
     }
 
     //监听回调
-    this._listeners.forEach(listener=>{
-      if (listener.eventType === eventType) {
+    for (let listener of this._listeners) {
+      if (listener.eventType !== eventType)
+        continue;
+
+      try {
         listener.handler(data);
-        ++ listener.triggerCount;
+      } catch (e) {
+        console.error(
+          '[EventHub] caught err when exec handler', 
+          'err:', e, 
+          'eventType:', eventType, 
+          'handler:', listener.handler
+        );
       }
-    });
+
+      ++ listener.triggerCount;
+    }
+    
 
     //移除达到回调上限的监听函数
     this._listeners = this._listeners.filter(listener=>!(listener.limitCount>0 && listener.limitCount<=listener.triggerCount));
+  }
+
+  /**
+   * 取消监听
+   * @param {string} eventType 事件类型
+   * @param {function} handler 监听函数
+   */
+  unsubscribe({eventType, handler}){
+    this._listeners = this._listeners.filter(listener=>!(listener.eventType===eventType && listener.handler===handler));
   }
 }
 
