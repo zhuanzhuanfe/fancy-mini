@@ -279,11 +279,10 @@ class Navigator {
    */
   static async _secretOpen(route, {retryAfter=NAV_BUSY_REMAIN, retryTimeout=2000, extraParams=null}={}){
     console.log('[Navigator] _secretOpen', route);
-    let openRes = await wxResolve.navigateTo(Object.assign({}, route, {success: null, fail: null, url: appendUrlParam(route.url, extraParams)}));
+    let openRes = await wxResolve.navigateTo({url: appendUrlParam(route.url, extraParams)});
 
     //打开成功
     if (openRes.succeeded) {
-      typeof route.success === "function" && route.success(openRes);
       await delay(NAV_BUSY_REMAIN);
       return;
     }
@@ -302,13 +301,11 @@ class Navigator {
         return Navigator._secretOpen(route, {retryAfter: retryAfter*2, retryTimeout, extraParams});
       } else { //等待足够长的时间间隔后才重试依然失败，则打开失败
         console.error('[Navigator error] _secretOpen failed, res:', openRes, 'getCurrentPages:',getCurrentPages(), 'longest retry interval:', retryAfter/2);
-        typeof route.fail === "function" && route.fail(openRes);
         throw openRes;
       }
     }
 
     //其它原因导致的打开失败
-    typeof route.fail === "function" && route.fail(openRes);
     throw openRes;
   }
 
@@ -321,7 +318,7 @@ class Navigator {
   static async _secretReplace(route, {extraParams=null}={}){
     console.log('[Navigator] _secretReplace', route);
     Navigator._activeUnload = true;
-    await wxPromise.redirectTo(Object.assign({}, route, {url: appendUrlParam(route.url, extraParams)}));
+    await wxPromise.redirectTo({url: appendUrlParam(route.url, extraParams)});
     await delay(NAV_BUSY_REMAIN);
   }
 

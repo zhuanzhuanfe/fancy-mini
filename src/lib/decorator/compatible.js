@@ -40,19 +40,30 @@ export function supportWXCallback(target, funcName, descriptor) {
   let oriFunc = descriptor.value;
   descriptor.value = function (...args) {
     //获取回调函数
-    let {success, fail, complete} = args[0] || {};
+    let options = args[0] || {};
+    let {success, fail, complete} = options;
+    
+    //清除回调，避免函数体和修饰器重复处理
+    delete options.success;
+    delete options.fail;
+    delete options.complete;
     
     //获取执行结果
     let fetchRes = oriFunc.apply(this, args);
 
     //格式检查
     if (!(fetchRes instanceof Promise)) {
-      console.error('[supportWXCallback] 被修饰函数返回结果应为Promise，函数：', funcName);
+      console.error('[supportWXCallback] 被修饰函数返回结果应为Promise，函数：', funcName, '返回值：', fetchRes);
       return fetchRes;
     }
 
     //触发回调
     fetchRes.then((...results)=>{
+      //恢复回调配置，尽量减小对入参原始对象的影响
+      options.success = success;
+      options.fail = fail;
+      options.complete = complete;
+      
       //判断应该按成功回调还是按失败回调
       let succeeded = results[0] && typeof results[0].succeeded === "boolean" ? results[0].succeeded : true;
       
@@ -66,6 +77,12 @@ export function supportWXCallback(target, funcName, descriptor) {
       complete && complete(...results);
     });
     fetchRes.catch((e)=>{
+      //恢复回调配置，尽量减小对入参原始对象的影响
+      options.success = success;
+      options.fail = fail;
+      options.complete = complete;
+      
+      //回调
       let res = {
         errMsg: (e instanceof Error) ? e.message : 
                 (e && e.errMsg) ? e.errMsg : 
