@@ -139,7 +139,7 @@
 ## 演示
 - 小程序名称：fancyDemos   
 - 访问：  
-![](https://zhuanzhuanfe.github.io/fancy-mini/static/images/fancyQrCode.jpg)  
+![二维码](https://zhuanzhuanfe.github.io/fancy-mini/static/images/fancyQrCode.jpg)  
 - 源码：[fancy-mini-demos](https://github.com/zhuanzhuanfe/fancy-mini-demos) （示例逐步补全中）  
 
 

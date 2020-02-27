@@ -304,11 +304,12 @@ export function padStart(str, minLen, leadChar) {
  * 查询元素在页面中的坐标，单位：px
  * @async
  * @param {string} selector 元素选择器
+ * @param [thisComp=null] 微信自定义组件this对象,目标元素在自定义组件中时需提供
  * @return {object} 元素坐标，格式同[boundingClientRect返回值]{@link https://developers.weixin.qq.com/miniprogram/dev/api/wxml/NodesRef.boundingClientRect.html}
  */
-export async function queryRect(selector){
+export async function queryRect(selector, {thisComp=null}={}){
   return new Promise((resolve, reject)=>{
-    wx.createSelectorQuery().select(selector).boundingClientRect(resolve).exec();
+    (thisComp||wx).createSelectorQuery().select(selector).boundingClientRect(resolve).exec();
   });
 }
 
