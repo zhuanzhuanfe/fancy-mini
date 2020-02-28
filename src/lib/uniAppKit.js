@@ -96,6 +96,7 @@ export function pageRestoreHandler({route, context}) {
 
 /**
  * 恢复组件树中各组件的数据
+ * @ignore
  * @param {VueComponent} targetVm 待恢复的组件树根实例
  * @param {VueComponent} sourceVm 作为数据源的组件树根实例 
  */
