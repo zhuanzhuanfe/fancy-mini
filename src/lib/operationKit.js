@@ -9,12 +9,38 @@
  * @return {*}   源参数的深度拷贝
  */
 export function deepClone(source){
+  return _deepClone(source);
+}
+
+/**
+ * 深度拷贝
+ * @ignore
+ * @param {*} source 源参数
+ * @param {Array<{source:object, clone:object}>} refs 引用列表，用于处理自引用型数据
+ * @return {*}   源参数的深度拷贝
+ */
+function _deepClone(source, refs=[]){
+  //string、number等非引用型数据，直接赋相同值
   if (!isNonNullObject(source))
     return source;
 
-  var clone = Array.isArray(source) ? [] : {};
-  for (var p in source)
-    clone[p] = deepClone(source[p]);
+  //自引用型数据，返回对应自引用实例 (e.g. obj = {self: obj} 返回 objCopy = {self: objCopy})
+  let selfRef = refs.find(ref=>ref.source===source);
+  if (selfRef)
+    return selfRef.clone;
+ 
+  //创建拷贝实例 
+  let clone = Array.isArray(source) ? [] : {};
+  
+  //更新引用列表，用于分析子属性是否为自引用
+  refs = [...refs, {
+    source,
+    clone,
+  }];
+  
+  //拷贝子属性
+  for (let p in source)
+    clone[p] = _deepClone(source[p], refs);
 
   return clone;
 }

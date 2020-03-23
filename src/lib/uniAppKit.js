@@ -102,7 +102,7 @@ export function pageRestoreHandler({route, context}) {
  */
 function restoreVmTree({targetVm, sourceVm}){
   //恢复根实例自身数据
-  Object.assign(targetVm, sourceVm.$data);
+  Object.assign(targetVm, sourceVm.$data || sourceVm._data);
   
   //恢复各子组件及其后代组件的数据
   for (let i=0; i<targetVm.$children.length; ++i)

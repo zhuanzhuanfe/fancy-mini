@@ -1,3 +1,5 @@
+import {deepClone} from '../operationKit';
+
 /**
  * 历史记录
  * 由于小程序只支持最多10级页面，但需求上希望维护更长的历史栈，故自行维护完整历史记录
@@ -96,7 +98,7 @@ class History {
    * @param wxPage 对应的原生页面实例
    */
   savePage(idx, wxPage){
-    this._routes[idx].wxPage = wxPage;
+    this._routes[idx].wxPage = deepClone(wxPage);
   }
 
   /**
@@ -108,7 +110,7 @@ class History {
     if (!(idx>=0 && idx<this._routes.length))
       return resetRoute({});
 
-    let route = Object.assign({}, this._routes[idx]);
+    let route = deepClone(this._routes[idx]);
     if (idx+1<=this._correctLevel)
       route.wxPage = getCurrentPages()[idx];
 
