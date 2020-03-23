@@ -1,7 +1,7 @@
 {
   "name": "fancy-mini",
-  "version-1.x": "1.0.19",
-  "version-2.x": "2.0.4",
+  "version-1.x": "1.0.20",
+  "version-2.x": "2.0.5",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -34,6 +34,7 @@
     "commander": "^4.0.1",
     "cross-env": "^6.0.3",
     "docdash": "^1.1.1",
+    "jsdoc": "^3.6.3",
     "jsdoc-escape-at": "^1.0.1",
     "rimraf": "^3.0.0"
   },
