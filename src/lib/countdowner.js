@@ -1,27 +1,29 @@
 /**
  * 倒计时模块
+ * @module countDowner
  * @param {Object} obj - 必填项，以对象字面量形式传参
  * @param {Number} obj.countFromInMs - 倒计时开始时的剩余时间，单位ms
  * @param {Function} obj.onTimeout - 倒计时结束时执行的回调函数
  * @param {Function} obj.onTimeChange - 每隔interval时间触发一次的回调函数，参数
  * @param {Number} obj.interval - 每间隔interval毫秒计算一次剩余时间，计算结果通过onTimeChange函数*入参传给调用方
  * @example: 
- *      var countdowner = new Countdowner({
- *         countFromInMs: 1000*60*60*24,  // 倒计时一小时
- *         onTimeChange: (res)=>{
- *          // 100ms执行一次，输出格式：[几天,几时,几分,几秒,几个（interval毫秒）]
- *          console.log(res.currentTimeArr);  // [00, 23, 59, 59, 9]
- *          console.log(res.currentTimeArrWithoutDay);  // [35, 23, 23, 23]
- *         },
- *         onTimeout: ()=>{
- *         },
- *         interval: 100 // 100ms输出一次当前时间
- *      }); 
- * 进阶用法：
- * 1、初始化完成后可通过实例绑定/解绑多个事件处理函数
+ * import Countdowner from 'fancy-mini/lib/countdowner'
+ * var countdowner = new Countdowner({
+ *    countFromInMs: 1000*60*60*24,  // 倒计时一小时
+ *    onTimeChange: (res)=>{
+ *     // 100ms执行一次，输出格式：[几天,几时,几分,几秒,几个（interval毫秒）]
+ *     console.log(res.currentTimeArr);  // [00, 23, 59, 59, 9]
+ *     console.log(res.currentTimeArrWithoutDay);  // [35, 23, 23, 23]
+ *    },
+ *    onTimeout: ()=>{
+ *    },
+ *    interval: 100 // 100ms输出一次当前时间
+ * }); 
+ * // 进阶用法：
+ * //1、初始化完成后可通过实例绑定/解绑多个事件处理函数
  * countdowner.on('timechange/timeout', fn);
  * countdowner.off('timechange/timeout', fn);
- * 2、暂停/重启，countdowner.pause()/countdowner.restart();
+ * //2、暂停/重启，countdowner.pause()/countdowner.restart();
  */
  export default class Countdowner {
   constructor({countFromInMs, onTimeChange, onTimeout, interval=1000}){
@@ -48,6 +50,11 @@
     timechange: []
   };
 
+  /**
+   * 事件监听函数
+   * @param {string} eventName 事件名(timeout、 timechange)
+   * @param {function} fn 回调函数
+  */
   on(eventName, fn){
     if(eventName != 'timeout' && eventName != 'timechange'){
       console.error('仅支持timeout和timechange事件');
@@ -56,6 +63,11 @@
     this.eventsHandler[eventName].push(fn);
   }
 
+  /**
+   * 取消事件监听
+   * @param {string} eventName 事件名(timeout、 timechange)
+   * @param {function} fn 回调函数
+  */
   off(eventName, fn){
     if(eventName != 'timeout' && eventName != 'timechange'){
       console.error('仅支持timeout和timechange事件');
@@ -65,12 +77,19 @@
     if(index > -1)this.eventsHandler[eventName].splice(index, 1);
   }
 
-  pause({strict=true}){
+  /**
+   * 暂停
+   * @param {Object} Object.strict 是否从暂停时间开始计算剩余时间（默认为true）
+  */
+  pause({ strict = true }){
     this.pauseTime = Date.now();
     this.strictPause = strict;
     this.isPause = true;
   }
 
+  /**
+   * 重启
+  */
   restart(){
     this.isPause = false;
     Countdowner.ticktock.call(this);

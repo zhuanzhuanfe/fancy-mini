@@ -1,5 +1,5 @@
 /**
- * @description GBK字符集处理工具
+ * GBK字符串处理工具
  * @module handleStr
  */
 

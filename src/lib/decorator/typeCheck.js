@@ -1,5 +1,6 @@
 /**
  * 检测工具
+ *  @module typeCheck
  */
 const _toString = Object.prototype.toString;
 // 检测是否为纯粹的对象
@@ -17,6 +18,7 @@ const _isRegExp = function  (v) {
  * @param {Array} checked 被检测数组
  * @param {Array} checker 检测数组
  * @return {Boolean} 是否通过检测
+ * @private
  */
 const _check = function (checked,checker) {
   check:
@@ -39,12 +41,25 @@ const _check = function (checked,checker) {
   return true;
 }
 /**
- * @description 检测类型
+ * 检测类型
  *   1.用于校检函数参数的类型，如果类型错误，会打印错误并不再执行该函数；
  *   2.类型检测忽略大小写，如string和String都可以识别为字符串类型；
  *   3.增加any类型，表示任何类型均可检测通过；
  *   4.可检测多个类型，如 "number array",两者均可检测通过。正则检测忽略连接符；
- * @param {...string} args
+ * @param {Array<string>} args 参数类型
+ * @example
+ * import { typeCheck } from 'fancy-mini/lib/decorators'
+ * 
+ * \@typeCheck('array', 'object', 'string|number')
+ * function multiple(list, item, maxNum) {
+ *   if (item.selected || selectedNum < maxNum) {
+ *     // do something
+ *   } else {
+ *     //...
+ *   }
+ * }
+ *
+ * multiple(['paramValues'], { value: 3 }, 10})
  */
 export function typeCheck() {
   const checker =  Array.prototype.slice.apply(arguments);

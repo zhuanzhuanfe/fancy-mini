@@ -118,7 +118,7 @@
     [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.2-errSafe.html)
 
   - 异常提示 @withErrToast  
-    功能： 兼容异常，响应交互  
+    功能：兼容异常，响应交互  
     场景示例： 页面操作响应过程，若出现异常自动予以捕获并toast提示，避免交互无响应  
     [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.2-errSafe.html)
 
@@ -128,6 +128,11 @@
     场景示例：将回调形式的api改写为promise形式后，兼容旧代码  
     [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.3-compatible.html)
 
+- 参数类型检查修饰器
+  - 功能：检查方法参数类型 @typeCheck
+  - 场景示例：调用函数时传递的参数会通 typeCheck 进行类型检查，避免不合规的参数致使代码报错
+  - [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.3.1-typCheck.html)
+
 - wepyKit
   - 功能：wepy1.x框架工具集，与wepy1.x框架耦合度较高的功能在此模块中提供，如：注册全局this属性、注册全局页面钩子等
   - [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.4-wepyKit.html)
@@ -135,6 +140,16 @@
 - operationKit  
   - 功能：各种杂七杂八的通用基础操作
   - [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.5-operationKit.html)
+
+- handleStr
+  - 功能：GBK字符串常用处理函数
+  - 场景示例：计算GBK字符串长度、剪切GBK字符串
+  - [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.6-handleStr.html)
+
+- countdowner
+  - 功能：倒计时模块，封装常用倒计时：暂停、重启等基本方法以及监听函数
+  - 场景示例：页面需要倒计时展示模块时使用
+  - [详情](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-5.7-countDowner.html)
   
 ## 演示
 - 小程序名称：fancyDemos   
@@ -147,3 +162,6 @@
 - [setup](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-0-getStarted.html)
 - [各功能使用说明](https://zhuanzhuanfe.github.io/fancy-mini/tutorial-2.1-login.html)
 - [各功能api查询](https://zhuanzhuanfe.github.io/fancy-mini/BaseLogin.html)
+
+## 开发说明
+[README.md](./docs-src/develop/index.md)

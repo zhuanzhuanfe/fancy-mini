@@ -62,10 +62,19 @@
   "5.3-compatible" : {
     "title" : "[工具库] 快捷兼容修饰器"
   },
+  "5.3.1-typeCheck" : {
+    "title" : "[工具库] 类型检查修饰器"
+  },
   "5.4-wepyKit" : {
     "title" : "[工具库] wepy框架工具集"
   },
   "5.5-operationKit" : {
     "title" : "[工具库] 基础操作工具集"
+  },
+  "5.6-handleStr" : {
+    "title" : "[工具库] GBK字符串处理工具集"
+  },
+  "5.7-countDowner" : {
+    "title" : "[工具库] 倒计时模块"
   }
 }
