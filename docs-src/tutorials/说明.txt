@@ -8,6 +8,9 @@
 关于引用静态资源
   静态资源放在/docs-src/static/目录下，通过'./static/'的相对路径进行引用
   编译时，教程文件生成的html和static目录都会被输出至/docs/目录，二者会是平级关系
+
+关于文档左侧导航
+  需要在structure.json中补充对文件的说明，若不写js-doc会根据文件名自动生成导航名称  
   
 关于引用其它教程/文档
   通过'./tutorial-0-getStarted.html'形式的相对路径引用其它教程

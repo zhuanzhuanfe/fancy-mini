@@ -19,6 +19,11 @@
   npm run build -- -t 1.x,2.x # 编译并输出至1.x目录和2.x目录
 ```
 
+### 生成文档
+```bash
+  npm run doc
+```
+
 ### 发布
 1. 修改package.json中版本号
 ```js

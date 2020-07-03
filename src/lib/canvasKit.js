@@ -56,6 +56,45 @@ export default {
     }
     ctx.restore();
   },
+
+  /**
+   * 绘制图片，保持图片纵横比，只保证图片的短边能完全显示出来。也就是说，图片通常只在水平或垂直方向是完整的，另一个方向将会发生截取。
+   * @param ctx  wx.createCanvasContext返回的canvas绘图上下文
+   * @param {string} picFile 图片临时文件路径
+   * @param {number} x   左上角横坐标
+   * @param {number} y   左上角纵坐标
+   * @param {number} w   宽度
+   * @param {number} h   高度
+   * @param {string} bgColor 背景色，裁剪后多余部分用背景色填充
+   * 
+   */
+  aspectFit({ctx, picFile, x, y, w, h, bgColor}){
+    return this._getImageInfo(picFile)
+    .then((picInfo)=>{
+      let aspect = picInfo.width / picInfo.height;  //图片宽高比
+      let [dx, dy, dw, dh] = [0, 0, 0, 0]; //整张图片绘制位置
+      if (aspect < w/h) {
+        dh = h;
+        dw = dh*aspect;
+        dx = x - (dw-w)/2;
+        dy = y;
+      } else {
+        dw = w;
+        dh = dw/aspect;
+        dx = x;
+        dy = y - (dh-h)/2;
+      }
+
+      if(bgColor){
+        ctx.save();
+        ctx.setFillStyle(bgColor);
+        ctx.fillRect(x,y,w,h);  
+        ctx.restore();
+      }
+      ctx.drawImage(picFile, dx, dy, dw, dh);
+    })
+  },
+
   /**
    * 将方形区域切成圆形，场景示例：将头像切成圆形展示
    * 说明：
@@ -82,11 +121,12 @@ export default {
     ctx.fill();
     ctx.restore();
   },
+
   /**
    * 将矩形切成圆角矩形
    * 说明：
    *    1.方形区域四角会被填充成指定的背景色，只保留中央圆角矩形区域不变
-   *    2.早期小程序canvas不支持clip，所以采用先绘制再擦除的方式实现圆角矩形，只能在纯色背景上使用，后续考虑改用clip方式实现，待优化
+   *    2.早期小程序canvas不支持clip，所以采用先绘制再擦除的方式实现圆角矩形，只能在纯色背景上使用，现推荐改用 canvasKit.createBorderRadiusPath + ctx.clip 生成圆角矩形/图片/边框式实现，待优化
    * @param ctx wx.createCanvasContext返回的canvas绘图上下文
    * @param {number} x   矩形左上角横坐标
    * @param {number} y   矩形左上角纵坐标
@@ -135,6 +175,32 @@ export default {
 
     ctx.restore();
   },
+
+  /**
+   * 生成圆角边框路径，后续可使用该路径绘制圆角矩形、圆角图片、圆角边框等
+   * @param ctx wx.createCanvasContext返回的canvas绘图上下文
+   * @param {number} x   矩形左上角横坐标
+   * @param {number} y   矩形左上角纵坐标
+   * @param {number} w   矩形宽度
+   * @param {number} h   矩形高度
+   * @param {number} radius  圆角半径
+   */
+  createBorderRadiusPath({ctx, x, y, w, h, radius}){
+    ctx.beginPath();
+    ctx.moveTo(x, y+radius);
+    ctx.quadraticCurveTo(x, y, x+radius, y); //左上角弧线
+
+    ctx.lineTo(x+w-radius, y); //顶部水平线
+    ctx.quadraticCurveTo(x+w, y, x+w, y+radius); //右上角弧线
+
+    ctx.lineTo(x+w, y+h-radius);  //右侧竖线
+    ctx.quadraticCurveTo(x+w, y+h, x+w-radius, y+h); //右下角弧线
+
+    ctx.lineTo(x+radius, y+h); //底部水平线
+    ctx.quadraticCurveTo(x, y+h, x, y+h-radius); //左下角弧线
+    ctx.closePath();  //左侧竖线
+  },
+
   /**
    * 绘制文本，支持\n换行
    * @param ctx   wx.createCanvasContext返回的canvas绘图上下文
@@ -196,6 +262,7 @@ export default {
       return str;
     }
   },
+
   /**
    * 字符串长度，1个字母长度计为1,1个汉字长度计为2
    * canvas目前似乎不支持获取文本绘制后所占宽度，只能根据字数粗略计算了
@@ -215,5 +282,19 @@ export default {
       }
     }
     return str_length;
+  },
+
+  _getImageInfo(picFile) {
+    return new Promise((resolve,reject)=>{
+      wx.getImageInfo({
+        src: picFile,
+        success: res =>{
+          resolve(res)
+        },
+        fail: res=>{
+          reject(res)
+        }
+      })
+    })
   }
 }
