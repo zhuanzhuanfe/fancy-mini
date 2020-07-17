@@ -68,7 +68,7 @@ export const wxResolve = promisify(wx, {dealFail: true});
  */
 export function customWxPromisify({overrides={}, dealFail=false}={}) {
   //修复wx下有些方法在小程序单页模式下枚举报错的问题
-  Object.keys(wx).forEach((key) =>{
+  for (let key in wx) {
     try {
       if(wx[key]) {}
     }catch(e) {
@@ -76,7 +76,7 @@ export function customWxPromisify({overrides={}, dealFail=false}={}) {
         enumerable:false
       });
     }
-  })
+  }
   let wxRefine = Object.assign({}, wx, overrides);
   return promisify(wxRefine, {dealFail});
 }
