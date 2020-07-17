@@ -67,6 +67,16 @@ export const wxResolve = promisify(wx, {dealFail: true});
  * console.log(copyRes.succeeded ? '复制成功' : '复制失败'); //以Promise形式获取wx.setClipboardData返回结果，成功失败以succeeded字段区分
  */
 export function customWxPromisify({overrides={}, dealFail=false}={}) {
+  //修复wx下有些方法在小程序单页模式下枚举报错的问题
+  Object.keys(wx).forEach((key) =>{
+    try {
+      if(wx[key]) {}
+    }catch(e) {
+      Object.defineProperty(wx,key,{
+        enumerable:false
+      });
+    }
+  })
   let wxRefine = Object.assign({}, wx, overrides);
   return promisify(wxRefine, {dealFail});
 }
@@ -74,26 +84,31 @@ export function customWxPromisify({overrides={}, dealFail=false}={}) {
 function promisify(callbackSdk, {dealFail=false}) {
   let promiseSdk = {};
   for (let key in callbackSdk) {
-    if (typeof callbackSdk[key] !== "function" || /[^a]sync$/i.test(key)) {
-      promiseSdk[key] = callbackSdk[key];
+    try {
+      if (typeof callbackSdk[key] !== "function" || /[^a]sync$/i.test(key)) {
+        promiseSdk[key] = callbackSdk[key];
+        continue;
+      }
+  
+      promiseSdk[key] = function (options={}) {
+        return new Promise((resolve, reject)=>{
+          return callbackSdk[key](Object.assign({}, options, {
+            success(res){
+              Object.assign(res, {succeeded: true});
+              options.success && options.success(res);
+              resolve(res);
+            },
+            fail(res){
+              Object.assign(res, {succeeded: false});
+              options.fail && options.fail(res);
+              dealFail ? resolve(res) : reject(res);
+            },
+          }));
+        });
+      }
+    }catch(e) {
+      console.error('[error]promisify出错: ',e);
       continue;
-    }
-
-    promiseSdk[key] = function (options={}) {
-      return new Promise((resolve, reject)=>{
-        return callbackSdk[key](Object.assign({}, options, {
-          success(res){
-            Object.assign(res, {succeeded: true});
-            options.success && options.success(res);
-            resolve(res);
-          },
-          fail(res){
-            Object.assign(res, {succeeded: false});
-            options.fail && options.fail(res);
-            dealFail ? resolve(res) : reject(res);
-          },
-        }));
-      });
     }
   }
   return promiseSdk;
