@@ -229,7 +229,17 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>import {makeMutex} from 'fancy-mini/lib/decorators';let globalStore = {};class Navigator {   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行   static async navigateTo(route){...}   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行   static async navigateToMiniProgram(route){...}}</code></pre>
+    <pre class="prettyprint"><code>import {makeMutex} from 'fancy-mini/lib/decorators';
+
+let globalStore = {};
+
+class Navigator {
+   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+   static async navigateTo(route){...}
+
+   @makeMutex({namespace:globalStore, mutexId:'navigate'}) //避免跳转相关函数并发执行
+   static async navigateToMiniProgram(route){...}
+}</code></pre>
 
 
 
@@ -442,7 +452,18 @@ wait - 等待模式，依次顺序执行，场景示例：页面中多处同时�
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>class Demo {  @makeNoConcurrent({ //免并发处理    mode: 'discard', //并发调用时，无视后续调用    discardRes: { //被无视时返回的指定错误信息      succeeded: false,      errMsg: 'discarded: invoke too frequently'    }  })  async func(){    }}</code></pre>
+    <pre class="prettyprint"><code>class Demo {
+  @makeNoConcurrent({ //免并发处理
+    mode: 'discard', //并发调用时，无视后续调用
+    discardRes: { //被无视时返回的指定错误信息
+      succeeded: false,
+      errMsg: 'discarded: invoke too frequently'
+    }
+  })
+  async func(){
+  
+  }
+}</code></pre>
 
 
 
@@ -610,7 +631,19 @@ wait - 等待模式，依次顺序执行，场景示例：页面中多处同时�
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>class Demo {  @mergingStep //该函数可并合执行，短时间内连续多次调用可以共享执行结果  async login(){   //...  }    test(){    //页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C       //未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次    //使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次  }}</code></pre>
+    <pre class="prettyprint"><code>class Demo {
+  @mergingStep //该函数可并合执行，短时间内连续多次调用可以共享执行结果
+  async login(){
+   //...
+  }
+  
+  test(){
+    //页面内同时发生如下三个请求： 登录-发送接口A、登录-发送接口B、登录-发送接口C
+   
+    //未使用本修饰器时，网络时序：登录，登录，登录 - 接口A，接口B，接口C， 登录请求将会被发送三次
+    //使用本修饰器时，网络时序：登录 - 接口A，接口B，接口C，登录请求只会被发送一次
+  }
+}</code></pre>
 
 
 
@@ -702,7 +735,13 @@ wait - 等待模式，依次顺序执行，场景示例：页面中多处同时�
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>class Demo {  //提交表单  @noConcurrent //表单提交期间，无视后续点击，避免用户连续多次点击同一个提交按钮，造成同时提交多份表单  async onSubmit(){    //...  }}</code></pre>
+    <pre class="prettyprint"><code>class Demo {
+  //提交表单
+  @noConcurrent //表单提交期间，无视后续点击，避免用户连续多次点击同一个提交按钮，造成同时提交多份表单
+  async onSubmit(){
+    //...
+  }
+}</code></pre>
 
 
 
@@ -794,7 +833,25 @@ wait - 等待模式，依次顺序执行，场景示例：页面中多处同时�
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>class Demo {  //展示弹窗  @singleAisle //并发调用时需依次执行  async popDialog({msg}){    //展示弹窗    //await 等待弹窗交互    //关闭弹窗，return  }    test(){    //页面中多处同时调用弹窗函数    this.popDialog({msg: '提示a'});    this.popDialog({msg: '提示b'});    this.popDialog({msg: '提示c'});        //未使用本修饰器时，执行效果：多个弹窗同时展现相互覆盖，用户只看到了“提示c”    //使用本修饰器时，执行效果：展示“提示a”->用户关闭->展示“提示b”->用户关闭->展示“提示c”  }}</code></pre>
+    <pre class="prettyprint"><code>class Demo {
+  //展示弹窗
+  @singleAisle //并发调用时需依次执行
+  async popDialog({msg}){
+    //展示弹窗
+    //await 等待弹窗交互
+    //关闭弹窗，return
+  }
+  
+  test(){
+    //页面中多处同时调用弹窗函数
+    this.popDialog({msg: '提示a'});
+    this.popDialog({msg: '提示b'});
+    this.popDialog({msg: '提示c'});
+    
+    //未使用本修饰器时，执行效果：多个弹窗同时展现相互覆盖，用户只看到了“提示c”
+    //使用本修饰器时，执行效果：展示“提示a”->用户关闭->展示“提示b”->用户关闭->展示“提示c”
+  }
+}</code></pre>
 
 
 
@@ -836,7 +893,7 @@ wait - 等待模式，依次顺序执行，场景示例：页面中多处同时�
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Wed Jul 01 2020 16:10:01 GMT+0800 (GMT+08:00) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Thu Mar 25 2021 19:54:36 GMT+0800 (中国标准时间) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
 </footer>
 
 <script>prettyPrint();</script>
