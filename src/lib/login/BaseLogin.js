@@ -298,7 +298,7 @@ class BaseLogin {
     //尝试静默登录
     let canUseSilent = !['forceAuth'].includes(options.mode); //是否可尝试静默登录
     loginRes = canUseSilent ? await this._silentLogin(options, configOptions) : loginRes;
-    options.authFlowId = loginRes.authFlowId
+    options.authFlowId = (loginRes && loginRes.authFlowId) || ''
 
     if (loginRes.code === 0) //静默登录成功，结束
       return { code: 0, errMsg: 'ok' };
@@ -360,7 +360,7 @@ class BaseLogin {
 
     //登录失败，返回
     if (!silentRes.succeeded)
-      return { code: -200, authFlowId: silentRes.authFlowId, errMsg: 'login failed silently: normal' };
+      return { code: -200, authFlowId: (silentRes && silentRes.authFlowId) || '', errMsg: 'login failed silently: normal' };
 
     //登录成功，保存相关信息
     return this._afterFetchInfoPack({
