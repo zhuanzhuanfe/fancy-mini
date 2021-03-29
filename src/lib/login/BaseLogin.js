@@ -395,7 +395,6 @@ class BaseLogin {
 
     //展示登录界面，等待用户交互
     let userAuthRes = await this._handleUserAuth(options);
-    console.log('=============返回用户的操作额吉锅给')
 
 
     //交互失败（e.g.用户取消登录）
