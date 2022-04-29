@@ -78,6 +78,7 @@ class BaseLogin {
 
       onUserAuthFailed: null,
       onUserAuthSucceeded: null,
+      onUserAuthCanceled: null,
       onNewlyLogin: null,
       onLoginFailed(res, { failAction }) {
         switch (failAction) { //调用方希望的失败处理方式
@@ -245,6 +246,10 @@ class BaseLogin {
         action: 'combineFunc'
       },
       {
+        field: 'onUserAuthCanceled',
+        action: 'combineFunc'
+      },
+      {
         field: 'onNewlyLogin',
         action: 'combineFunc'
       },
@@ -399,6 +404,10 @@ class BaseLogin {
 
     //交互失败（e.g.用户取消登录）
     if (!userAuthRes.succeeded) {
+      if (userAuthRes.errMsg.includes('cancel login!')) {
+        configOptions.onUserAuthCanceled && configOptions.onUserAuthCanceled.call(options.thisIssuer, {});
+        return { code: -200, errMsg: 'user auth failed:' + userAuthRes.errMsg }
+      }
       configOptions.onUserAuthFailed && configOptions.onUserAuthFailed.call(options.thisIssuer, {});
       return { code: -100, errMsg: 'user auth failed:' + userAuthRes.errMsg }
     }
